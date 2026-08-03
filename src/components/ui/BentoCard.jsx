@@ -1,9 +1,15 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SimccCard } from '@/components/ui/SimccCard';
 
 export function BentoCard({ module }) {
+  if (module.id === 'simcc-mapeamento') {
+    return <SimccCard module={module} />;
+  }
+
   const {
+
     title,
     icon,
     gridClass,
