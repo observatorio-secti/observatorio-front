@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { institutionsData } from '@/data/institutionsData';
 import { InstitutionCard } from '@/components/ui/InstitutionCard';
-import { ArrowRight } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Landmark, GraduationCap, Building2, Award, Building, ArrowRight } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'todas', label: 'Todas' },
-  { id: 'federais', label: 'Federais' },
-  { id: 'estaduais', label: 'Estaduais' },
-  { id: 'institutos', label: 'Institutos' },
-  { id: 'privadas', label: 'Privadas' },
+  { id: 'todas', label: 'Todas', icon: Landmark },
+  { id: 'federais', label: 'Federais', icon: GraduationCap },
+  { id: 'estaduais', label: 'Estaduais', icon: Building2 },
+  { id: 'institutos', label: 'Institutos', icon: Award },
+  { id: 'privadas', label: 'Privadas', icon: Building },
 ];
 
 export function InstitutionsSection() {
   const [activeTab, setActiveTab] = useState('todas');
-
-  const filteredInstitutions = institutionsData.filter(
-    (inst) => activeTab === 'todas' || inst.category === activeTab
-  );
 
   return (
     <section
@@ -24,7 +23,7 @@ export function InstitutionsSection() {
       className="scroll-mt-16 w-full max-w-[1280px] mx-auto px-4 md:px-16 py-12 flex flex-col gap-8 min-h-screen"
     >
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-steel-blue/40 pb-4 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end pb-2 gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="font-display text-2xl md:text-3xl text-navy-deep font-bold tracking-tight">
             Instituições integradas
@@ -33,57 +32,62 @@ export function InstitutionsSection() {
             Acesse os dados e produções de cada instituição participante.
           </p>
         </div>
-
-        <a
-          className="text-xs md:text-sm font-semibold text-primary-container uppercase tracking-wider hover:text-navy-deep transition-colors flex items-center gap-1 group shrink-0"
-          href="#instituicoes"
-        >
-          <span>Ver todas</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </a>
       </div>
 
-      {/* Category Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {CATEGORIES.map((category) => {
-          const count =
-            category.id === 'todas'
-              ? institutionsData.length
-              : institutionsData.filter((i) => i.category === category.id).length;
+      {/* Tabs Design System Component */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col">
+        {/* Horizontal ScrollArea for TabsList with Bottom Divider Line */}
+        <div className="border-b border-steel-blue/30 dark:border-steel-blue/20 w-full relative">
+          <ScrollArea orientation="horizontal" className="w-full pb-0.5">
+            <TabsList className="bg-transparent p-0 h-auto flex items-center gap-4 min-w-max">
+              {CATEGORIES.map((category) => {
+                const IconComponent = category.icon;
+                const count =
+                  category.id === 'todas'
+                    ? institutionsData.length
+                    : institutionsData.filter((i) => i.category === category.id).length;
 
-          const isActive = activeTab === category.id;
+                return (
+                  <TabsTrigger
+                    key={category.id}
+                    value={category.id}
+                    className="p-0 border-b-2 border-b-transparent pb-3.5 data-[state=active]:border-[#719CB8] data-[state=active]:text-on-surface dark:data-[state=active]:text-white transition-all cursor-pointer m-0"
+                  >
+                    <Button
+                      variant="ghost"
+                      className="m-0 h-auto py-1 px-3 flex items-center gap-2 hover:bg-surface-container/60 rounded-lg text-sm font-medium"
+                    >
+                      <IconComponent className="w-4 h-4 text-primary shrink-0" />
+                      <span>{category.label}</span>
+                      <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-surface-container-high text-on-surface-variant">
+                        {count}
+                      </span>
+                    </Button>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+
+        {/* Tabs Content inside Vertical Scroll Area with px-8 Horizontal Padding */}
+        {CATEGORIES.map((category) => {
+          const filtered = institutionsData.filter(
+            (inst) => category.id === 'todas' || inst.category === category.id
+          );
 
           return (
-            <button
-              key={category.id}
-              onClick={() => setActiveTab(category.id)}
-              className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-                isActive
-                  ? 'bg-navy-deep text-surface-white shadow-sm'
-                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-navy-deep'
-              }`}
-            >
-              <span>{category.label}</span>
-              <span
-                className={`px-1.5 py-0.5 text-[11px] rounded-full font-bold ${
-                  isActive
-                    ? 'bg-primary-container text-surface-white'
-                    : 'bg-surface-dim text-on-surface-variant'
-                }`}
-              >
-                {count}
-              </span>
-            </button>
+            <TabsContent key={category.id} value={category.id} className="px-8 py-6 m-0">
+              <div className="bento-grid transition-all duration-300">
+                {filtered.map((institution) => (
+                  <InstitutionCard key={institution.id} institution={institution} />
+                ))}
+              </div>
+            </TabsContent>
           );
         })}
-      </div>
-
-      {/* Institutions Bento Grid */}
-      <div className="bento-grid transition-all duration-300">
-        {filteredInstitutions.map((institution) => (
-          <InstitutionCard key={institution.id} institution={institution} />
-        ))}
-      </div>
+      </Tabs>
     </section>
   );
 }

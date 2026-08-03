@@ -7,7 +7,7 @@ export const modulesData = [
     gridClass: 'lg:col-span-2 lg:row-span-2',
     isLarge: true,
     isMain: true,
-    bgImage: '/BG-MODULOS.png',
+    bgImage: '/BG-SIMCC.png',
     logo: '/LOGO-SIMCC.svg'
   },
   {

@@ -29,7 +29,7 @@ export function SimccCard({ module }) {
           src={bgImage}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-15 pointer-events-none select-none"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-30 pointer-events-none select-none group-hover:scale-105 transition-transform duration-500"
         />
       )}
 
