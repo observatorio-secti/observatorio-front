@@ -8,7 +8,7 @@ export function HeroSection() {
     >
       <div className="space-y-4 max-w-4xl">
         <h1 className="font-display text-4xl sm:text-5xl md:text-[56px] md:leading-[64px] text-navy-deep font-bold tracking-tight">
-          O ponto de encontro da ciência baiana.
+          Observatório de CT&I da Bahia
         </h1>
         <p className="font-sans text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
           Explore dados integrados sobre produção científica, pesquisadores, instituições e

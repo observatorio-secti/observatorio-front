@@ -34,16 +34,37 @@ export function Header() {
     { label: 'Instituições', href: '#instituicoes', id: 'instituicoes' },
   ];
 
+  const showName = activeSection !== 'sobre';
+
   return (
     <header className="bg-surface/95 backdrop-blur-sm border-b border-outline-variant w-full sticky top-0 z-50 h-16 transition-all duration-300">
       <div className="flex justify-between items-center w-full px-4 md:px-16 h-full max-w-[1280px] mx-auto">
         {/* Brand Logo */}
-        <a className="flex items-center h-16 py-0 overflow-hidden" href="#sobre">
-          <img
-            alt="Observatório Logo"
-            className="h-full w-auto object-contain scale-125 origin-left"
-            src="https://lh3.googleusercontent.com/aida/AP1WRLu51lMIJZ29XZY_5mHIa2bYRoXvzE_-cP0OtQ05w_jj3_qpRDMNzp7WndWUdRMV-GMm1IVmwdjCZNJMQYKbRcSXRADUNqhNePVmh9tfOQrh8-Eg0MyVTBVm4TjkoDQSDtxQjwbRNdumhh1TCT0uFrBuFurbQfXnhkYcnV6EqDL7F0O12kftRNMrtUUGxjQ8rLqriAaklNLCclFVAURc0zHvdRYxU00oizHk94PYW8d0KT2iOvV01US2wGxU"
-          />
+        <a className="flex items-center h-16 py-2 overflow-hidden group" href="#sobre">
+          <div className="relative flex items-center h-full">
+            {/* Logo Icon */}
+            <img
+              alt="Observatório Logo"
+              className="h-10 w-auto object-contain z-10 relative shrink-0 transition-transform duration-300 group-hover:scale-105"
+              src="/LOGO.png"
+            />
+
+            {/* Name sliding from under logo left-to-right on section 2 */}
+            <div
+              className={cn(
+                'transition-all duration-500 ease-out flex items-center h-full overflow-hidden shrink-0',
+                showName
+                  ? 'max-w-[280px] opacity-100 translate-x-0 ml-2.5'
+                  : 'max-w-0 opacity-0 -translate-x-8 ml-0 pointer-events-none'
+              )}
+            >
+             <img
+  alt="Observatório de CT&I da Bahia"
+  className="h-12 md:h-16 w-auto object-contain shrink-0"
+  src="/NOME.png"
+/>
+            </div>
+          </div>
         </a>
 
         {/* Desktop Navigation */}
