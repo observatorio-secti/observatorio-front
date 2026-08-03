@@ -1,13 +1,14 @@
 export const modulesData = [
   {
     id: 'simcc-mapeamento',
-    title: 'SIMCC - Mapeamento de Competências',
+    title: 'Mapeamento de Competências',
     link: 'https://observatoriocti.secti.ba.gov.br/',
     icon: 'map',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     isLarge: true,
     isMain: true,
-    tag: 'SIMCC'
+    bgImage: '/BG-MODULOS.png',
+    logo: '/LOGO-SIMCC.svg'
   },
   {
     id: 'indicadores-pos-graduacao',
@@ -68,12 +69,13 @@ export const modulesData = [
   },
   {
     id: 'vip-vitrine',
-    title: 'VIP - Vitrine de Infraestrutura',
+    title: 'Vitrine de Infraestrutura',
     link: 'https://vip.uesc.br/',
     icon: 'domain',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     isLarge: true,
     isMain: true,
-    tag: 'VIP'
+    bgImage: '/BG-VIP.png',
+    logo: '/LOGO-VIP.svg'
   }
 ];

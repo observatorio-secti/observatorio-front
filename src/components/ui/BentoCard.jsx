@@ -12,6 +12,8 @@ export function BentoCard({ module }) {
     tag,
     link,
     status,
+    bgImage,
+    logo,
   } = module;
 
   const isInactive = status === 'inactive';
@@ -34,10 +36,20 @@ export function BentoCard({ module }) {
         }
       }}
     >
+      {/* Imagem de Fundo com Transparência */}
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-30 pointer-events-none select-none group-hover:scale-105 transition-transform duration-500"
+        />
+      )}
+
       {/* 4px vertical accent line on left (from DESIGN.md) */}
       <div
         className={cn(
-          'absolute left-0 top-0 bottom-0 w-1 transition-colors duration-200',
+          'absolute left-0 top-0 bottom-0 w-1 transition-colors duration-200 z-10',
           isInactive
             ? 'bg-outline-variant'
             : isMain
@@ -47,23 +59,34 @@ export function BentoCard({ module }) {
       />
 
       {/* Top Header Row */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div
-            className={cn(
-              'rounded-full bg-surface-container flex items-center justify-center text-primary-container shrink-0 transition-transform group-hover:scale-105',
-              isLarge ? 'w-12 h-12' : 'w-9 h-9'
-            )}
-          >
-            <span
+      <div className="flex items-start justify-between gap-3 relative z-10">
+        <div className="flex items-center gap-[14.4px] flex-wrap sm:flex-nowrap">
+          {logo ? (
+            <img
+              src={logo}
+              alt=""
               className={cn(
-                'material-symbols-outlined',
-                isLarge ? 'text-[26px]' : 'text-[20px]'
+                'object-contain shrink-0 transition-transform group-hover:scale-105',
+                isLarge ? 'h-9 md:h-11 w-auto max-w-[180px]' : 'h-7 w-auto max-w-[120px]'
+              )}
+            />
+          ) : (
+            <div
+              className={cn(
+                'rounded-full bg-surface-container flex items-center justify-center text-primary-container shrink-0 transition-transform group-hover:scale-105',
+                isLarge ? 'w-12 h-12' : 'w-9 h-9'
               )}
             >
-              {icon}
-            </span>
-          </div>
+              <span
+                className={cn(
+                  'material-symbols-outlined',
+                  isLarge ? 'text-[26px]' : 'text-[20px]'
+                )}
+              >
+                {icon}
+              </span>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 flex-wrap">
             <h3
