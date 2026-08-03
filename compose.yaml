@@ -1,0 +1,7 @@
+services:
+  builder:
+    build: .
+    command: npm run build
+    volumes:
+      - .:/app
+      - /app/node_modules
