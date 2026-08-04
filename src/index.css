@@ -1,86 +1,10 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --font-sans: 'Lexend', sans-serif;
-  --font-display: 'Lexend', sans-serif;
-  --font-tabular: 'Ubuntu', sans-serif;
-
-  --color-surface: #f8f9fb;
-  --color-surface-dim: #d9dadc;
-  --color-surface-bright: #f8f9fb;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f4f6;
-  --color-surface-container: #edeef0;
-  --color-surface-container-high: #e7e8ea;
-  --color-surface-container-highest: #e1e2e4;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #3f484c;
-  --color-inverse-surface: #2e3132;
-  --color-inverse-on-surface: #f0f1f3;
-  --color-outline: #6f787d;
-  --color-outline-variant: #bfc8cc;
-  --color-surface-tint: #07677e;
-  --color-primary: #07677e;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #559fb8;
-  --color-on-primary-container: #003340;
-  --color-inverse-primary: #88d1eb;
-  --color-secondary: #37637d;
-  --color-on-secondary: #ffffff;
-  --color-secondary-container: #b4e0fe;
-  --color-on-secondary-container: #38647e;
-  --color-tertiary: #2b657c;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #679db6;
-  --color-on-tertiary-container: #003343;
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-  --color-primary-fixed: #b6eaff;
-  --color-primary-fixed-dim: #88d1eb;
-  --color-on-primary-fixed: #001f28;
-  --color-on-primary-fixed-variant: #004e60;
-  --color-secondary-fixed: #c6e7ff;
-  --color-secondary-fixed-dim: #a0ccea;
-  --color-on-secondary-fixed: #001e2d;
-  --color-on-secondary-fixed-variant: #1c4b64;
-  --color-tertiary-fixed: #bde9ff;
-  --color-tertiary-fixed-dim: #98cee8;
-  --color-on-tertiary-fixed: #001f2a;
-  --color-on-tertiary-fixed-variant: #084d63;
-  --color-background: #f8f9fb;
-  --color-on-background: #191c1e;
-  --color-surface-variant: #e1e2e4;
-  --color-navy-deep: #024A60;
-  --color-steel-blue: #719CB8;
-  --color-success-emerald: #10b981;
-  --color-surface-white: #ffffff;
-  --color-ink-black: #0a0a0a;
-
-  --spacing-base: 4px;
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 48px;
-  --spacing-gutter: 24px;
-  --spacing-margin-mobile: 16px;
-  --spacing-margin-desktop: 64px;
-  --spacing-max-width: 1280px;
-
-  --radius-sm: 0.25rem;
-  --radius-default: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-}
-
+/* Estilos extraídos do arquivo original */
 body {
   background-color: #f8f9fb;
-  color: #191c1e;
-  font-family: 'Lexend', sans-serif;
 }
 
 .bento-grid {
@@ -92,15 +16,43 @@ body {
 
 @media (min-width: 768px) {
   .bento-grid {
-    grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 1fr);
   }
+
+  .col-span-2 { grid-column: span 2; }
+  .row-span-2 { grid-row: span 2; }
 }
 
 @media (min-width: 1024px) {
   .bento-grid {
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: minmax(180px, auto);
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: minmax(180px, auto);
   }
+
+  .module-item-1 { grid-column: span 2; grid-row: span 2; }
+  .module-item-2 { grid-column: span 1; grid-row: span 1; }
+  .module-item-3 { grid-column: span 1; grid-row: span 2; }
+  .module-item-4 { grid-column: span 1; grid-row: span 1; }
+  .module-item-5 { grid-column: span 2; grid-row: span 1; }
+  .module-item-6 { grid-column: span 1; grid-row: span 1; }
+  .module-item-7 { grid-column: span 1; grid-row: span 1; }
+  .module-item-8 { grid-column: span 1; grid-row: span 1; }
+  .module-item-9 { grid-column: span 1; grid-row: span 1; }
+  .module-item-10 { grid-column: span 1; grid-row: span 1; }
+  .module-item-11 { grid-column: span 1; grid-row: span 1; }
+  .module-item-12 { grid-column: span 2; grid-row: span 2; }
+
+  .inst-item-1 { grid-column: span 2; grid-row: span 1; }
+  .inst-item-2 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-3 { grid-column: span 1; grid-row: span 2; }
+  .inst-item-4 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-5 { grid-column: span 2; grid-row: span 1; }
+  .inst-item-6 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-7 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-8 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-9 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-10 { grid-column: span 1; grid-row: span 1; }
+  .inst-item-11 { grid-column: span 2; grid-row: span 1; }
 }
 
 .bento-card {
