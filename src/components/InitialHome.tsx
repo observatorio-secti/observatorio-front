@@ -391,7 +391,7 @@ export default function InitialHome() {
             <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#">Sobre o Simcc</a>
           </nav>
           <div className="text-sm text-slate-500 text-center md:text-right">
-            © 2024 Observatório da Ciência da Bahia.
+            © 2026 Observatório da Ciência da Bahia.
           </div>
         </div>
       </footer>
