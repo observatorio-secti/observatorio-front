@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -58,35 +58,61 @@ export function Header() {
                   : 'max-w-0 opacity-0 -translate-x-8 ml-0 pointer-events-none'
               )}
             >
-             <img
-  alt="Observatório de CT&I da Bahia"
-  className="h-12 md:h-16 w-auto object-contain shrink-0"
-  src="/NOME.png"
-/>
+              <img
+                alt="Observatório de CT&I da Bahia"
+                className="h-12 md:h-16 w-auto object-contain shrink-0"
+                src="/NOME.png"
+              />
             </div>
           </div>
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 h-full">
-          {navItems.map((item) => (
-            <a
-              key={item.id}
-              href={item.href}
-              className={cn(
-                'font-medium text-xs md:text-sm transition-colors duration-200 py-1 border-b-2',
-                activeSection === item.id
-                  ? 'text-primary border-primary font-semibold'
-                  : 'text-on-surface-variant border-transparent hover:text-primary'
-              )}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        {/* Desktop Navigation & Apoio */}
+        <div className="hidden md:flex items-center gap-6 h-full">
+          <nav className="flex items-center gap-6 h-full">
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={item.href}
+                className={cn(
+                  'font-medium text-xs md:text-sm transition-colors duration-200 py-1 border-b-2',
+                  activeSection === item.id
+                    ? 'text-primary border-primary font-semibold'
+                    : 'text-on-surface-variant border-transparent hover:text-primary'
+                )}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-        {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden">
+          <div className="h-6 w-px bg-outline-variant/60 shrink-0" aria-hidden="true" />
+
+          {/* Apoio section */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="text-xs font-semibold text-on-surface-variant/80 uppercase tracking-wider select-none">
+              Apoio:
+            </span>
+            <img
+              src="/ESTADO-BAHIA.svg"
+              alt="Governo do Estado da Bahia"
+              className="h-12 w-auto object-contain"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Header Right (Apoio Icon + Menu Button) */}
+        <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] font-semibold text-on-surface-variant/70 uppercase tracking-wider select-none">
+              Apoio:
+            </span>
+            <img
+              src="/ESTADO-BAHIA.svg"
+              alt="Governo do Estado da Bahia"
+              className="h-6 w-auto object-contain"
+            />
+          </div>
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -116,6 +142,16 @@ export function Header() {
               {item.label}
             </a>
           ))}
+          <div className="pt-3 border-t border-outline-variant/60 flex items-center justify-between">
+            <span className="text-xs font-semibold text-on-surface-variant/80 uppercase tracking-wider select-none">
+              Apoio:
+            </span>
+            <img
+              src="/ESTADO-BAHIA.svg"
+              alt="Governo do Estado da Bahia"
+              className="h-7 w-auto object-contain"
+            />
+          </div>
         </div>
       )}
     </header>

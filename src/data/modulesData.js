@@ -2,7 +2,7 @@ export const modulesData = [
   {
     id: 'simcc-mapeamento',
     title: 'Mapeamento de Competências',
-    link: 'https://observatoriocti.secti.ba.gov.br/',
+    link: 'http://simcc.uesc.br/',
     icon: 'map',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     isLarge: true,
