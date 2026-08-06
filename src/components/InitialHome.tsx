@@ -1,8 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Importações dos dados e do novo componente
+import { modulesData } from '../data/modulesData';
+import FeaturedResearchers from './FeaturedResearchers';
+
+// Tipagem básica para os módulos
+interface ModuleData {
+  id: string;
+  title: string;
+  link: string;
+  icon?: string;
+  gridClass: string;
+  isLarge?: boolean;
+  isMain?: boolean;
+  bgImage?: string;
+  logo?: string;
+  status?: string;
+}
+
 export default function InitialHome() {
   const navigate = useNavigate();
+  
+  // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Todas');
   const [activeSection, setActiveSection] = useState('');
@@ -17,12 +37,14 @@ export default function InitialHome() {
   const increaseText = () => setFontSize(prev => (prev < 150 ? prev + 10 : prev));
   const decreaseText = () => setFontSize(prev => (prev > 80 ? prev - 10 : prev));
 
+  // Lógica de Scroll da Navbar
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Lógica do Intersection Observer para as abas da Navbar
   useEffect(() => {
     const sections = document.querySelectorAll('section[id]');
     const observer = new IntersectionObserver(
@@ -47,8 +69,15 @@ export default function InitialHome() {
     }
   };
 
-  const handleNavigation = (path: string) => navigate(path);
+  const handleModuleClick = (link: string) => {
+    if (link.startsWith('http')) {
+      window.location.href = link; 
+    } else {
+      navigate(link); 
+    }
+  };
 
+  // Dados das Instituições
   const institutionsData = [
     { id: 'ufba', sigla: 'UFBA', nome: 'Universidade Federal da Bahia', category: 'Federais', rowSpan: 1 },
     { id: 'uesb', sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', category: 'Estaduais', rowSpan: 1 },
@@ -70,7 +99,6 @@ export default function InitialHome() {
 
   return (
     <>
-      {/* Estilos Globais Injetados para Acessibilidade Funcional */}
       <style>
         {`
           html {
@@ -114,13 +142,11 @@ export default function InitialHome() {
           </div>
         </header>
 
-        {/* Main Canvas */}
         <main className="flex-grow flex flex-col items-center w-full">
           
           {/* Hero Section */}
           <section id="sobre" className="scroll-mt-16 w-full relative h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
-
             <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col items-center text-center gap-8">
               <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold max-w-4xl tracking-tight">
                 Observatório <br />
@@ -130,16 +156,14 @@ export default function InitialHome() {
                 Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
               </p>
             </div>
-            
             <a className="absolute bottom-12 text-slate-300 hover:text-blue-700 transition-colors cursor-pointer z-10" onClick={(e) => scrollToSection(e, 'modulos')}>
               <span className="material-symbols-outlined text-[24px]">keyboard_arrow_down</span>
             </a>
           </section>
 
-          {/* Módulos da Plataforma */}
-          <section id="modulos" className="scroll-mt-16 w-full bg-[#F8FAFC] py-24 border-t border-gray-200 min-h-screen">
+          {/* Módulos da Plataforma (Bento Grid) */}
+          <section id="modulos" className="scroll-mt-16 w-full bg-[#F8FAFC] py-24 border-t border-gray-200">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-              
               <div className="flex flex-col gap-2 mb-12">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">
                   Módulos da Plataforma
@@ -149,147 +173,137 @@ export default function InitialHome() {
                 </p>
               </div>
 
-              {/* Grid Bento - Layout Idêntico ao Print */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-fr">
-                
-                {/* LINHA 1 e 2 - Card SIMCC (2 colunas, 2 linhas de altura) */}
-                <div onClick={() => handleNavigation('/resultados')} className="md:col-span-2 md:row-span-2 bg-white rounded-[20px] p-8 border border-gray-200 shadow-sm flex flex-col relative group hover:shadow-md hover:border-blue-300 transition-all cursor-pointer overflow-hidden">
-                  <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0"></div>
-                  <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
+              {/* Ajuste de altura aqui: md:auto-rows-[180px] */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
+                {(modulesData as ModuleData[]).map((module) => {
                   
-                  <div className="flex items-center gap-4 mb-4 z-10">
-                    <img src="/LOGO-SIMCC.svg" alt="SIMCC" className="h-10 w-auto" />
-                    <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight">Mapeamento de<br/>Competências</h3>
-                  </div>
-                  
-                  <div className="flex-grow relative w-full min-h-[220px] select-none py-6 z-10 overflow-hidden">
-                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-5xl bg-white/80 px-4 py-1 rounded-xl backdrop-blur-sm border border-white/40 shadow-sm">Bahia</span>
-                     </div>
-                     <span className="absolute top-4 left-[15%] text-[#0f4c64] font-bold text-2xl">Brasil</span>
-                     <span className="absolute top-2 left-[2%] text-slate-400 text-sm">Desenvolvimento</span>
-                     <span className="absolute bottom-6 left-[22%] text-[#0f4c64] font-bold text-xl">Saúde</span>
-                     <span className="absolute bottom-14 left-[8%] text-gray-400 -rotate-90 text-lg tracking-wide">Experiência</span>
-                     <span className="absolute bottom-6 left-[2%] text-[#0f4c64] font-bold -rotate-90 text-sm">Social</span>
-                     <span className="absolute top-[45%] left-[2%] text-slate-400 text-sm">Ensino</span>
-                     <span className="absolute top-8 right-[25%] text-[#0f4c64] font-medium rotate-90 text-lg tracking-widest">Educação</span>
-                     <span className="absolute top-4 right-[8%] text-slate-400 text-sm">Estudo</span>
-                     <span className="absolute bottom-8 right-[18%] text-[#0f4c64] font-semibold text-lg">Análise</span>
-                     <span className="absolute bottom-3 right-[35%] text-[#0f4c64] text-sm font-medium">Formação</span>
-                     <span className="absolute bottom-10 right-[6%] text-gray-400 text-sm rotate-90">Trabalho</span>
-                     <span className="absolute bottom-2 right-[2%] text-slate-400 text-xs">Município</span>
-                     <span className="absolute top-[40%] right-[2%] text-[#0f4c64] text-sm -rotate-90 font-medium">Avaliação</span>
-                  </div>
+                  if (module.id === 'simcc-mapeamento') {
+                    return (
+                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
+                        
+                        {/* ACCENT BAR - Cores da Bahia no canto esquerdo */}
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
+                        
+                        <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0"></div>
+                        <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
+                        
+                        <div className="flex items-center gap-4 mb-4 z-10 pl-2">
+                          {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
+                          <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
+                        </div>
+                        
+                        {/* NUVEM DE PALAVRAS COM SAFE ZONE NO CENTRO E MARGENS REDUZIDAS PARA CABER NO CARD MENOR */}
+                        <div className="flex-grow relative w-full h-full min-h-[120px] select-none z-10 overflow-hidden font-sans pl-2">
+                           {/* Centro */}
+                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[180px] h-[50px] flex items-center justify-center">
+                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[40px] leading-none tracking-tight">Bahia</span>
+                           </div>
+                           
+                           {/* Topo Esquerda */}
+                           <span className="absolute top-[2%] left-[15%] text-slate-400 font-medium text-xs">Desenvolvimento</span>
+                           <span className="absolute top-[18%] left-[25%] text-[#0f4c64] font-bold text-lg">Brasil</span>
+                           <span className="absolute top-[28%] left-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Estado</span>
+                           <span className="absolute top-[50%] left-[12%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
+                           
+                           {/* Topo Direita */}
+                           <span className="absolute top-[8%] right-[22%] text-slate-400 font-bold text-lg">Estudo</span>
+                           <span className="absolute top-[32%] right-[14%] text-[#0f4c64] font-extrabold text-2xl -rotate-90">Educacao</span>
+                           <span className="absolute top-[15%] right-[8%] text-[#0f4c64] font-bold text-sm -rotate-90">Avaliacao</span>
+                           <span className="absolute top-[4%] right-[2%] text-slate-400 font-medium text-xs -rotate-90">Municipio</span>
+                           
+                           {/* Base Esquerda */}
+                           <span className="absolute bottom-[22%] left-[10%] text-[#0f4c64] font-bold text-lg">Saude</span>
+                           <span className="absolute bottom-[16%] left-[22%] text-slate-400 font-bold text-sm -rotate-90">Ensino</span>
+                           <span className="absolute bottom-[4%] left-[18%] text-[#0f4c64] font-bold text-base">Social</span>
+                           <span className="absolute bottom-[12%] left-[2%] text-slate-400 font-medium text-sm -rotate-90">Experiencia</span>
+                           
+                           {/* Base Centro/Direita */}
+                           <span className="absolute bottom-[12%] left-[38%] text-[#0f4c64] font-bold text-xl">Analise</span>
+                           <span className="absolute bottom-[2%] left-[34%] text-[#0f4c64] font-bold text-sm">Caso</span>
+                           
+                           <span className="absolute bottom-[10%] right-[28%] text-[#0f4c64] font-extrabold text-lg">Producao</span>
+                           <span className="absolute bottom-[18%] right-[20%] text-[#0f4c64] font-bold text-sm">Formacao</span>
+                           <span className="absolute bottom-[2%] right-[32%] text-slate-400 font-medium text-sm">Diferentes</span>
+                           
+                           <span className="absolute bottom-[10%] right-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
+                           <span className="absolute bottom-[28%] right-[2%] text-[#0f4c64] font-medium text-xs">Relato</span>
+                        </div>
+                        
+                        <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center gap-4 justify-between z-10 pl-2">
+                          <div className="flex-grow w-full bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2 border border-gray-200">
+                            <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
+                            <input type="text" placeholder="Pesquisar competências..." onClick={(e) => e.stopPropagation()} className="bg-transparent border-none outline-none w-full text-sm text-slate-600 placeholder-gray-400"/>
+                          </div>
+                          <button onClick={(e) => { e.stopPropagation(); handleModuleClick(module.link); }} className="text-gray-400 font-bold text-xs tracking-wider flex items-center gap-1 hover:text-red-600 transition-colors uppercase whitespace-nowrap bg-white/80 py-2 px-3 rounded-lg">
+                            MAIS <span className="material-symbols-outlined text-[16px]">expand_less</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
 
-                  <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center gap-4 justify-between z-10">
-                    <div className="flex-grow w-full bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2 border border-gray-200">
-                      <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
-                      <input type="text" placeholder="Pesquisar competências..." onClick={(e) => e.stopPropagation()} className="bg-transparent border-none outline-none w-full text-sm text-slate-600 placeholder-gray-400"/>
+                  if (module.id === 'vip-vitrine') {
+                    return (
+                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
+                        {/* ACCENT BAR */}
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
+
+                        <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
+                        <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
+                        <div className="flex items-center gap-4 z-10 pl-2">
+                          {module.logo && <img src={module.logo} alt="VIP" className="h-10 w-auto" />}
+                          <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">{module.title}</h3>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (module.status === 'inactive') {
+                    return (
+                      <div key={module.id} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-gray-100 shadow-sm flex flex-col justify-center relative group cursor-default overflow-hidden`}>
+                        {/* INACTIVE BAR */}
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-300 z-20"></div>
+
+                        <div className="flex items-center gap-4 pr-6 pl-2">
+                          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-gray-400 text-[24px]">{module.icon}</span>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <h3 className="font-bold text-gray-400 text-sm leading-tight">{module.title}</h3>
+                            <span className="bg-gray-200 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded w-max uppercase tracking-wider">Em breve</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-700 transition-all duration-300 overflow-hidden`}>
+                      {/* ACCENT BAR */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
+
+                      <span className="material-symbols-outlined absolute top-4 right-4 text-blue-200 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
+                      <div className="flex items-center gap-4 pr-6 pl-2">
+                        <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">{module.icon}</span>
+                        </div>
+                        <h3 className="font-bold text-[#0f4c64] text-sm leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' e ', ' e<br/>').replace(' de ', ' de<br/>').replace(' - ', ' -<br/>') }}></h3>
+                      </div>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); handleNavigation('/resultados'); }} className="text-gray-400 font-bold text-xs tracking-wider flex items-center gap-1 hover:text-red-600 transition-colors uppercase whitespace-nowrap bg-white/80 py-2 px-3 rounded-lg">
-                      MAIS <span className="material-symbols-outlined text-[16px]">expand_less</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* LINHA 1 - Lado Direito (Indicadores e Programas) */}
-                <div onClick={() => handleNavigation('/indicadores')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">bar_chart</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Indicadores<br/>Institucionais e<br/>Pós-graduação</h3>
-                  </div>
-                </div>
-
-                <div onClick={() => handleNavigation('/pos-graduacao')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">school</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Programas de<br/>Pós-Graduação</h3>
-                  </div>
-                </div>
-
-                {/* LINHA 2 - Lado Direito (Produção Técnica - Ocupa 2 colunas) */}
-                <div onClick={() => handleNavigation('/producoes-recentes')} className="md:col-span-2 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">lightbulb</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-[15px] leading-tight">Produção Técnica e Inovação</h3>
-                  </div>
-                </div>
-
-                {/* LINHA 3 - (4 cards lado a lado) */}
-                <div onClick={() => handleNavigation('/grupos-pesquisa')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">groups</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Grupos de<br/>Pesquisa</h3>
-                  </div>
-                </div>
-
-                <div onClick={() => handleNavigation('/incites')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">account_balance</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">INCITE -<br/>Institutos de<br/>C&amp;T&amp;I</h3>
-                  </div>
-                </div>
-
-                <div onClick={() => handleNavigation('/indice-pesquisador')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">workspace_premium</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Bolsistas de<br/>Produtividade</h3>
-                  </div>
-                </div>
-
-                <div className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-default">
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-gray-400 text-[24px]">psychology</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Busca por IA</h3>
-                      <span className="bg-gray-200 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded w-max uppercase tracking-wider">Em breve</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* LINHA 4 - Clube de Ciência (1 Coluna) e VIP (3 Colunas) */}
-                <div onClick={() => handleNavigation('/resultados')} className="md:col-span-1 md:row-span-1 bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 pr-6">
-                    <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">hub</span>
-                    </div>
-                    <h3 className="font-bold text-[#0f4c64] text-sm leading-tight">Clube de<br/>Ciência</h3>
-                  </div>
-                </div>
-
-                <div onClick={() => handleNavigation('/paines-dados-externos')} className="md:col-span-3 md:row-span-1 bg-white rounded-[20px] px-8 py-6 border border-gray-200 shadow-sm flex flex-col justify-center relative group hover:shadow-md hover:border-blue-300 transition-all cursor-pointer overflow-hidden">
-                  <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-[url('/BG-VIP.png')] bg-no-repeat bg-right bg-cover z-0"></div>
-                  <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-                  <div className="flex items-center gap-4 z-10">
-                    <img src="/LOGO-VIP.svg" alt="VIP" className="h-10 w-auto" />
-                    <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">Vitrine de Infraestrutura</h3>
-                  </div>
-                </div>
-
+                  );
+                })}
               </div>
             </div>
           </section>
+
+          {/* COMPONENTE PESQUISADORES EM DESTAQUE IMPORTADO AQUI */}
+          <FeaturedResearchers 
+            apiBaseUrl={import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/'}
+            maxItems={20}
+            direction="left"
+            speed="normal"
+            pauseOnHover={true}
+          />
 
           {/* Institutions Showcase */}
           <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8 min-h-screen">
@@ -324,7 +338,7 @@ export default function InitialHome() {
               {filteredInstitutions.map((inst) => (
                 <div 
                   key={inst.id}
-                  onClick={() => handleNavigation(`/instituicao/${inst.id}`)}
+                  onClick={() => handleModuleClick(`/instituicao/${inst.sigla.toLowerCase()}`)}
                   className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group min-h-[160px] ${
                     inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : '' 
                   }`}
@@ -352,7 +366,7 @@ export default function InitialHome() {
           </div>
         </footer>
 
-        {/* Aba de Acessibilidade Flutuante */}
+        {/* Menu Flutuante de Acessibilidade */}
         <div className="a11y-fab fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
           <div 
             className={`bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 ease-in-out origin-bottom-right ${
