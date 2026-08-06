@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Importações
+// Importações dos dados e do novo componente
 import { modulesData } from '../data/modulesData';
 import FeaturedResearchers from './FeaturedResearchers';
 import { useHomeQuantitativeData, HeroMetricCards, DadosDestaqueSection } from '../hooks/useHomeQuantitativeData';
 
+// Tipagem básica para os módulos
 interface ModuleData {
   id: string;
   title: string;
@@ -133,13 +134,11 @@ export default function InitialHome() {
 
         <main className="flex-grow flex flex-col items-center w-full">
           
-          {/* HERO SECTION - Refatorada para 2 colunas */}
+          {/* HERO SECTION */}
           <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-140px)] flex flex-col justify-center overflow-hidden py-24">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
             
             <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
-              
-              {/* Coluna Esquerda: Texto */}
               <div className="flex flex-col items-start text-left gap-8">
                 <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold tracking-tight">
                   Observatório <br />
@@ -149,13 +148,11 @@ export default function InitialHome() {
                   Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
                 </p>
                 <div className="flex gap-4">
-                  <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2">
-                    Acessar Módulos <span className="material-symbols-outlined">arrow_downward</span>
+                  <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300">
+                    Acessar Módulos <span className="material-symbols-outlined transition-transform group-hover:translate-y-1">arrow_downward</span>
                   </button>
                 </div>
               </div>
-
-              {/* Coluna Direita: Cards Quantitativos */}
               <HeroMetricCards data={quantData} loading={quantLoading} />
             </div>
           </section>
@@ -179,48 +176,63 @@ export default function InitialHome() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[180px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
                 {(modulesData as ModuleData[]).map((module) => {
+                  
                   if (module.id === 'simcc-mapeamento') {
                     return (
-                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
+                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                        <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0"></div>
+                        
+                        <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0 transition-transform duration-700 ease-in-out group-hover:scale-[1.08] group-hover:-translate-x-2 group-hover:-translate-y-2"></div>
+                        
                         <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
+                        
                         <div className="flex items-center gap-4 mb-4 z-10 pl-2">
                           {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
                           <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
                         </div>
-                        <div className="flex-grow relative w-full h-full min-h-[120px] select-none z-10 overflow-hidden font-sans pl-2">
-                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[180px] h-[50px] flex items-center justify-center">
-                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[40px] leading-none tracking-tight">Bahia</span>
+                        
+                        {/* NUVEM DE PALAVRAS COM TAMANHOS LEVEMENTE MAIORES E ESPAÇAMENTO EQUILIBRADO */}
+                        <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
+                           
+                           {/* Centro */}
+                           <div className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
                            </div>
-                           <span className="absolute top-[2%] left-[15%] text-slate-400 font-medium text-xs">Desenvolvimento</span>
-                           <span className="absolute top-[18%] left-[25%] text-[#0f4c64] font-bold text-lg">Brasil</span>
-                           <span className="absolute top-[28%] left-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Estado</span>
-                           <span className="absolute top-[50%] left-[12%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
-                           <span className="absolute top-[8%] right-[22%] text-slate-400 font-bold text-lg">Estudo</span>
-                           <span className="absolute top-[32%] right-[14%] text-[#0f4c64] font-extrabold text-2xl -rotate-90">Educacao</span>
-                           <span className="absolute top-[15%] right-[8%] text-[#0f4c64] font-bold text-sm -rotate-90">Avaliacao</span>
-                           <span className="absolute top-[4%] right-[2%] text-slate-400 font-medium text-xs -rotate-90">Municipio</span>
-                           <span className="absolute bottom-[22%] left-[10%] text-[#0f4c64] font-bold text-lg">Saude</span>
-                           <span className="absolute bottom-[16%] left-[22%] text-slate-400 font-bold text-sm -rotate-90">Ensino</span>
-                           <span className="absolute bottom-[4%] left-[18%] text-[#0f4c64] font-bold text-base">Social</span>
-                           <span className="absolute bottom-[12%] left-[2%] text-slate-400 font-medium text-sm -rotate-90">Experiencia</span>
-                           <span className="absolute bottom-[12%] left-[38%] text-[#0f4c64] font-bold text-xl">Analise</span>
-                           <span className="absolute bottom-[2%] left-[34%] text-[#0f4c64] font-bold text-sm">Caso</span>
-                           <span className="absolute bottom-[10%] right-[28%] text-[#0f4c64] font-extrabold text-lg">Producao</span>
-                           <span className="absolute bottom-[18%] right-[20%] text-[#0f4c64] font-bold text-sm">Formacao</span>
-                           <span className="absolute bottom-[2%] right-[32%] text-slate-400 font-medium text-sm">Diferentes</span>
-                           <span className="absolute bottom-[10%] right-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
-                           <span className="absolute bottom-[28%] right-[2%] text-[#0f4c64] font-medium text-xs">Relato</span>
+                           
+                           {/* Palavras próximas ao centro */}
+                           <span className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl">Brasil</span>
+                           <span className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base">Estudo</span>
+                           <span className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90">Avaliacao</span>
+                           <span className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90">Educacao</span>
+                           <span className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl">Analise</span>
+                           <span className="absolute bottom-[16%] left-[38%] text-[#0f4c64] font-bold text-base">Caso</span>
+                           <span className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl">Producao</span>
+                           <span className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base">Formacao</span>
+                           
+                           {/* Palavras das bordas (Trazidas para perto, com tamanho um pouco maior) */}
+                           <span className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm">Desenvolvimento</span>
+                           <span className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90">Estado</span>
+                           <span className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
+                           <span className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Experiencia</span>
+                           
+                           <span className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl">Saude</span>
+                           <span className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90">Ensino</span>
+                           <span className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg">Social</span>
+
+                           <span className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90">Municipio</span>
+                           <span className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm">Relato</span>
+                           <span className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
+                           <span className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm">Diferentes</span>
                         </div>
+                        
                         <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center gap-4 justify-between z-10 pl-2">
                           <div className="flex-grow w-full bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2 border border-gray-200">
                             <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
                             <input type="text" placeholder="Pesquisar competências..." onClick={(e) => e.stopPropagation()} className="bg-transparent border-none outline-none w-full text-sm text-slate-600 placeholder-gray-400"/>
                           </div>
-                          <button onClick={(e) => { e.stopPropagation(); handleModuleClick(module.link); }} className="text-gray-400 font-bold text-xs tracking-wider flex items-center gap-1 hover:text-red-600 transition-colors uppercase whitespace-nowrap bg-white/80 py-2 px-3 rounded-lg">
+                          <button onClick={(e) => { e.stopPropagation(); handleModuleClick(module.link); }} className="text-gray-400 font-bold text-xs tracking-wider flex items-center gap-1 hover:text-red-600 transition-colors uppercase whitespace-nowrap bg-white/80 py-2 px-3 rounded-lg group-hover:bg-red-50 group-hover:text-red-600 duration-300">
                             MAIS <span className="material-symbols-outlined text-[16px]">expand_less</span>
                           </button>
                         </div>
@@ -230,9 +242,11 @@ export default function InitialHome() {
 
                   if (module.id === 'vip-vitrine') {
                     return (
-                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
+                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                        <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
+                        
+                        <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
+                        
                         <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
                         <div className="flex items-center gap-4 z-10 pl-2">
                           {module.logo && <img src={module.logo} alt="VIP" className="h-10 w-auto" />}
@@ -260,12 +274,12 @@ export default function InitialHome() {
                   }
 
                   return (
-                    <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-700 transition-all duration-300 overflow-hidden`}>
+                    <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-lg hover:border-blue-600 transition-all duration-500 hover:-translate-y-1 overflow-hidden`}>
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
                       <span className="material-symbols-outlined absolute top-4 right-4 text-blue-200 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                      <div className="flex items-center gap-4 pr-6 pl-2">
-                        <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
-                          <span className="material-symbols-outlined text-[#0f4c64] text-[24px]">{module.icon}</span>
+                      <div className="flex items-center gap-4 pr-6 pl-2 z-10">
+                        <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
+                          <span className="material-symbols-outlined text-[#0f4c64] text-[24px] group-hover:text-blue-700 transition-colors duration-300">{module.icon}</span>
                         </div>
                         <h3 className="font-bold text-[#0f4c64] text-sm leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' e ', ' e<br/>').replace(' de ', ' de<br/>').replace(' - ', ' -<br/>') }}></h3>
                       </div>
@@ -319,12 +333,12 @@ export default function InitialHome() {
                 <div 
                   key={inst.id}
                   onClick={() => handleModuleClick(`/instituicao/${inst.sigla.toLowerCase()}`)}
-                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group min-h-[160px] ${
+                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px] ${
                     inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : '' 
                   }`}
                 >
-                  <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-105 transition-transform duration-300" />
-                  <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-slate-700 transition-colors px-2">{inst.nome}</p>
+                  <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
+                  <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">{inst.nome}</p>
                 </div>
               ))}
             </div>
