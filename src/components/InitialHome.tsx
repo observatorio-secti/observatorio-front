@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Importações dos dados e do novo componente
 import { modulesData } from '../data/modulesData';
 import FeaturedResearchers from './FeaturedResearchers';
-import { useHomeQuantitativeData, HeroMetricCards, DadosDestaqueSection } from '../hooks/useHomeQuantitativeData';
+import { useHomeQuantitativeData, HeroMetricCards } from '../hooks/useHomeQuantitativeData';
 
 // Tipagem básica para os módulos
 interface ModuleData {
@@ -157,13 +157,6 @@ export default function InitialHome() {
             </div>
           </section>
 
-          {/* DADOS EM DESTAQUE SECTION */}
-          <section className="w-full bg-white py-12 border-y border-gray-200 relative z-20 shadow-sm -mt-6">
-             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-               <DadosDestaqueSection data={quantData} loading={quantLoading} />
-             </div>
-          </section>
-
           {/* Módulos da Plataforma (Bento Grid) */}
           <section id="modulos" className="scroll-mt-16 w-full py-24">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
@@ -193,7 +186,6 @@ export default function InitialHome() {
                           <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
                         </div>
                         
-                        {/* NUVEM DE PALAVRAS COM TAMANHOS LEVEMENTE MAIORES E ESPAÇAMENTO EQUILIBRADO */}
                         <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
                            
                            {/* Centro */}
@@ -211,7 +203,7 @@ export default function InitialHome() {
                            <span className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl">Producao</span>
                            <span className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base">Formacao</span>
                            
-                           {/* Palavras das bordas (Trazidas para perto, com tamanho um pouco maior) */}
+                           {/* Palavras das bordas */}
                            <span className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm">Desenvolvimento</span>
                            <span className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90">Estado</span>
                            <span className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
