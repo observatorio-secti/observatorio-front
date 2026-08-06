@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Importações dos dados e do novo componente
+// Importações
 import { modulesData } from '../data/modulesData';
 import FeaturedResearchers from './FeaturedResearchers';
+import { useHomeQuantitativeData, HeroMetricCards, DadosDestaqueSection } from '../hooks/useHomeQuantitativeData';
 
-// Tipagem básica para os módulos
 interface ModuleData {
   id: string;
   title: string;
@@ -22,6 +22,10 @@ interface ModuleData {
 export default function InitialHome() {
   const navigate = useNavigate();
   
+  // Custom Hook de Dados Quantitativos da Home
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/';
+  const { data: quantData, loading: quantLoading } = useHomeQuantitativeData(apiBaseUrl);
+  
   // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Todas');
@@ -32,19 +36,16 @@ export default function InitialHome() {
   const [fontSize, setFontSize] = useState(100); 
   const [isHighContrast, setIsHighContrast] = useState(false);
 
-  // Lógicas de Acessibilidade
   const toggleHighContrast = () => setIsHighContrast(!isHighContrast);
   const increaseText = () => setFontSize(prev => (prev < 150 ? prev + 10 : prev));
   const decreaseText = () => setFontSize(prev => (prev > 80 ? prev - 10 : prev));
 
-  // Lógica de Scroll da Navbar
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lógica do Intersection Observer para as abas da Navbar
   useEffect(() => {
     const sections = document.querySelectorAll('section[id]');
     const observer = new IntersectionObserver(
@@ -77,7 +78,6 @@ export default function InitialHome() {
     }
   };
 
-  // Dados das Instituições
   const institutionsData = [
     { id: 'ufba', sigla: 'UFBA', nome: 'Universidade Federal da Bahia', category: 'Federais', rowSpan: 1 },
     { id: 'uesb', sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', category: 'Estaduais', rowSpan: 1 },
@@ -101,23 +101,12 @@ export default function InitialHome() {
     <>
       <style>
         {`
-          html {
-            font-size: ${fontSize}%;
-            transition: font-size 0.3s ease;
-          }
-          ${isHighContrast ? `
-            html {
-              filter: invert(1) hue-rotate(180deg) contrast(1.2) !important;
-              background-color: #000 !important;
-            }
-            img, .a11y-fab, .hero-bg, .bento-bg {
-              filter: invert(1) hue-rotate(180deg) !important;
-            }
-          ` : ''}
+          html { font-size: ${fontSize}%; transition: font-size 0.3s ease; }
+          ${isHighContrast ? `html { filter: invert(1) hue-rotate(180deg) contrast(1.2) !important; background-color: #000 !important; } img, .a11y-fab, .hero-bg, .bento-bg { filter: invert(1) hue-rotate(180deg) !important; }` : ''}
         `}
       </style>
 
-      <div className="font-body-md text-slate-800 bg-white min-h-screen flex flex-col relative transition-colors duration-300">
+      <div className="font-body-md text-slate-800 bg-[#F8FAFC] min-h-screen flex flex-col relative transition-colors duration-300">
         
         {/* TopNavBar */}
         <header className={`bg-white border-b border-gray-200 w-full sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'h-14 shadow-sm' : 'h-16'}`}>
@@ -144,25 +133,42 @@ export default function InitialHome() {
 
         <main className="flex-grow flex flex-col items-center w-full">
           
-          {/* Hero Section */}
-          <section id="sobre" className="scroll-mt-16 w-full relative h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
+          {/* HERO SECTION - Refatorada para 2 colunas */}
+          <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-140px)] flex flex-col justify-center overflow-hidden py-24">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
-            <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col items-center text-center gap-8">
-              <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold max-w-4xl tracking-tight">
-                Observatório <br />
-                de <span className="bg-blue-800 text-white px-5 py-1 rounded-[20px] inline-flex items-center justify-center align-middle -translate-y-1 mx-1 border-b-[3px] border-red-600 shadow-sm">CT&I</span> da <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">Bahia</span>
-              </h1>
-              <p className="text-lg text-slate-500 max-w-2xl">
-                Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
-              </p>
+            
+            <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
+              
+              {/* Coluna Esquerda: Texto */}
+              <div className="flex flex-col items-start text-left gap-8">
+                <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold tracking-tight">
+                  Observatório <br />
+                  de <span className="bg-blue-800 text-white px-5 py-1 rounded-[20px] inline-flex items-center justify-center align-middle -translate-y-1 mx-1 border-b-[3px] border-red-600 shadow-sm">CT&I</span> da <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">Bahia</span>
+                </h1>
+                <p className="text-lg text-slate-500 max-w-xl leading-relaxed">
+                  Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
+                </p>
+                <div className="flex gap-4">
+                  <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2">
+                    Acessar Módulos <span className="material-symbols-outlined">arrow_downward</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Coluna Direita: Cards Quantitativos */}
+              <HeroMetricCards data={quantData} loading={quantLoading} />
             </div>
-            <a className="absolute bottom-12 text-slate-300 hover:text-blue-700 transition-colors cursor-pointer z-10" onClick={(e) => scrollToSection(e, 'modulos')}>
-              <span className="material-symbols-outlined text-[24px]">keyboard_arrow_down</span>
-            </a>
+          </section>
+
+          {/* DADOS EM DESTAQUE SECTION */}
+          <section className="w-full bg-white py-12 border-y border-gray-200 relative z-20 shadow-sm -mt-6">
+             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+               <DadosDestaqueSection data={quantData} loading={quantLoading} />
+             </div>
           </section>
 
           {/* Módulos da Plataforma (Bento Grid) */}
-          <section id="modulos" className="scroll-mt-16 w-full bg-[#F8FAFC] py-24 border-t border-gray-200">
+          <section id="modulos" className="scroll-mt-16 w-full py-24">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
               <div className="flex flex-col gap-2 mb-12">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">
@@ -173,62 +179,42 @@ export default function InitialHome() {
                 </p>
               </div>
 
-              {/* Ajuste de altura aqui: md:auto-rows-[180px] */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[180px]">
                 {(modulesData as ModuleData[]).map((module) => {
-                  
                   if (module.id === 'simcc-mapeamento') {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
-                        
-                        {/* ACCENT BAR - Cores da Bahia no canto esquerdo */}
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                        
                         <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0"></div>
                         <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-                        
                         <div className="flex items-center gap-4 mb-4 z-10 pl-2">
                           {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
                           <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
                         </div>
-                        
-                        {/* NUVEM DE PALAVRAS COM SAFE ZONE NO CENTRO E MARGENS REDUZIDAS PARA CABER NO CARD MENOR */}
                         <div className="flex-grow relative w-full h-full min-h-[120px] select-none z-10 overflow-hidden font-sans pl-2">
-                           {/* Centro */}
                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[180px] h-[50px] flex items-center justify-center">
                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[40px] leading-none tracking-tight">Bahia</span>
                            </div>
-                           
-                           {/* Topo Esquerda */}
                            <span className="absolute top-[2%] left-[15%] text-slate-400 font-medium text-xs">Desenvolvimento</span>
                            <span className="absolute top-[18%] left-[25%] text-[#0f4c64] font-bold text-lg">Brasil</span>
                            <span className="absolute top-[28%] left-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Estado</span>
                            <span className="absolute top-[50%] left-[12%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
-                           
-                           {/* Topo Direita */}
                            <span className="absolute top-[8%] right-[22%] text-slate-400 font-bold text-lg">Estudo</span>
                            <span className="absolute top-[32%] right-[14%] text-[#0f4c64] font-extrabold text-2xl -rotate-90">Educacao</span>
                            <span className="absolute top-[15%] right-[8%] text-[#0f4c64] font-bold text-sm -rotate-90">Avaliacao</span>
                            <span className="absolute top-[4%] right-[2%] text-slate-400 font-medium text-xs -rotate-90">Municipio</span>
-                           
-                           {/* Base Esquerda */}
                            <span className="absolute bottom-[22%] left-[10%] text-[#0f4c64] font-bold text-lg">Saude</span>
                            <span className="absolute bottom-[16%] left-[22%] text-slate-400 font-bold text-sm -rotate-90">Ensino</span>
                            <span className="absolute bottom-[4%] left-[18%] text-[#0f4c64] font-bold text-base">Social</span>
                            <span className="absolute bottom-[12%] left-[2%] text-slate-400 font-medium text-sm -rotate-90">Experiencia</span>
-                           
-                           {/* Base Centro/Direita */}
                            <span className="absolute bottom-[12%] left-[38%] text-[#0f4c64] font-bold text-xl">Analise</span>
                            <span className="absolute bottom-[2%] left-[34%] text-[#0f4c64] font-bold text-sm">Caso</span>
-                           
                            <span className="absolute bottom-[10%] right-[28%] text-[#0f4c64] font-extrabold text-lg">Producao</span>
                            <span className="absolute bottom-[18%] right-[20%] text-[#0f4c64] font-bold text-sm">Formacao</span>
                            <span className="absolute bottom-[2%] right-[32%] text-slate-400 font-medium text-sm">Diferentes</span>
-                           
                            <span className="absolute bottom-[10%] right-[6%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
                            <span className="absolute bottom-[28%] right-[2%] text-[#0f4c64] font-medium text-xs">Relato</span>
                         </div>
-                        
                         <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center gap-4 justify-between z-10 pl-2">
                           <div className="flex-grow w-full bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2 border border-gray-200">
                             <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
@@ -245,9 +231,7 @@ export default function InitialHome() {
                   if (module.id === 'vip-vitrine') {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-md hover:border-blue-700 transition-all duration-300 cursor-pointer overflow-hidden`}>
-                        {/* ACCENT BAR */}
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-
                         <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
                         <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
                         <div className="flex items-center gap-4 z-10 pl-2">
@@ -261,9 +245,7 @@ export default function InitialHome() {
                   if (module.status === 'inactive') {
                     return (
                       <div key={module.id} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-gray-100 shadow-sm flex flex-col justify-center relative group cursor-default overflow-hidden`}>
-                        {/* INACTIVE BAR */}
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-300 z-20"></div>
-
                         <div className="flex items-center gap-4 pr-6 pl-2">
                           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-gray-400 text-[24px]">{module.icon}</span>
@@ -279,9 +261,7 @@ export default function InitialHome() {
 
                   return (
                     <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-md hover:border-blue-700 transition-all duration-300 overflow-hidden`}>
-                      {/* ACCENT BAR */}
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-
                       <span className="material-symbols-outlined absolute top-4 right-4 text-blue-200 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
                       <div className="flex items-center gap-4 pr-6 pl-2">
                         <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0">
@@ -298,7 +278,7 @@ export default function InitialHome() {
 
           {/* COMPONENTE PESQUISADORES EM DESTAQUE IMPORTADO AQUI */}
           <FeaturedResearchers 
-            apiBaseUrl={import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/'}
+            apiBaseUrl={apiBaseUrl}
             maxItems={20}
             direction="left"
             speed="normal"
@@ -306,7 +286,7 @@ export default function InitialHome() {
           />
 
           {/* Institutions Showcase */}
-          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8 min-h-screen">
+          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8">
             <div className="flex flex-col gap-6 border-b border-gray-200 pb-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
