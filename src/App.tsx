@@ -1,24 +1,30 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useSearchParams } from 'react-router-dom';
 import InitialHome from './components/InitialHome';
-// importe as outras páginas dos módulos aqui se já tiver criado
+
+// Mantivemos o teste da Instituição apenas se você for construir essa página aqui!
+function InstituicaoTeste() {
+  const [searchParams] = useSearchParams();
+  const institutionId = searchParams.get('institution_id');
+
+  return (
+    <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+      <h1>Página da Instituição</h1>
+      <p style={{ fontSize: '20px', marginTop: '20px' }}>ID: <strong style={{ color: 'blue' }}>{institutionId}</strong></p>
+      <br />
+      <a href="/" style={{ color: 'blue', textDecoration: 'underline' }}>← Voltar para a Home</a>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* A sua nova Home completa fica na rota raiz */}
+        {/* A sua Home principal */}
         <Route path="/" element={<InitialHome />} />
         
-        {/* Rotas dos módulos que os cards redirecionam */}
-        <Route path="/resultados" element={<div>Página de Resultados / Mapeamento</div>} />
-        <Route path="/indicadores" element={<div>Página de Indicadores</div>} />
-        <Route path="/pos-graduacao" element={<div>Página de Pós-Graduação</div>} />
-        <Route path="/producoes-recentes" element={<div>Página de Produções</div>} />
-        <Route path="/grupos-pesquisa" element={<div>Página de Grupos de Pesquisa</div>} />
-        <Route path="/incites" element={<div>Página de INCITES</div>} />
-        <Route path="/indice-pesquisador" element={<div>Página de Bolsistas</div>} />
-        <Route path="/paines-dados-externos" element={<div>Página de Vitrine de Infraestrutura</div>} />
-        <Route path="/instituicao/:id" element={<div>Página Detalhe da Instituição</div>} />
+        {/* Rota para o detalhe da Instituição */}
+        <Route path="/instituicao" element={<InstituicaoTeste />} />
       </Routes>
     </Router>
   );

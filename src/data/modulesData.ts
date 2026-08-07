@@ -65,7 +65,8 @@ export const modulesData = [
     title: 'Clube de Ciência',
     link: 'https://observatoriocti.secti.ba.gov.br/ictite/v1/web/',
     icon: 'hub',
-    gridClass: 'lg:col-span-1 lg:row-span-1'
+    gridClass: 'lg:col-span-2 lg:row-span-2',
+    logo: '/LOGO-CLUBE.png' 
   },
   {
     id: 'vip-vitrine',
