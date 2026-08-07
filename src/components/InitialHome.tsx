@@ -158,7 +158,7 @@ export default function InitialHome() {
           </section>
 
           {/* Módulos da Plataforma (Bento Grid) */}
-          <section id="modulos" className="scroll-mt-16 w-full py-24">
+          <section id="modulos" className="scroll-mt-16 w-full py-24 border-t border-gray-200/60 bg-white">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
               <div className="flex flex-col gap-2 mb-12">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">
@@ -172,6 +172,7 @@ export default function InitialHome() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
                 {(modulesData as ModuleData[]).map((module) => {
                   
+                  // 1. O CARD MAIOR DO MAPEAMENTO (Nuvem de palavras)
                   if (module.id === 'simcc-mapeamento') {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
@@ -186,6 +187,7 @@ export default function InitialHome() {
                           <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
                         </div>
                         
+                        {/* NUVEM DE PALAVRAS COM TAMANHOS LEVEMENTE MAIORES E ESPAÇAMENTO EQUILIBRADO */}
                         <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
                            
                            {/* Centro */}
@@ -232,22 +234,28 @@ export default function InitialHome() {
                     );
                   }
 
-                  if (module.id === 'vip-vitrine') {
+                  // 2. CARDS PREMIUM COM LOGO (Vitrine VIP, Clube de Ciência ou qualquer outro com logo)
+                  if (module.id === 'vip-vitrine' || module.id === 'clube-ciencia' || module.logo) {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
                         
-                        <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
+                        {/* Se o card tiver bgImage (como a vitrine), renderiza o parallax */}
+                        {module.bgImage && (
+                          <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
+                        )}
                         
                         <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
+                        
                         <div className="flex items-center gap-4 z-10 pl-2">
-                          {module.logo && <img src={module.logo} alt="VIP" className="h-10 w-auto" />}
+                          <img src={module.logo} alt={module.title} className="h-10 w-auto object-contain" />
                           <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">{module.title}</h3>
                         </div>
                       </div>
                     );
                   }
 
+                  // 3. CARDS EM BREVE (Status Inativo)
                   if (module.status === 'inactive') {
                     return (
                       <div key={module.id} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-gray-100 shadow-sm flex flex-col justify-center relative group cursor-default overflow-hidden`}>
@@ -265,6 +273,7 @@ export default function InitialHome() {
                     );
                   }
 
+                  // 4. CARDS GENÉRICOS (Padrão)
                   return (
                     <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-lg hover:border-blue-600 transition-all duration-500 hover:-translate-y-1 overflow-hidden`}>
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
@@ -292,7 +301,7 @@ export default function InitialHome() {
           />
 
           {/* Institutions Showcase */}
-          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8">
+          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8 border-t border-gray-100">
             <div className="flex flex-col gap-6 border-b border-gray-200 pb-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
