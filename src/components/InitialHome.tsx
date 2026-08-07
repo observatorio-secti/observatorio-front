@@ -1,12 +1,19 @@
+// src/components/InitialHome.tsx
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Importações dos dados e do novo componente
 import { modulesData } from '../data/modulesData';
+import { 
+  instituicoes, 
+  categoriasAbas, 
+  filtrarInstituicoes, 
+  instituicoesVerTodas
+} from '../constants/home-links';
+
 import FeaturedResearchers from './FeaturedResearchers';
 import { useHomeQuantitativeData, HeroMetricCards } from '../hooks/useHomeQuantitativeData';
 
-// Tipagem básica para os módulos
 interface ModuleData {
   id: string;
   title: string;
@@ -22,17 +29,13 @@ interface ModuleData {
 
 export default function InitialHome() {
   const navigate = useNavigate();
-  
-  // Custom Hook de Dados Quantitativos da Home
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/';
   const { data: quantData, loading: quantLoading } = useHomeQuantitativeData(apiBaseUrl);
   
-  // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Todas');
   const [activeSection, setActiveSection] = useState('');
   
-  // Estados de Acessibilidade
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
   const [fontSize, setFontSize] = useState(100); 
   const [isHighContrast, setIsHighContrast] = useState(false);
@@ -80,25 +83,7 @@ export default function InitialHome() {
     }
   };
 
-  // IDs ajustados de acordo com a regra de negócio legada e FIOCRUZ adicionada de volta com ID 11
-  const institutionsData = [
-    { id: 1, sigla: 'UFBA', nome: 'Universidade Federal da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 2, sigla: 'EBMSP', nome: 'Escola Bahiana de Medicina e Saúde Pública', category: 'Privadas', rowSpan: 1 },
-    { id: 3, sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', category: 'Estaduais', rowSpan: 1 },
-    { id: 4, sigla: 'UFOB', nome: 'Universidade Federal do Oeste da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 5, sigla: 'UFSB', nome: 'Universidade Federal do Sul da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 6, sigla: 'UEFS', nome: 'Universidade Estadual de Feira de Santana', category: 'Estaduais', rowSpan: 1 },
-    { id: 7, sigla: 'UESC', nome: 'Universidade Estadual de Santa Cruz', category: 'Estaduais', rowSpan: 1 },
-    { id: 8, sigla: 'UFRB', nome: 'Universidade Federal do Recôncavo da Bahia', category: 'Federais', rowSpan: 2 },
-    { id: 9, sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', category: 'Estaduais', rowSpan: 1 },
-    { id: 10, sigla: 'IFBA', nome: 'Instituto Federal da Bahia', category: 'Institutos', rowSpan: 1 },
-    { id: 11, sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', category: 'Institutos', rowSpan: 1 },
-  ];
-
-  const filteredInstitutions = institutionsData.filter((inst) => {
-    if (activeTab === 'Todas') return true;
-    return inst.category === activeTab;
-  });
+  const filteredInstitutions = filtrarInstituicoes(activeTab);
 
   return (
     <>
@@ -108,7 +93,6 @@ export default function InitialHome() {
           ${isHighContrast ? `
             html { filter: invert(1) hue-rotate(180deg) contrast(1.2) !important; background-color: #000 !important; } 
             img, .a11y-fab, .hero-bg, .bento-bg { filter: invert(1) hue-rotate(180deg) !important; }
-            /* Fundo branco nas logos das instituições apenas no alto contraste */
             .inst-logo { background-color: #ffffff !important; padding: 10px !important; border-radius: 12px !important; }
           ` : ''}
         `}
@@ -116,7 +100,6 @@ export default function InitialHome() {
 
       <div className="font-body-md text-slate-800 bg-[#F8FAFC] min-h-screen flex flex-col relative transition-colors duration-300">
         
-        {/* TopNavBar */}
         <header className={`bg-white border-b border-gray-200 w-full sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'h-14 shadow-sm' : 'h-16'}`}>
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
           <div className="flex justify-between items-center w-full px-6 md:px-12 h-full max-w-[1400px] mx-auto mt-[1px]">
@@ -141,7 +124,6 @@ export default function InitialHome() {
 
         <main className="flex-grow flex flex-col items-center w-full">
           
-          {/* HERO SECTION */}
           <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-140px)] flex flex-col justify-center overflow-hidden py-24">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
             
@@ -154,17 +136,21 @@ export default function InitialHome() {
                 <p className="text-lg text-slate-500 max-w-xl leading-relaxed">
                   Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
                 </p>
-                <div className="flex gap-4">
-                  <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300">
-                    Acessar Módulos <span className="material-symbols-outlined transition-transform group-hover:translate-y-1">arrow_downward</span>
-                  </button>
+                
+                {/* Botão principal limpo (sem "Sobre o Projeto" e sem "Acesso Rápido") */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300">
+                      Acessar Módulos <span className="material-symbols-outlined transition-transform group-hover:translate-y-1">arrow_downward</span>
+                    </button>
+                  </div>
                 </div>
+
               </div>
               <HeroMetricCards data={quantData} loading={quantLoading} />
             </div>
           </section>
 
-          {/* Módulos da Plataforma (Bento Grid) */}
           <section id="modulos" className="scroll-mt-16 w-full py-24 border-t border-gray-200/60 bg-white">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
               <div className="flex flex-col gap-2 mb-12">
@@ -179,7 +165,6 @@ export default function InitialHome() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
                 {(modulesData as ModuleData[]).map((module) => {
                   
-                  // 1. O CARD MAIOR DO MAPEAMENTO (Nuvem de palavras)
                   if (module.id === 'simcc-mapeamento') {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
@@ -194,15 +179,11 @@ export default function InitialHome() {
                           <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
                         </div>
                         
-                        {/* NUVEM DE PALAVRAS COM TAMANHOS LEVEMENTE MAIORES E ESPAÇAMENTO EQUILIBRADO */}
                         <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
-                           
-                           {/* Centro */}
                            <div className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
                            </div>
                            
-                           {/* Palavras próximas ao centro */}
                            <span className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl">Brasil</span>
                            <span className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base">Estudo</span>
                            <span className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90">Avaliacao</span>
@@ -212,7 +193,6 @@ export default function InitialHome() {
                            <span className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl">Producao</span>
                            <span className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base">Formacao</span>
                            
-                           {/* Palavras das bordas */}
                            <span className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm">Desenvolvimento</span>
                            <span className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90">Estado</span>
                            <span className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
@@ -241,13 +221,11 @@ export default function InitialHome() {
                     );
                   }
 
-                  // 2. CARDS PREMIUM COM LOGO (Vitrine VIP, Clube de Ciência ou qualquer outro com logo)
                   if (module.id === 'vip-vitrine' || module.id === 'clube-ciencia' || module.logo) {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
                         
-                        {/* Se o card tiver bgImage (como a vitrine), renderiza o parallax */}
                         {module.bgImage && (
                           <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
                         )}
@@ -262,7 +240,6 @@ export default function InitialHome() {
                     );
                   }
 
-                  // 3. CARDS EM BREVE (Status Inativo)
                   if (module.status === 'inactive') {
                     return (
                       <div key={module.id} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-gray-100 shadow-sm flex flex-col justify-center relative group cursor-default overflow-hidden`}>
@@ -280,7 +257,6 @@ export default function InitialHome() {
                     );
                   }
 
-                  // 4. CARDS GENÉRICOS (Padrão)
                   return (
                     <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-lg hover:border-blue-600 transition-all duration-500 hover:-translate-y-1 overflow-hidden`}>
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
@@ -298,7 +274,6 @@ export default function InitialHome() {
             </div>
           </section>
 
-          {/* COMPONENTE PESQUISADORES EM DESTAQUE IMPORTADO AQUI */}
           <FeaturedResearchers 
             apiBaseUrl={apiBaseUrl}
             maxItems={20}
@@ -307,45 +282,47 @@ export default function InitialHome() {
             pauseOnHover={true}
           />
 
-          {/* Institutions Showcase */}
           <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8 border-t border-gray-100">
-            <div className="flex flex-col gap-6 border-b border-gray-200 pb-4">
+            
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-200 pb-4 gap-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
                 <p className="text-base text-slate-500">Acesse os dados e produções de cada instituição participante.</p>
               </div>
               
-              <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
-                {[
-                  // Contadores atualizados para refletir o total de 11 e 2 institutos
-                  { name: 'Todas', count: institutionsData.length, icon: 'account_balance' },
-                  { name: 'Federais', count: institutionsData.filter(i => i.category === 'Federais').length, icon: 'account_balance' },
-                  { name: 'Estaduais', count: institutionsData.filter(i => i.category === 'Estaduais').length, icon: 'account_balance' },
-                  { name: 'Institutos', count: institutionsData.filter(i => i.category === 'Institutos').length, icon: 'business' },
-                  { name: 'Privadas', count: institutionsData.filter(i => i.category === 'Privadas').length, icon: 'domain' }
-                ].map((tab) => (
+              <button 
+                onClick={() => handleModuleClick(instituicoesVerTodas.to)}
+                className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors"
+              >
+                Ver todas <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+              
+            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-2">
+              {categoriasAbas.map((tab) => {
+                const count = tab.value === 'Todas' ? instituicoes.length : instituicoes.filter(i => i.categoria === tab.value).length;
+                const icon = tab.value === 'Institutos' ? 'business' : (tab.value === 'Privadas' ? 'domain' : 'account_balance');
+                
+                return (
                   <button 
-                    key={tab.name}
-                    onClick={() => setActiveTab(tab.name)}
-                    className={`flex items-center gap-2 pb-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.name ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className={`flex items-center gap-2 pb-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.value ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
                   >
-                    <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
-                    <span className="font-bold text-sm">{tab.name}</span>
-                    <span className="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded-full font-bold">{tab.count}</span>
+                    <span className="material-symbols-outlined text-[18px]">{icon}</span>
+                    <span className="font-bold text-sm">{tab.value}</span>
+                    <span className="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded-full font-bold">{count}</span>
                   </button>
-                ))}
-              </div>
+                )
+              })}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-fr">
               {filteredInstitutions.map((inst) => (
                 <div 
                   key={inst.id}
-                  // Link dinâmico usando instituição_id=X
-                  onClick={() => handleModuleClick(`/instituicao?institution_id=${inst.id}`)}
-                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px] ${
-                    inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : '' 
-                  }`}
+                  onClick={() => handleModuleClick(`https://observatoriocti.secti.ba.gov.br/instituicao?institution_id=${inst.id}&pagina=producoes`)}
+                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]`}
                 >
                   <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
                   <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">{inst.nome}</p>
@@ -355,7 +332,6 @@ export default function InitialHome() {
           </section>
         </main>
 
-        {/* Footer */}
         <footer className="snap-start bg-slate-900 w-full mt-auto scroll-mt-16 relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-700 via-slate-800 to-red-600"></div>
           <div className="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-12 max-w-[1400px] mx-auto gap-y-8 w-full mt-1">
@@ -370,7 +346,6 @@ export default function InitialHome() {
           </div>
         </footer>
 
-        {/* Menu Flutuante de Acessibilidade */}
         <div className="a11y-fab fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
           <div 
             className={`bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 ease-in-out origin-bottom-right ${
@@ -401,7 +376,6 @@ export default function InitialHome() {
                 </div>
                 {fontSize < 100 && <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">{fontSize}%</span>}
               </button>
-              {/* Botão Tamanho Padrão com função resetText e ícone correto */}
               <button onClick={resetText} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 text-sm text-slate-700 transition-colors text-left w-full group" disabled={fontSize === 100}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-blue-600 transition-colors">text_format</span>

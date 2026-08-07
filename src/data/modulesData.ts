@@ -1,3 +1,5 @@
+// src/data/modulesData.ts
+
 export const modulesData = [
   {
     id: 'simcc-mapeamento',
@@ -63,7 +65,7 @@ export const modulesData = [
   {
     id: 'clube-ciencia',
     title: 'Clube de Ciência',
-    link: 'https://observatoriocti.secti.ba.gov.br/ictite/v1/web/',
+    link: 'https://simcc.uesc.br/ictite/v1/web/',
     icon: 'hub',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     logo: '/LOGO-CLUBE.png' 
