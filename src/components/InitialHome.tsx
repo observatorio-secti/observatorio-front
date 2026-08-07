@@ -40,6 +40,7 @@ export default function InitialHome() {
   const toggleHighContrast = () => setIsHighContrast(!isHighContrast);
   const increaseText = () => setFontSize(prev => (prev < 150 ? prev + 10 : prev));
   const decreaseText = () => setFontSize(prev => (prev > 80 ? prev - 10 : prev));
+  const resetText = () => setFontSize(100);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -79,18 +80,19 @@ export default function InitialHome() {
     }
   };
 
+  // IDs ajustados de acordo com a regra de negócio legada e FIOCRUZ adicionada de volta com ID 11
   const institutionsData = [
-    { id: 'ufba', sigla: 'UFBA', nome: 'Universidade Federal da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 'uesb', sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', category: 'Estaduais', rowSpan: 1 },
-    { id: 'ufsb', sigla: 'UFSB', nome: 'Universidade Federal do Sul da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 'ufrb', sigla: 'UFRB', nome: 'Universidade Federal do Recôncavo da Bahia', category: 'Federais', rowSpan: 2 },
-    { id: 'uneb', sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', category: 'Estaduais', rowSpan: 1 },
-    { id: 'uefs', sigla: 'UEFS', nome: 'Universidade Estadual de Feira de Santana', category: 'Estaduais', rowSpan: 1 },
-    { id: 'fiocruz', sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', category: 'Institutos', rowSpan: 1 },
-    { id: 'ufob', sigla: 'UFOB', nome: 'Universidade Federal do Oeste da Bahia', category: 'Federais', rowSpan: 1 },
-    { id: 'uesc', sigla: 'UESC', nome: 'Universidade Estadual de Santa Cruz', category: 'Estaduais', rowSpan: 1 },
-    { id: 'ifba', sigla: 'IFBA', nome: 'Instituto Federal da Bahia', category: 'Institutos', rowSpan: 1 },
-    { id: 'ebmsp', sigla: 'EBMSP', nome: 'Escola Bahiana de Medicina e Saúde Pública', category: 'Privadas', rowSpan: 1 },
+    { id: 1, sigla: 'UFBA', nome: 'Universidade Federal da Bahia', category: 'Federais', rowSpan: 1 },
+    { id: 2, sigla: 'EBMSP', nome: 'Escola Bahiana de Medicina e Saúde Pública', category: 'Privadas', rowSpan: 1 },
+    { id: 3, sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', category: 'Estaduais', rowSpan: 1 },
+    { id: 4, sigla: 'UFOB', nome: 'Universidade Federal do Oeste da Bahia', category: 'Federais', rowSpan: 1 },
+    { id: 5, sigla: 'UFSB', nome: 'Universidade Federal do Sul da Bahia', category: 'Federais', rowSpan: 1 },
+    { id: 6, sigla: 'UEFS', nome: 'Universidade Estadual de Feira de Santana', category: 'Estaduais', rowSpan: 1 },
+    { id: 7, sigla: 'UESC', nome: 'Universidade Estadual de Santa Cruz', category: 'Estaduais', rowSpan: 1 },
+    { id: 8, sigla: 'UFRB', nome: 'Universidade Federal do Recôncavo da Bahia', category: 'Federais', rowSpan: 2 },
+    { id: 9, sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', category: 'Estaduais', rowSpan: 1 },
+    { id: 10, sigla: 'IFBA', nome: 'Instituto Federal da Bahia', category: 'Institutos', rowSpan: 1 },
+    { id: 11, sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', category: 'Institutos', rowSpan: 1 },
   ];
 
   const filteredInstitutions = institutionsData.filter((inst) => {
@@ -103,7 +105,12 @@ export default function InitialHome() {
       <style>
         {`
           html { font-size: ${fontSize}%; transition: font-size 0.3s ease; }
-          ${isHighContrast ? `html { filter: invert(1) hue-rotate(180deg) contrast(1.2) !important; background-color: #000 !important; } img, .a11y-fab, .hero-bg, .bento-bg { filter: invert(1) hue-rotate(180deg) !important; }` : ''}
+          ${isHighContrast ? `
+            html { filter: invert(1) hue-rotate(180deg) contrast(1.2) !important; background-color: #000 !important; } 
+            img, .a11y-fab, .hero-bg, .bento-bg { filter: invert(1) hue-rotate(180deg) !important; }
+            /* Fundo branco nas logos das instituições apenas no alto contraste */
+            .inst-logo { background-color: #ffffff !important; padding: 10px !important; border-radius: 12px !important; }
+          ` : ''}
         `}
       </style>
 
@@ -310,6 +317,7 @@ export default function InitialHome() {
               
               <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
                 {[
+                  // Contadores atualizados para refletir o total de 11 e 2 institutos
                   { name: 'Todas', count: institutionsData.length, icon: 'account_balance' },
                   { name: 'Federais', count: institutionsData.filter(i => i.category === 'Federais').length, icon: 'account_balance' },
                   { name: 'Estaduais', count: institutionsData.filter(i => i.category === 'Estaduais').length, icon: 'account_balance' },
@@ -333,12 +341,13 @@ export default function InitialHome() {
               {filteredInstitutions.map((inst) => (
                 <div 
                   key={inst.id}
-                  onClick={() => handleModuleClick(`/instituicao/${inst.sigla.toLowerCase()}`)}
+                  // Link dinâmico usando instituição_id=X
+                  onClick={() => handleModuleClick(`/instituicao?institution_id=${inst.id}`)}
                   className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px] ${
                     inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : '' 
                   }`}
                 >
-                  <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
+                  <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
                   <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">{inst.nome}</p>
                 </div>
               ))}
@@ -391,6 +400,13 @@ export default function InitialHome() {
                   Diminuir
                 </div>
                 {fontSize < 100 && <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">{fontSize}%</span>}
+              </button>
+              {/* Botão Tamanho Padrão com função resetText e ícone correto */}
+              <button onClick={resetText} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 text-sm text-slate-700 transition-colors text-left w-full group" disabled={fontSize === 100}>
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-blue-600 transition-colors">text_format</span>
+                  Tamanho Padrão
+                </div>
               </button>
             </div>
           </div>
