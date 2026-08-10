@@ -13,49 +13,49 @@ export const modulesData = [
   {
     id: 'indicadores-pos-graduacao',
     title: 'Indicadores Institucionais e Pós-graduação',
-    link: 'https://observatoriocti.secti.ba.gov.br/indicadores',
+    link: 'http://simcc.uesc.br/indicadores',
     icon: 'bar_chart',
     gridClass: 'lg:col-span-1 lg:row-span-1'
   },
   {
     id: 'pos-graduacao',
     title: 'Programas de Pós-Graduação',
-    link: 'https://observatoriocti.secti.ba.gov.br/pos-graduacao',
+    link: 'http://simcc.uesc.br/pos-graduacao',
     icon: 'school',
     gridClass: 'lg:col-span-1 lg:row-span-1'
   },
   {
     id: 'producao-tecnica',
     title: 'Produção Técnica e Inovação',
-    link: 'https://observatoriocti.secti.ba.gov.br/listagens?tab=patent',
+    link: 'http://simcc.uesc.br/listagens?tab=patent',
     icon: 'lightbulb',
     gridClass: 'lg:col-span-2 lg:row-span-1'
   },
   {
     id: 'grupos-pesquisa',
     title: 'Grupos de Pesquisa',
-    link: 'https://observatoriocti.secti.ba.gov.br/grupos-pesquisa',
+    link: 'http://simcc.uesc.br/grupos-pesquisa',
     icon: 'groups',
     gridClass: 'lg:col-span-1 lg:row-span-1'
   },
   {
     id: 'incite-institutos',
     title: 'INCITE - Institutos de C&T&I',
-    link: 'https://observatoriocti.secti.ba.gov.br/incites',
+    link: 'http://simcc.uesc.br/incites',
     icon: 'account_balance',
     gridClass: 'lg:col-span-1 lg:row-span-1'
   },
   {
     id: 'bolsistas-produtividade',
     title: 'Bolsistas de Produtividade',
-    link: 'https://observatoriocti.secti.ba.gov.br/listagens?tab=bolsistas',
+    link: 'http://simcc.uesc.br/listagens?tab=bolsistas',
     icon: 'workspace_premium',
     gridClass: 'lg:col-span-1 lg:row-span-1'
   },
   {
     id: 'busca-ia',
     title: 'Busca por IA',
-    link: 'https://observatoriocti.secti.ba.gov.br/resultados-ia',
+    link: 'http://simcc.uesc.br/resultados-ia',
     status: 'inactive',
     icon: 'psychology',
     gridClass: 'lg:col-span-1 lg:row-span-1'
@@ -63,10 +63,10 @@ export const modulesData = [
   {
     id: 'clube-ciencia',
     title: 'Clube de Ciência',
-    link: 'https://observatoriocti.secti.ba.gov.br/ictite/v1/web/',
+    link: 'http://simcc.uesc.br/ictite/v1/web/',
     icon: 'hub',
     gridClass: 'lg:col-span-2 lg:row-span-2',
-    logo: '/LOGO-CLUBE.png' 
+    logo: '/LOGO-CLUBE.png'
   },
   {
     id: 'vip-vitrine',

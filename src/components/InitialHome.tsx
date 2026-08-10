@@ -41,7 +41,7 @@ export const SIMCC_SEARCH_TYPES: SimccSearchType[] = [
 
 export default function InitialHome() {
   const navigate = useNavigate();
-  
+
   // Custom Hook de Dados Quantitativos da Home
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/';
   const { data: quantData, loading: quantLoading } = useHomeQuantitativeData(apiBaseUrl);
@@ -50,7 +50,7 @@ export default function InitialHome() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Todas');
   const [activeSection, setActiveSection] = useState('');
-  
+
   // Estado e handler da busca SIMCC
   const [isSimccModalOpen, setIsSimccModalOpen] = useState(false);
   const [simccSearchQuery, setSimccSearchQuery] = useState('');
@@ -140,10 +140,10 @@ export default function InitialHome() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isSimccModalOpen]);
-  
+
   // Estados de Acessibilidade
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
-  const [fontSize, setFontSize] = useState(100); 
+  const [fontSize, setFontSize] = useState(100);
   const [isHighContrast, setIsHighContrast] = useState(false);
 
   const toggleHighContrast = () => setIsHighContrast(!isHighContrast);
@@ -176,16 +176,16 @@ export default function InitialHome() {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const y = element.getBoundingClientRect().top + window.scrollY - 64; 
+      const y = element.getBoundingClientRect().top + window.scrollY - 64;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
   const handleModuleClick = (link: string) => {
     if (link.startsWith('http')) {
-      window.location.href = link; 
+      window.location.href = link;
     } else {
-      navigate(link); 
+      navigate(link);
     }
   };
 
@@ -224,7 +224,7 @@ export default function InitialHome() {
       </style>
 
       <div className="font-body-md text-slate-800 bg-[#F8FAFC] min-h-screen flex flex-col relative transition-colors duration-300">
-        
+
         {/* TopNavBar */}
         <header className={`bg-white border-b border-gray-200 w-full sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'h-14 shadow-sm' : 'h-16'}`}>
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
@@ -249,11 +249,11 @@ export default function InitialHome() {
         </header>
 
         <main className="flex-grow flex flex-col items-center w-full">
-          
+
           {/* HERO SECTION */}
           <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-64px)] flex flex-col justify-between items-center overflow-hidden pt-12 pb-8">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
-            
+
             <div className="my-auto relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
               <div className="flex flex-col items-start text-left gap-8">
                 <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold tracking-tight">
@@ -297,17 +297,17 @@ export default function InitialHome() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
                 {(modulesData as ModuleData[]).map((module) => {
-                  
+
                   // 1. O CARD MAIOR DO MAPEAMENTO (Nuvem de palavras)
                   if (module.id === 'simcc-mapeamento') {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                        
+
                         <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0 transition-transform duration-700 ease-in-out group-hover:scale-[1.08] group-hover:-translate-x-2 group-hover:-translate-y-2"></div>
-                        
+
                         <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-                        
+
                         <div className="flex items-center gap-4 mb-2 z-10 pl-2">
                           {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
                           <div>
@@ -317,43 +317,43 @@ export default function InitialHome() {
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* NUVEM DE PALAVRAS COM CLIQUE DIRETO PARA BUSCA EM ARTIGOS */}
                         <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
-                           
-                           {/* Centro */}
-                           <div 
-                             onClick={(e) => handleWordCloudClick(e, 'Bahia')}
-                             className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
-                             title="Buscar artigos sobre Bahia"
-                           >
-                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
-                           </div>
-                           
-                           {/* Palavras próximas ao centro */}
-                           <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brasil</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estudo">Estudo</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Avaliação')} className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Avaliação">Avaliacao</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Educação">Educacao</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Análise">Analise</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Caso')} className="absolute bottom-[16%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Caso">Caso</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Produção">Producao</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Formação')} className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Formação">Formacao</span>
-                           
-                           {/* Palavras das bordas */}
-                           <span onClick={(e) => handleWordCloudClick(e, 'Desenvolvimento')} className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Desenvolvimento">Desenvolvimento</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estado">Estado</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brazil</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Experiência">Experiencia</span>
-                           
-                           <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Saúde">Saude</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Ensino">Ensino</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Social">Social</span>
 
-                           <span onClick={(e) => handleWordCloudClick(e, 'Município')} className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Município">Municipio</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Relato')} className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Relato">Relato</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Trabalho')} className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Trabalho">Trabalho</span>
-                           <span onClick={(e) => handleWordCloudClick(e, 'Diferentes')} className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Diferentes">Diferentes</span>
+                          {/* Centro */}
+                          <div
+                            onClick={(e) => handleWordCloudClick(e, 'Bahia')}
+                            className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
+                            title="Buscar artigos sobre Bahia"
+                          >
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
+                          </div>
+
+                          {/* Palavras próximas ao centro */}
+                          <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brasil</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estudo">Estudo</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Avaliação')} className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Avaliação">Avaliacao</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Educação">Educacao</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Análise">Analise</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Caso')} className="absolute bottom-[16%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Caso">Caso</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Produção">Producao</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Formação')} className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Formação">Formacao</span>
+
+                          {/* Palavras das bordas */}
+                          <span onClick={(e) => handleWordCloudClick(e, 'Desenvolvimento')} className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Desenvolvimento">Desenvolvimento</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estado">Estado</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brazil</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Experiência">Experiencia</span>
+
+                          <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Saúde">Saude</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Ensino">Ensino</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Social">Social</span>
+
+                          <span onClick={(e) => handleWordCloudClick(e, 'Município')} className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Município">Municipio</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Relato')} className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Relato">Relato</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Trabalho')} className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Trabalho">Trabalho</span>
+                          <span onClick={(e) => handleWordCloudClick(e, 'Diferentes')} className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Diferentes">Diferentes</span>
                         </div>
 
                         {/* Indicação animada na borda inferior do cartão */}
@@ -362,7 +362,7 @@ export default function InitialHome() {
                         </div>
 
                         {/* BARRA DE BUSCA QUE DESLISA DA PARTE INFERIOR DO CARTÃO */}
-                        <div 
+                        <div
                           className="absolute bottom-0 inset-x-0 p-4 sm:p-6 z-30 transition-all duration-300 transform translate-y-full opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto bg-gradient-to-t from-white via-white/95 to-transparent pt-6"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -386,14 +386,14 @@ export default function InitialHome() {
                     return (
                       <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                        
+
                         {/* Se o card tiver bgImage (como a vitrine), renderiza o parallax */}
                         {module.bgImage && (
                           <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
                         )}
-                        
+
                         <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-                        
+
                         <div className="flex items-center gap-4 z-10 pl-2">
                           <img src={module.logo} alt={module.title} className="h-10 w-auto object-contain" />
                           <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">{module.title}</h3>
@@ -439,7 +439,7 @@ export default function InitialHome() {
           </section>
 
           {/* COMPONENTE PESQUISADORES EM DESTAQUE IMPORTADO AQUI */}
-          <FeaturedResearchers 
+          <FeaturedResearchers
             apiBaseUrl={apiBaseUrl}
             maxItems={20}
             direction="left"
@@ -454,7 +454,7 @@ export default function InitialHome() {
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
                 <p className="text-base text-slate-500">Acesse os dados e produções de cada instituição participante.</p>
               </div>
-              
+
               <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
                 {[
                   // Contadores atualizados para refletir o total de 11 e 2 institutos
@@ -464,7 +464,7 @@ export default function InitialHome() {
                   { name: 'Institutos', count: institutionsData.filter(i => i.category === 'Institutos').length, icon: 'business' },
                   { name: 'Privadas', count: institutionsData.filter(i => i.category === 'Privadas').length, icon: 'domain' }
                 ].map((tab) => (
-                  <button 
+                  <button
                     key={tab.name}
                     onClick={() => setActiveTab(tab.name)}
                     className={`flex items-center gap-2 pb-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.name ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
@@ -479,13 +479,12 @@ export default function InitialHome() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
               {filteredInstitutions.map((inst) => (
-                <div 
+                <div
                   key={inst.id}
                   // Link dinâmico usando instituição_id=X
                   onClick={() => handleModuleClick(`/instituicao?institution_id=${inst.id}`)}
-                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px] ${
-                    inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : '' 
-                  }`}
+                  className={`bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px] ${inst.rowSpan === 2 && activeTab === 'Todas' ? 'md:row-span-2' : ''
+                    }`}
                 >
                   <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
                   <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">{inst.nome}</p>
@@ -512,10 +511,9 @@ export default function InitialHome() {
 
         {/* Menu Flutuante de Acessibilidade */}
         <div className="a11y-fab fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-          <div 
-            className={`bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 ease-in-out origin-bottom-right ${
-              isAccessibilityOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-4 pointer-events-none'
-            }`}
+          <div
+            className={`bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 ease-in-out origin-bottom-right ${isAccessibilityOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-4 pointer-events-none'
+              }`}
             style={{ width: '220px' }}
           >
             <div className="bg-blue-700 text-white p-4 font-bold text-sm flex items-center gap-2">
@@ -550,12 +548,11 @@ export default function InitialHome() {
               </button>
             </div>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
-            className={`text-white p-3.5 rounded-full shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center ${
-              isAccessibilityOpen ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-700 hover:bg-blue-800'
-            }`}
+            className={`text-white p-3.5 rounded-full shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center ${isAccessibilityOpen ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-700 hover:bg-blue-800'
+              }`}
             aria-label="Menu de Acessibilidade"
           >
             <span className="material-symbols-outlined text-[28px] transition-transform duration-300">
@@ -567,14 +564,14 @@ export default function InitialHome() {
 
       {/* MODAL DE BUSCA CENTRALIZADO SIMCC */}
       {isSimccModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200"
           onClick={() => {
             setIsSimccModalOpen(false);
             setIsTypeDropdownOpen(false);
           }}
         >
-          <div 
+          <div
             className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col relative animate-in zoom-in-95 duration-200 mt-12 sm:mt-0 overflow-visible"
             onClick={(e) => e.stopPropagation()}
           >
@@ -599,17 +596,17 @@ export default function InitialHome() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); handleSubmitSimcc(simccSearchQuery); }} className="p-6 flex flex-col gap-4 relative overflow-visible">
-              
+
               {/* Overlay transparente para fechar o dropdown ao clicar fora dele */}
               {isTypeDropdownOpen && (
-                <div 
+                <div
                   className="fixed inset-0 z-40 bg-transparent"
                   onClick={() => setIsTypeDropdownOpen(false)}
                 />
               )}
 
               <div className="flex flex-col sm:flex-row items-stretch gap-2.5 w-full relative z-50">
-                
+
                 {/* Botão Seletor de Tipo (Lado Esquerdo) */}
                 <div className="relative shrink-0">
                   <button
@@ -638,9 +635,8 @@ export default function InitialHome() {
                             setSelectedSearchType(type);
                             setIsTypeDropdownOpen(false);
                           }}
-                          className={`w-full px-3.5 py-2 text-xs font-medium flex items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer ${
-                            selectedSearchType.id === type.id ? 'bg-blue-50/80 text-blue-700 font-bold' : 'text-gray-700'
-                          }`}
+                          className={`w-full px-3.5 py-2 text-xs font-medium flex items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer ${selectedSearchType.id === type.id ? 'bg-blue-50/80 text-blue-700 font-bold' : 'text-gray-700'
+                            }`}
                         >
                           <div className="flex items-center gap-2.5">
                             <span className="w-3.5 h-3.5 rounded-sm shrink-0 shadow-xs" style={{ backgroundColor: type.color }} />
@@ -726,8 +722,8 @@ export default function InitialHome() {
                     )
                   ) : (
                     [
-                      'Bahia', 'Brasil', 'Educação', 'Saúde', 'Análise', 'Estudo', 
-                      'Desenvolvimento', 'Ensino', 'Social', 'Formação', 'Produção', 
+                      'Bahia', 'Brasil', 'Educação', 'Saúde', 'Análise', 'Estudo',
+                      'Desenvolvimento', 'Ensino', 'Social', 'Formação', 'Produção',
                       'Trabalho', 'Estado', 'Avaliação', 'Caso', 'Experiência', 'Município', 'Relato'
                     ].map((term) => (
                       <button

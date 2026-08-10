@@ -16,9 +16,9 @@ export const platformModules = [
 ];
 
 export const quickAccessLinks = [
-  { to: 'https://observatoriocti.secti.ba.gov.br/indicadores', title: 'Indicadores' },
-  { to: 'https://observatoriocti.secti.ba.gov.br/grupos-pesquisa', title: 'Grupos de Pesquisa' },
-  { to: 'https://observatoriocti.secti.ba.gov.br/listagens?tab=bolsistas', title: 'Bolsistas' },
+  { to: 'http://simcc.uesc.br/grupos-pesquisa/indicadores', title: 'Indicadores' },
+  { to: 'http://simcc.uesc.br/grupos-pesquisa/grupos-pesquisa', title: 'Grupos de Pesquisa' },
+  { to: 'http://simcc.uesc.br/grupos-pesquisa/listagens?tab=bolsistas', title: 'Bolsistas' },
 ];
 
 // FIOCRUZ adicionada com o ID 11
