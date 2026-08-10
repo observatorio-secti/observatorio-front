@@ -71,6 +71,15 @@ export default function InitialHome() {
     setIsTypeDropdownOpen(false);
   };
 
+  const handleWordCloudClick = (e: React.MouseEvent, term: string) => {
+    e.stopPropagation();
+    if (term && term.trim()) {
+      const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
+      const url = `https://simcc.uesc.br/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
+      window.open(url, '_blank');
+    }
+  };
+
   // Efeito para buscar autocompletar na API (secondWord) quando > 3 caracteres
   useEffect(() => {
     const query = simccSearchQuery.trim();
@@ -299,43 +308,52 @@ export default function InitialHome() {
                         
                         <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
                         
-                        <div className="flex items-center gap-4 mb-4 z-10 pl-2">
+                        <div className="flex items-center gap-4 mb-2 z-10 pl-2">
                           {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
-                          <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
+                          <div>
+                            <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
+                            <span className="text-[11px] font-semibold text-slate-400 tracking-wide block mt-0.5">
+                              Principais palavras chave da plataforma
+                            </span>
+                          </div>
                         </div>
                         
-                        {/* NUVEM DE PALAVRAS COM TAMANHOS LEVEMENTE MAIORES E ESPAÇAMENTO EQUILIBRADO */}
+                        {/* NUVEM DE PALAVRAS COM CLIQUE DIRETO PARA BUSCA EM ARTIGOS */}
                         <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
                            
                            {/* Centro */}
-                           <div className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+                           <div 
+                             onClick={(e) => handleWordCloudClick(e, 'Bahia')}
+                             className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
+                             title="Buscar artigos sobre Bahia"
+                           >
                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
                            </div>
                            
                            {/* Palavras próximas ao centro */}
-                           <span className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl">Brasil</span>
-                           <span className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base">Estudo</span>
-                           <span className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90">Avaliacao</span>
-                           <span className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90">Educacao</span>
-                           <span className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl">Analise</span>
-                           <span className="absolute bottom-[16%] left-[38%] text-[#0f4c64] font-bold text-base">Caso</span>
-                           <span className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl">Producao</span>
-                           <span className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base">Formacao</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brasil</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estudo">Estudo</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Avaliação')} className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Avaliação">Avaliacao</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Educação">Educacao</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Análise">Analise</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Caso')} className="absolute bottom-[16%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Caso">Caso</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Produção">Producao</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Formação')} className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Formação">Formacao</span>
                            
                            {/* Palavras das bordas */}
-                           <span className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm">Desenvolvimento</span>
-                           <span className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90">Estado</span>
-                           <span className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Brazil</span>
-                           <span className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90">Experiencia</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Desenvolvimento')} className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Desenvolvimento">Desenvolvimento</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estado">Estado</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brazil</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Experiência">Experiencia</span>
                            
-                           <span className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl">Saude</span>
-                           <span className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90">Ensino</span>
-                           <span className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg">Social</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Saúde">Saude</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Ensino">Ensino</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Social">Social</span>
 
-                           <span className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90">Municipio</span>
-                           <span className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm">Relato</span>
-                           <span className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
-                           <span className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm">Diferentes</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Município')} className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Município">Municipio</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Relato')} className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Relato">Relato</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Trabalho')} className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Trabalho">Trabalho</span>
+                           <span onClick={(e) => handleWordCloudClick(e, 'Diferentes')} className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Diferentes">Diferentes</span>
                         </div>
 
                         {/* Indicação animada na borda inferior do cartão */}
