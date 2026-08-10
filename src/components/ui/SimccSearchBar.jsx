@@ -145,8 +145,7 @@ export function SimccSearchBar({ onSearch = defaultHandleSimccSearch }) {
               <Search className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
               <span>Pesquisar competências...</span>
             </div>
-            <div className="flex items-center gap-1 text-primary-container text-[11px] font-bold uppercase tracking-wider">
-              <span>Mais</span>
+            <div className="flex items-center text-primary-container">
               <ChevronUp className="w-3.5 h-3.5 animate-bounce" />
             </div>
           </button>

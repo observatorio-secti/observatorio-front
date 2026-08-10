@@ -20,17 +20,117 @@ interface ModuleData {
   status?: string;
 }
 
+// Tipagem e opções para os tipos de produção/busca do SIMCC
+export interface SimccSearchType {
+  id: string;
+  label: string;
+  color: string;
+  type_search: string;
+}
+
+export const SIMCC_SEARCH_TYPES: SimccSearchType[] = [
+  { id: 'todos', label: 'Todos os tipos', color: '#94A3B8', type_search: 'article' },
+  { id: 'artigos', label: 'Artigos', color: '#3B82F6', type_search: 'article' },
+  { id: 'livros', label: 'Livros e capítulos', color: '#EC4899', type_search: 'book' },
+  { id: 'patentes', label: 'Patentes', color: '#06B6D4', type_search: 'patent' },
+  { id: 'nome', label: 'Nome', color: '#EF4444', type_search: 'name' },
+  { id: 'areas', label: 'Áreas', color: '#22C55E', type_search: 'area' },
+  { id: 'resumo', label: 'Resumo', color: '#EAB308', type_search: 'abstract' },
+  { id: 'eventos', label: 'Participação em eventos', color: '#F97316', type_search: 'speaker' },
+];
+
 export default function InitialHome() {
   const navigate = useNavigate();
   
   // Custom Hook de Dados Quantitativos da Home
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/';
   const { data: quantData, loading: quantLoading } = useHomeQuantitativeData(apiBaseUrl);
-  
+
   // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Todas');
   const [activeSection, setActiveSection] = useState('');
+  
+  // Estado e handler da busca SIMCC
+  const [isSimccModalOpen, setIsSimccModalOpen] = useState(false);
+  const [simccSearchQuery, setSimccSearchQuery] = useState('');
+  const [selectedSearchType, setSelectedSearchType] = useState<SimccSearchType>(SIMCC_SEARCH_TYPES[0]);
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
+
+  // Autocompletar da API secondWord
+  const [secondWordSuggestions, setSecondWordSuggestions] = useState<Array<{ word: string; freq: number }>>([]);
+  const [isSecondWordLoading, setIsSecondWordLoading] = useState(false);
+
+  const handleSubmitSimcc = (term: string, type: SimccSearchType = selectedSearchType) => {
+    if (term && term.trim()) {
+      const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
+      const url = `https://simcc.uesc.br/resultados?type_search=${type.type_search}&terms=${encodeURIComponent(cleanTerm)}`;
+      window.open(url, '_blank');
+    }
+    setIsSimccModalOpen(false);
+    setIsTypeDropdownOpen(false);
+  };
+
+  // Efeito para buscar autocompletar na API (secondWord) quando > 3 caracteres
+  useEffect(() => {
+    const query = simccSearchQuery.trim();
+    if (query.length > 3) {
+      setIsSecondWordLoading(true);
+      const controller = new AbortController();
+      const timer = setTimeout(() => {
+        fetch(`https://simcc.uesc.br/v3/api/secondWord?term=${encodeURIComponent(query)}`, {
+          signal: controller.signal
+        })
+          .then((res) => res.json())
+          .then((data: Array<{ word: string; freq: number }>) => {
+            if (Array.isArray(data)) {
+              // Normalizar palavras e somar frequências repetidas
+              const frequencyMap = new Map<string, number>();
+              data.forEach((item) => {
+                const normalized = item.word ? item.word.replace(/[?.,!;:]/g, '').trim().toLowerCase() : '';
+                if (normalized) {
+                  frequencyMap.set(normalized, (frequencyMap.get(normalized) || 0) + (item.freq || 1));
+                }
+              });
+
+              const list = Array.from(frequencyMap.entries())
+                .map(([word, freq]) => ({ word, freq }))
+                .sort((a, b) => b.freq - a.freq);
+
+              setSecondWordSuggestions(list);
+            } else {
+              setSecondWordSuggestions([]);
+            }
+            setIsSecondWordLoading(false);
+          })
+          .catch((err) => {
+            if (err.name !== 'AbortError') {
+              setSecondWordSuggestions([]);
+              setIsSecondWordLoading(false);
+            }
+          });
+      }, 250);
+
+      return () => {
+        clearTimeout(timer);
+        controller.abort();
+      };
+    } else {
+      setSecondWordSuggestions([]);
+      setIsSecondWordLoading(false);
+    }
+  }, [simccSearchQuery]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSimccModalOpen) {
+        setIsSimccModalOpen(false);
+        setIsTypeDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSimccModalOpen]);
   
   // Estados de Acessibilidade
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -142,10 +242,10 @@ export default function InitialHome() {
         <main className="flex-grow flex flex-col items-center w-full">
           
           {/* HERO SECTION */}
-          <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-140px)] flex flex-col justify-center overflow-hidden py-24">
+          <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-64px)] flex flex-col justify-between items-center overflow-hidden pt-12 pb-8">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
             
-            <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
+            <div className="my-auto relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
               <div className="flex flex-col items-start text-left gap-8">
                 <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold tracking-tight">
                   Observatório <br />
@@ -162,6 +262,16 @@ export default function InitialHome() {
               </div>
               <HeroMetricCards data={quantData} loading={quantLoading} />
             </div>
+
+            {/* Indicação animada de scroll */}
+            <a
+              href="#modulos"
+              onClick={(e) => scrollToSection(e, 'modulos')}
+              className="relative z-10 flex items-center justify-center text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group mt-4"
+              aria-label="Rolar para explorar os módulos"
+            >
+              <span className="material-symbols-outlined text-[36px] animate-bounce">keyboard_arrow_down</span>
+            </a>
           </section>
 
           {/* Módulos da Plataforma (Bento Grid) */}
@@ -227,15 +337,27 @@ export default function InitialHome() {
                            <span className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90">Trabalho</span>
                            <span className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm">Diferentes</span>
                         </div>
-                        
-                        <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center gap-4 justify-between z-10 pl-2">
-                          <div className="flex-grow w-full bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2 border border-gray-200">
-                            <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
-                            <input type="text" placeholder="Pesquisar competências..." onClick={(e) => e.stopPropagation()} className="bg-transparent border-none outline-none w-full text-sm text-slate-600 placeholder-gray-400"/>
+
+                        {/* Indicação animada na borda inferior do cartão */}
+                        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center bg-white/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full border border-blue-200 shadow-xs opacity-100 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
+                          <span className="material-symbols-outlined text-[20px] animate-bounce text-blue-600">keyboard_arrow_up</span>
+                        </div>
+
+                        {/* BARRA DE BUSCA QUE DESLISA DA PARTE INFERIOR DO CARTÃO */}
+                        <div 
+                          className="absolute bottom-0 inset-x-0 p-4 sm:p-6 z-30 transition-all duration-300 transform translate-y-full opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto bg-gradient-to-t from-white via-white/95 to-transparent pt-6"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSimccModalOpen(true);
+                          }}
+                        >
+                          <div className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between gap-2 border-2 border-blue-500 shadow-xl cursor-pointer group/search hover:bg-blue-50/50 transition-all">
+                            <div className="flex items-center gap-2.5 overflow-hidden">
+                              <span className="material-symbols-outlined text-blue-600 text-[20px] group-hover/search:scale-110 transition-transform shrink-0">search</span>
+                              <span className="text-sm font-medium text-slate-700 select-none truncate">Pesquisar competências...</span>
+                            </div>
+                            <span className="material-symbols-outlined text-blue-600 text-[18px] group-hover/search:translate-x-1 transition-transform shrink-0">arrow_forward</span>
                           </div>
-                          <button onClick={(e) => { e.stopPropagation(); handleModuleClick(module.link); }} className="text-gray-400 font-bold text-xs tracking-wider flex items-center gap-1 hover:text-red-600 transition-colors uppercase whitespace-nowrap bg-white/80 py-2 px-3 rounded-lg group-hover:bg-red-50 group-hover:text-red-600 duration-300">
-                            MAIS <span className="material-symbols-outlined text-[16px]">expand_less</span>
-                          </button>
                         </div>
                       </div>
                     );
@@ -424,6 +546,192 @@ export default function InitialHome() {
           </button>
         </div>
       </div>
+
+      {/* MODAL DE BUSCA CENTRALIZADO SIMCC */}
+      {isSimccModalOpen && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200"
+          onClick={() => {
+            setIsSimccModalOpen(false);
+            setIsTypeDropdownOpen(false);
+          }}
+        >
+          <div 
+            className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col relative animate-in zoom-in-95 duration-200 mt-12 sm:mt-0 overflow-visible"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+              <div className="flex items-center gap-2.5 text-[#0f4c64] font-bold text-lg">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <span className="material-symbols-outlined text-[20px]">search</span>
+                </div>
+                <span>Pesquisar no SIMCC</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSimccModalOpen(false);
+                  setIsTypeDropdownOpen(false);
+                }}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label="Fechar busca"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmitSimcc(simccSearchQuery); }} className="p-6 flex flex-col gap-4 relative overflow-visible">
+              
+              {/* Overlay transparente para fechar o dropdown ao clicar fora dele */}
+              {isTypeDropdownOpen && (
+                <div 
+                  className="fixed inset-0 z-40 bg-transparent"
+                  onClick={() => setIsTypeDropdownOpen(false)}
+                />
+              )}
+
+              <div className="flex flex-col sm:flex-row items-stretch gap-2.5 w-full relative z-50">
+                
+                {/* Botão Seletor de Tipo (Lado Esquerdo) */}
+                <div className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                    className="h-full w-full sm:w-auto px-3.5 py-3.5 bg-gray-50 hover:bg-gray-100 border-2 border-blue-100 rounded-xl flex items-center justify-between sm:justify-start gap-2.5 text-xs font-semibold text-gray-700 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-sm shrink-0 shadow-xs" style={{ backgroundColor: selectedSearchType.color }} />
+                      <span className="truncate max-w-[130px] text-left">{selectedSearchType.label}</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[18px] text-gray-400">unfold_more</span>
+                  </button>
+
+                  {/* Menu Dropdown sem corte de overflow */}
+                  {isTypeDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-1.5 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3.5 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
+                        Selecione o tipo de produção
+                      </div>
+                      {SIMCC_SEARCH_TYPES.map((type) => (
+                        <button
+                          key={type.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSearchType(type);
+                            setIsTypeDropdownOpen(false);
+                          }}
+                          className={`w-full px-3.5 py-2 text-xs font-medium flex items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer ${
+                            selectedSearchType.id === type.id ? 'bg-blue-50/80 text-blue-700 font-bold' : 'text-gray-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-3.5 h-3.5 rounded-sm shrink-0 shadow-xs" style={{ backgroundColor: type.color }} />
+                            <span>{type.label}</span>
+                          </div>
+                          {selectedSearchType.id === type.id && (
+                            <span className="material-symbols-outlined text-[16px] text-blue-600">check</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Input de Busca */}
+                <div className="relative flex-grow flex items-center">
+                  <span className="material-symbols-outlined text-blue-600 absolute left-4 text-[22px] pointer-events-none">search</span>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={simccSearchQuery}
+                    onChange={(e) => setSimccSearchQuery(e.target.value)}
+                    placeholder={selectedSearchType.id === 'todos' ? 'Digite um termo, área de estudo ou pesquisador...' : `Pesquisar em ${selectedSearchType.label.toLowerCase()}...`}
+                    className="w-full bg-gray-50 border-2 border-blue-100 focus:border-blue-600 focus:bg-white rounded-xl pl-12 pr-28 py-3.5 text-base font-sans text-gray-800 outline-none transition-all shadow-xs"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <span>Buscar</span>
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Termos Sugeridos da Nuvem de Palavras ou resultados da API secondWord quando > 3 caracteres */}
+              <div className="flex flex-col gap-2 pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    {simccSearchQuery.trim().length > 3
+                      ? `Sugestões relacionadas para "${simccSearchQuery.trim()}"`
+                      : 'Termos da Nuvem de Palavras'}
+                  </span>
+                  {isSecondWordLoading && (
+                    <span className="flex items-center gap-1.5 text-blue-600 text-xs font-medium">
+                      <span className="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                      Buscando termos...
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
+                  {simccSearchQuery.trim().length > 3 ? (
+                    isSecondWordLoading ? (
+                      <div className="py-3 text-xs text-slate-400 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px] animate-spin text-blue-600">progress_activity</span>
+                        <span>Pesquisando termos no SIMCC...</span>
+                      </div>
+                    ) : secondWordSuggestions.length > 0 ? (
+                      secondWordSuggestions.map((item) => (
+                        <button
+                          key={item.word}
+                          type="button"
+                          onClick={() => {
+                            setSimccSearchQuery(item.word);
+                            handleSubmitSimcc(item.word);
+                          }}
+                          className="px-3 py-1.5 text-xs font-medium bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg text-blue-800 border border-blue-200/80 transition-all cursor-pointer shadow-2xs hover:shadow-xs flex items-center gap-1.5 group/sug"
+                        >
+                          <span className="material-symbols-outlined text-[14px] text-blue-600 group-hover/sug:text-white">search</span>
+                          <span className="capitalize">{item.word}</span>
+                          {item.freq > 0 && (
+                            <span className="text-[10px] px-1.5 py-0.2 bg-blue-200/60 group-hover/sug:bg-white/20 text-blue-900 group-hover/sug:text-white rounded-full font-bold">
+                              {item.freq}
+                            </span>
+                          )}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="py-2 text-xs text-slate-400 italic">
+                        Nenhum termo relacionado encontrado. Pressione Enter para buscar "{simccSearchQuery.trim()}".
+                      </div>
+                    )
+                  ) : (
+                    [
+                      'Bahia', 'Brasil', 'Educação', 'Saúde', 'Análise', 'Estudo', 
+                      'Desenvolvimento', 'Ensino', 'Social', 'Formação', 'Produção', 
+                      'Trabalho', 'Estado', 'Avaliação', 'Caso', 'Experiência', 'Município', 'Relato'
+                    ].map((term) => (
+                      <button
+                        key={term}
+                        type="button"
+                        onClick={() => {
+                          setSimccSearchQuery(term);
+                          handleSubmitSimcc(term);
+                        }}
+                        className="px-3 py-1.5 text-xs font-medium bg-gray-100/90 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-gray-700 border border-gray-200/80 transition-all cursor-pointer shadow-2xs hover:shadow-xs flex items-center gap-1.5"
+                      >
+                        <span className="material-symbols-outlined text-[14px] text-blue-500">search</span>
+                        <span>{term}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
