@@ -32,6 +32,6 @@ export function HeroSection() {
       >
         <span className="material-symbols-outlined text-[40px]">expand_more</span>
       </a>
-    </section>
+    </section >
   );
 }

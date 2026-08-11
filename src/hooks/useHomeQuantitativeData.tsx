@@ -91,7 +91,13 @@ export function HeroMetricCards({ data, loading }: { data: HomeQuantData; loadin
   }
 
   const totalProducoes = data.visaoPrograma
-    ? data.visaoPrograma.article + data.visaoPrograma.book + data.visaoPrograma.book_chapter + data.visaoPrograma.work_in_event
+    ? data.visaoPrograma.article + 
+      data.visaoPrograma.book + 
+      data.visaoPrograma.book_chapter + 
+      data.visaoPrograma.work_in_event + 
+      data.visaoPrograma.patent + 
+      data.visaoPrograma.software + 
+      data.visaoPrograma.brand
     : 0;
 
   const totalPesquisadores = data.visaoPrograma ? data.visaoPrograma.researcher : 0;
@@ -141,7 +147,7 @@ export function HeroMetricCards({ data, loading }: { data: HomeQuantData; loadin
           <span className="material-symbols-outlined text-[14px] text-slate-400 group-hover:text-blue-600 transition-colors">info</span>
           
           <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[220px] bg-slate-800 text-white text-xs rounded-lg py-2 px-3 text-center z-50 shadow-lg font-normal">
-            Soma total absoluta contemplando: artigos, livros, capítulos e trabalhos em eventos.
+            Soma total absoluta contemplando: artigos, livros, capítulos, trabalhos em eventos, patentes, softwares e marcas.
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
           </div>
         </div>
