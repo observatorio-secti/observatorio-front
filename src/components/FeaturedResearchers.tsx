@@ -16,7 +16,7 @@ interface Researcher {
 }
 
 export interface FeaturedResearchersProps {
-  apiBaseUrl: string;
+  apiBaseUrl?: string;
   maxItems?: number;
   direction?: 'left' | 'right';
   speed?: 'fast' | 'normal' | 'slow';
@@ -24,7 +24,7 @@ export interface FeaturedResearchersProps {
 }
 
 export default function FeaturedResearchers({
-  apiBaseUrl,
+  apiBaseUrl = import.meta.env.VITE_API_URL || 'https://simcc.uesc.br/v3/api/',
   maxItems = 30, // Atualizado o valor padrão para 30
   direction = 'left',
   speed = 'normal',

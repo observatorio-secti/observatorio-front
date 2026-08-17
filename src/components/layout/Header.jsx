@@ -67,7 +67,6 @@ export function Header() {
           </div>
         </a>
 
-        {/* Desktop Navigation & Apoio */}
         <div className="hidden md:flex items-center gap-6 h-full">
           <nav className="flex items-center gap-6 h-full">
             {navItems.map((item) => (
@@ -88,11 +87,7 @@ export function Header() {
 
           <div className="h-6 w-px bg-outline-variant/60 shrink-0" aria-hidden="true" />
 
-          {/* Apoio section */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <span className="text-xs font-semibold text-on-surface-variant/80 uppercase tracking-wider select-none">
-              Apoio:
-            </span>
             <img
               src="/ESTADO-BAHIA.svg"
               alt="Governo do Estado da Bahia"
@@ -101,12 +96,8 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Header Right (Apoio Icon + Menu Button) */}
         <div className="flex items-center gap-3 md:hidden">
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[10px] font-semibold text-on-surface-variant/70 uppercase tracking-wider select-none">
-              Apoio:
-            </span>
             <img
               src="/ESTADO-BAHIA.svg"
               alt="Governo do Estado da Bahia"
@@ -143,9 +134,6 @@ export function Header() {
             </a>
           ))}
           <div className="pt-3 border-t border-outline-variant/60 flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant/80 uppercase tracking-wider select-none">
-              Apoio:
-            </span>
             <img
               src="/ESTADO-BAHIA.svg"
               alt="Governo do Estado da Bahia"
