@@ -1,21 +1,31 @@
-import React from 'react';
-import Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts';
 import HighchartsReactRaw from 'highcharts-react-official';
 import wordCloudModuleRaw from 'highcharts/modules/wordcloud';
 
 // Resolve CJS/ESM module interop safely for Vite
-const HighchartsReact = HighchartsReactRaw?.default || HighchartsReactRaw;
-const wordCloudModule = wordCloudModuleRaw?.default || wordCloudModuleRaw;
+const HighchartsReact = (HighchartsReactRaw as any)?.default || HighchartsReactRaw;
+const wordCloudModule = (wordCloudModuleRaw as any)?.default || wordCloudModuleRaw;
 
 // Ensure the Highcharts Wordcloud module is initialized once
 if (typeof Highcharts === 'object' && typeof wordCloudModule === 'function') {
-  if (!Highcharts.seriesTypes?.wordcloud) {
+  if (!(Highcharts as any).seriesTypes?.wordcloud) {
     wordCloudModule(Highcharts);
   }
 }
 
+interface WordData {
+  term: string;
+  among: number;
+}
 
-export function SimccWordCloud({ words = [], isLoading = false, isError = false, onWordClick }) {
+interface SimccWordCloudProps {
+  words?: WordData[];
+  isLoading?: boolean;
+  isError?: boolean;
+  onWordClick?: (word: string) => void;
+}
+
+export function SimccWordCloud({ words = [], isLoading = false, isError = false, onWordClick }: SimccWordCloudProps) {
   if (isLoading) {
     return (
       <div className="h-[300px] w-full flex flex-col items-center justify-center gap-3 text-outline">
@@ -33,7 +43,7 @@ export function SimccWordCloud({ words = [], isLoading = false, isError = false,
     );
   }
 
-  const options = {
+  const options: any = {
     chart: {
       backgroundColor: 'transparent',
       height: '300px',
@@ -74,10 +84,10 @@ export function SimccWordCloud({ words = [], isLoading = false, isError = false,
         cursor: 'pointer',
         point: {
           events: {
-            click: function (e) {
+            click: function (e: any) {
               if (onWordClick) {
                 if (e && e.stopPropagation) e.stopPropagation();
-                onWordClick(this.name);
+                onWordClick((this as any).name);
               }
             }
           }
