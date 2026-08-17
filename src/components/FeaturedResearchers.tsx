@@ -25,7 +25,7 @@ export interface FeaturedResearchersProps {
 
 export default function FeaturedResearchers({
   apiBaseUrl,
-  maxItems = 40,
+  maxItems = 30, // Atualizado o valor padrão para 30
   direction = 'left',
   speed = 'normal',
   pauseOnHover = true,
@@ -115,7 +115,7 @@ export default function FeaturedResearchers({
               Pesquisadores em <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-white">Destaque</span>
             </h2>
             <p className="text-blue-100 text-sm md:text-base leading-relaxed opacity-90">
-              Conheça os profissionais que estão impulsionando a ciência, tecnologia e inovação no estado, reconhecidos por sua produtividade e impacto acadêmico.
+              Pesquisadores ativos com atualizações recentes no currículo Lattes.
             </p>
           </div>
           

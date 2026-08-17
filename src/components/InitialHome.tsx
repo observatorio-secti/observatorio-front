@@ -3,28 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { modulesData } from '../data/modulesData';
 import { 
-  instituicoes,  
+  instituicoes, 
   filtrarInstituicoes, 
   instituicoesVerTodas
 } from '../constants/home-links';
 
 import FeaturedResearchers from './FeaturedResearchers';
 import { useHomeQuantitativeData, HeroMetricCards } from '../hooks/useHomeQuantitativeData';
-
-interface ModuleData {
-  id: string;
-  title: string;
-  link: string;
-  icon?: string;
-  gridClass: string;
-  isLarge?: boolean;
-  isMain?: boolean;
-  bgImage?: string;
-  logo?: string;
-  status?: string;
-}
 
 // Tipagem e opções para os tipos de produção/busca do SIMCC
 export interface SimccSearchType {
@@ -54,6 +40,11 @@ export default function InitialHome() {
 
   // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Abas dos Módulos (Inicializa com o nome completo)
+  const [activeModuleTab, setActiveModuleTab] = useState('Sistema de Mapeamento de Competências Científicas');
+  
+  // Abas das Instituições
   const [activeTab, setActiveTab] = useState('Todas');
   const [activeSection, setActiveSection] = useState('');
 
@@ -86,7 +77,7 @@ export default function InitialHome() {
     }
   };
 
-  // Efeito para buscar autocompletar na API (secondWord) quando > 3 caracteres
+  // Efeito para buscar autocompletar na API (secondWord)
   useEffect(() => {
     const query = simccSearchQuery.trim();
     if (query.length > 3) {
@@ -99,7 +90,6 @@ export default function InitialHome() {
           .then((res) => res.json())
           .then((data: Array<{ word: string; freq: number }>) => {
             if (Array.isArray(data)) {
-              // Normalizar palavras e somar frequências repetidas
               const frequencyMap = new Map<string, number>();
               data.forEach((item) => {
                 const normalized = item.word ? item.word.replace(/[?.,!;:]/g, '').trim().toLowerCase() : '';
@@ -197,6 +187,13 @@ export default function InitialHome() {
 
   const filteredInstitutions = filtrarInstituicoes(activeTab);
 
+  const moduleTabs = [
+    { name: 'Sistema de Mapeamento de Competências Científicas', label: 'Sistema de Mapeamento<br/>de Competências Científicas', icon: 'map' },
+    { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
+    { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
+    { name: 'Iniciativas de CT&I', label: 'Iniciativas<br/>de CT&I', icon: 'account_balance' }
+  ];
+
   return (
     <>
       <style>
@@ -216,22 +213,39 @@ export default function InitialHome() {
         <header className={`bg-white border-b border-gray-200 w-full sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'h-14 shadow-sm' : 'h-16'}`}>
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
           <div className="flex justify-between items-center w-full px-6 md:px-12 h-full max-w-[1400px] mx-auto mt-[1px]">
-            <a className="flex items-center h-full py-0 gap-3" href="#" onClick={(e) => scrollToSection(e, 'sobre')}>
-              <img alt="Símbolo Observatório" className="h-10 w-auto object-contain z-10 relative" src="/LOGO.png" />
-              <div className={`transition-all duration-500 ease-in-out flex items-center overflow-hidden ${isScrolled ? 'max-w-0 opacity-0 -translate-x-8' : 'max-w-[400px] opacity-100 translate-x-0'}`}>
-                <img alt="Nome Observatório" className="h-9 md:h-11 w-auto object-contain" src="/NOME.png" />
+            
+            {/* LADO ESQUERDO: Apoio + Logo Observatório */}
+            <div className="flex items-center h-full gap-4 md:gap-6">
+              
+              {/* NOVO: Logo de Apoio (Extremo Esquerdo) apontando pro SVG */}
+              <div className="hidden md:flex items-center gap-2 border-r border-gray-200 pr-4 md:pr-6 h-10">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Apoio:</span>
+                <img src="/ESTADO-BAHIA.svg" alt="Apoio Estado" className="h-8 md:h-10 w-auto object-contain" />
               </div>
-            </a>
-            <nav className="hidden md:flex items-center gap-8 h-full">
-              <a href="#sobre" onClick={(e) => scrollToSection(e, 'sobre')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'sobre' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Sobre</a>
-              <a href="#modulos" onClick={(e) => scrollToSection(e, 'modulos')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'modulos' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Módulos</a>
-              <a href="#instituicoes" onClick={(e) => scrollToSection(e, 'instituicoes')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'instituicoes' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Instituições</a>
-            </nav>
-            <div className="flex items-center gap-4">
-              <button className="md:hidden text-slate-500">
-                <span className="material-symbols-outlined">menu</span>
-              </button>
+
+              {/* Logo Observatório */}
+              <a className="flex items-center h-full py-0 gap-3" href="#" onClick={(e) => scrollToSection(e, 'sobre')}>
+                <img alt="Símbolo Observatório" className="h-9 md:h-10 w-auto object-contain z-10 relative" src="/LOGO.png" />
+                <div className={`transition-all duration-500 ease-in-out flex items-center overflow-hidden ${isScrolled ? 'max-w-0 opacity-0 -translate-x-8' : 'max-w-[400px] opacity-100 translate-x-0'}`}>
+                  <img alt="Nome Observatório" className="h-8 md:h-11 w-auto object-contain" src="/NOME.png" />
+                </div>
+              </a>
             </div>
+
+            {/* LADO DIREITO: Menu de Navegação */}
+            <div className="flex items-center gap-8 h-full">
+              <nav className="hidden md:flex items-center gap-8 h-full">
+                <a href="#sobre" onClick={(e) => scrollToSection(e, 'sobre')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'sobre' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Sobre</a>
+                <a href="#modulos" onClick={(e) => scrollToSection(e, 'modulos')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'modulos' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Módulos</a>
+                <a href="#instituicoes" onClick={(e) => scrollToSection(e, 'instituicoes')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'instituicoes' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Instituições</a>
+              </nav>
+              <div className="flex items-center gap-4">
+                <button className="md:hidden text-slate-500">
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </header>
 
@@ -248,10 +262,9 @@ export default function InitialHome() {
                   de <span className="bg-blue-800 text-white px-5 py-1 rounded-[20px] inline-flex items-center justify-center align-middle -translate-y-1 mx-1 border-b-[3px] border-red-600 shadow-sm">CT&I</span> da <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">Bahia</span>
                 </h1>
                 <p className="text-lg text-slate-500 max-w-xl leading-relaxed">
-                  Explore dados integrados sobre produção científica, pesquisadores, institutions e inovações no estado da Bahia, apresentados com clareza e precisão.
+                  Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão.
                 </p>
                 
-                {/* Botão principal limpo (sem "Sobre o Projeto" e sem "Acesso Rápido") */}
                 <div className="flex flex-col gap-4">
                   <div className="flex gap-4">
                     <button onClick={(e) => scrollToSection(e as any, 'modulos')} className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300">
@@ -259,12 +272,10 @@ export default function InitialHome() {
                     </button>
                   </div>
                 </div>
-
               </div>
               <HeroMetricCards data={quantData} loading={quantLoading} />
             </div>
 
-            {/* Indicação animada de scroll */}
             <a
               href="#modulos"
               onClick={(e) => scrollToSection(e, 'modulos')}
@@ -275,169 +286,321 @@ export default function InitialHome() {
             </a>
           </section>
 
-          <section id="modulos" className="scroll-mt-16 w-full py-24 border-t border-gray-200/60 bg-white">
-            <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-              <div className="flex flex-col gap-2 mb-12">
-                <h2 className="text-3xl text-slate-800 font-bold tracking-tight">
-                  Módulos da Plataforma
-                </h2>
-                <p className="text-base text-slate-500">
-                  Explore o ecossistema integrado de informações científicas.
-                </p>
-              </div>
+          {/* SEÇÃO DE MÓDULOS */}
+          <section id="modulos" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-6 border-t border-gray-100 bg-[#F8FAFC]">
+            
+            <div className="flex flex-col gap-2">
+              <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Módulos da Plataforma</h2>
+              <p className="text-base text-slate-500">Explore o ecossistema integrado de informações científicas.</p>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto md:auto-rows-[240px]">
-                {(modulesData as ModuleData[]).map((module) => {
+            {/* Menu de Abas dos Módulos COM LINHA DE SEPARAÇÃO E FLEX-WRAP (sem barra de scroll) */}
+            <div className="flex items-center gap-6 md:gap-8 flex-wrap border-b border-gray-200 mb-6 w-full">
+              {moduleTabs.map((tab) => (
+                <button
+                  key={tab.name}
+                  onClick={() => setActiveModuleTab(tab.name)}
+                  className={`flex items-center gap-2 pb-4 border-b-[3px] transition-all cursor-pointer text-left -mb-[2px] ${activeModuleTab === tab.name ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-gray-300'}`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+                  <span className="font-bold text-sm leading-tight" dangerouslySetInnerHTML={{ __html: tab.label }}></span>
+                </button>
+              ))}
+            </div>
 
-                  // 1. O CARD MAIOR DO MAPEAMENTO (Nuvem de palavras)
-                  if (module.id === 'simcc-mapeamento') {
-                    return (
-                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-8 border-2 border-blue-100 shadow-sm flex flex-col relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
+            {/* Conteúdo Renderizado da Aba */}
+            <div className="w-full">
+              {activeModuleTab === 'Sistema de Mapeamento de Competências Científicas' && (
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full items-stretch">
+                  
+                  {/* ESQUERDA: Grid com os Cartões */}
+                  <div className="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+                    
+                    {/* 1. Módulo Principal da Aba (SIMCC) */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <img src="/LOGO-SIMCC.svg" alt="SIMCC" className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Plataforma SIMCC</p>
+                    </div>
 
-                        <div className="bento-bg absolute inset-0 opacity-15 pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0 transition-transform duration-700 ease-in-out group-hover:scale-[1.08] group-hover:-translate-x-2 group-hover:-translate-y-2"></div>
-
-                        <span className="material-symbols-outlined absolute top-6 right-6 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-
-                        <div className="flex items-center gap-4 mb-2 z-10 pl-2">
-                          {module.logo && <img src={module.logo} alt="SIMCC" className="h-10 w-auto" />}
-                          <div>
-                            <h3 className="text-[22px] font-bold text-[#0f4c64] leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' de ', ' de<br/>') }}></h3>
-                            <span className="text-[11px] font-semibold text-slate-400 tracking-wide block mt-0.5">
-                              Principais palavras chave da plataforma
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* NUVEM DE PALAVRAS COM CLIQUE DIRETO PARA BUSCA EM ARTIGOS */}
-                        <div className="flex-grow relative w-full h-full min-h-[160px] select-none z-10 overflow-hidden font-sans">
-
-                          {/* Centro */}
-                          <div
-                            onClick={(e) => handleWordCloudClick(e, 'Bahia')}
-                            className="absolute top-[48%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
-                            title="Buscar artigos sobre Bahia"
-                          >
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[52px] leading-none tracking-tight">Bahia</span>
-                          </div>
-
-                          {/* Palavras próximas ao centro */}
-                          <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[26%] left-[27%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brasil</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[30%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estudo">Estudo</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Avaliação')} className="absolute top-[20%] right-[30%] text-[#0f4c64] font-bold text-xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Avaliação">Avaliacao</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[24%] right-[20%] text-[#0f4c64] font-extrabold text-3xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Educação">Educacao</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute bottom-[30%] left-[42%] text-[#0f4c64] font-bold text-3xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Análise">Analise</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Caso')} className="absolute bottom-[16%] left-[38%] text-slate-400 font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Caso">Caso</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[20%] right-[30%] text-[#0f4c64] font-extrabold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Produção">Producao</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Formação')} className="absolute bottom-[28%] right-[24%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Formação">Formacao</span>
-
-                          {/* Palavras das bordas */}
-                          <span onClick={(e) => handleWordCloudClick(e, 'Desenvolvimento')} className="absolute top-[20%] left-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Desenvolvimento">Desenvolvimento</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[34%] left-[14%] text-[#0f4c64] font-bold text-base -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Estado">Estado</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[52%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Brasil">Brazil</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute bottom-[16%] left-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Experiência">Experiencia</span>
-
-                          <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[38%] left-[22%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Saúde">Saude</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[25%] left-[24%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Ensino">Ensino</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[12%] left-[22%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Social">Social</span>
-
-                          <span onClick={(e) => handleWordCloudClick(e, 'Município')} className="absolute top-[22%] right-[14%] text-slate-400 font-medium text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Município">Municipio</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Relato')} className="absolute top-[48%] right-[14%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Relato">Relato</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Trabalho')} className="absolute bottom-[14%] right-[14%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Trabalho">Trabalho</span>
-                          <span onClick={(e) => handleWordCloudClick(e, 'Diferentes')} className="absolute bottom-[10%] right-[26%] text-slate-400 font-medium text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all" title="Buscar artigos sobre Diferentes">Diferentes</span>
-                        </div>
-
-                        {/* Indicação animada na borda inferior do cartão */}
-                        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center bg-white/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full border border-blue-200 shadow-xs opacity-100 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
-                          <span className="material-symbols-outlined text-[20px] animate-bounce text-blue-600">keyboard_arrow_up</span>
-                        </div>
-
-                        {/* BARRA DE BUSCA QUE DESLISA DA PARTE INFERIOR DO CARTÃO */}
-                        <div
-                          className="absolute bottom-0 inset-x-0 p-4 sm:p-6 z-30 transition-all duration-300 transform translate-y-full opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto bg-gradient-to-t from-white via-white/95 to-transparent pt-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsSimccModalOpen(true);
-                          }}
-                        >
-                          <div className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between gap-2 border-2 border-blue-500 shadow-xl cursor-pointer group/search hover:bg-blue-50/50 transition-all">
-                            <div className="flex items-center gap-2.5 overflow-hidden">
-                              <span className="material-symbols-outlined text-blue-600 text-[20px] group-hover/search:scale-110 transition-transform shrink-0">search</span>
-                              <span className="text-sm font-medium text-slate-700 select-none truncate">Pesquisar competências...</span>
-                            </div>
-                            <span className="material-symbols-outlined text-blue-600 text-[18px] group-hover/search:translate-x-1 transition-transform shrink-0">arrow_forward</span>
-                          </div>
-                        </div>
+                    {/* 2. Indicadores Institucionais e Pós-graduação */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/indicadores')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                        <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">bar_chart</span>
                       </div>
-                    );
-                  }
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Indicadores Institucionais<br/>e Pós-graduação</p>
+                    </div>
 
-                  if (module.id === 'vip-vitrine' || module.id === 'clube-ciencia' || module.logo) {
-                    return (
-                      <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] px-8 py-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group hover:shadow-xl hover:border-blue-600 transition-all duration-500 hover:-translate-y-1.5 cursor-pointer overflow-hidden`}>
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-
-                        {/* Se o card tiver bgImage (como a vitrine), renderiza o parallax */}
-                        {module.bgImage && (
-                          <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-no-repeat bg-right bg-cover z-0 transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:-translate-x-3 group-hover:-translate-y-1" style={{ backgroundImage: `url(${module.bgImage})` }}></div>
-                        )}
-
-                        <span className="material-symbols-outlined absolute top-4 right-4 text-gray-300 group-hover:text-blue-600 transition-colors z-20 text-[20px]">open_in_new</span>
-
-                        <div className="flex items-center gap-4 z-10 pl-2">
-                          <img src={module.logo} alt={module.title} className="h-10 w-auto object-contain" />
-                          <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">{module.title}</h3>
-                        </div>
+                    {/* 3. Programas de Pós-Graduação */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/pos-graduacao')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                        <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">school</span>
                       </div>
-                    );
-                  }
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Programas de<br/>Pós-Graduação</p>
+                    </div>
 
-                  if (module.status === 'inactive') {
-                    return (
-                      <div key={module.id} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-gray-100 shadow-sm flex flex-col justify-center relative group cursor-default overflow-hidden`}>
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-300 z-20"></div>
-                        <div className="flex items-center gap-4 pr-6 pl-2">
-                          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                            <span className="material-symbols-outlined text-gray-400 text-[24px]">{module.icon}</span>
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <h3 className="font-bold text-gray-400 text-sm leading-tight">{module.title}</h3>
-                            <span className="bg-gray-200 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded w-max uppercase tracking-wider">Em breve</span>
-                          </div>
-                        </div>
+                    {/* 4. Produção Técnica e Inovação */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/listagens?tab=patent')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                        <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">lightbulb</span>
                       </div>
-                    );
-                  }
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Produção Técnica<br/>e Inovação</p>
+                    </div>
 
-                  return (
-                    <div key={module.id} onClick={() => handleModuleClick(module.link)} className={`${module.gridClass} bg-white rounded-[20px] p-6 border-2 border-blue-100 shadow-sm flex flex-col justify-center relative group cursor-pointer hover:shadow-lg hover:border-blue-600 transition-all duration-500 hover:-translate-y-1 overflow-hidden`}>
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 group-hover:opacity-100 group-hover:w-2 transition-all duration-300 z-20"></div>
-                      <span className="material-symbols-outlined absolute top-4 right-4 text-blue-200 group-hover:text-blue-600 transition-colors text-[20px]">open_in_new</span>
-                      <div className="flex items-center gap-4 pr-6 pl-2 z-10">
-                        <div className="w-12 h-12 rounded-full bg-[#e6f0f5] flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
-                          <span className="material-symbols-outlined text-[#0f4c64] text-[24px] group-hover:text-blue-700 transition-colors duration-300">{module.icon}</span>
+                    {/* 5. Grupos de Pesquisa */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/grupos-pesquisa')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                        <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">groups</span>
+                      </div>
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Grupos de<br/>Pesquisa</p>
+                    </div>
+
+                    {/* 6. Bolsistas de Produtividade */}
+                    <div 
+                      onClick={() => handleModuleClick('http://simcc.uesc.br/listagens?tab=bolsistas')} 
+                      className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                    >
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                        <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">workspace_premium</span>
+                      </div>
+                      <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Bolsistas de<br/>Produtividade</p>
+                    </div>
+                  </div>
+
+                  {/* DIREITA: Nuvem de Palavras e Barra de Pesquisa */}
+                  <div className="xl:col-span-1 bg-white border border-blue-100 shadow-sm rounded-[20px] flex flex-col relative overflow-hidden min-h-[400px] h-full group hover:shadow-lg hover:border-blue-400 transition-all duration-300">
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-700 via-blue-600 to-red-600 opacity-90 z-20"></div>
+                    <div className="bento-bg absolute inset-0 opacity-[0.08] pointer-events-none bg-[url('/BG-SIMCC.png')] bg-no-repeat bg-right-bottom bg-contain z-0 transition-transform duration-700 ease-in-out group-hover:scale-105"></div>
+                    
+                    <div className="p-6 pb-0 z-10 flex flex-col items-start">
+                      <h3 className="text-xl font-bold text-[#0f4c64] leading-tight">Pesquise por Competência</h3>
+                      <span className="text-[11px] font-semibold text-slate-400 tracking-wide mt-1">Busque por pesquisadores ou explore a nuvem de palavras</span>
+                    </div>
+
+                    <div className="flex-grow relative w-full h-full min-h-[250px] select-none z-10 overflow-hidden font-sans">
+                      {/* Centro da Nuvem */}
+                      <div
+                        onClick={(e) => handleWordCloudClick(e, 'Bahia')}
+                        className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
+                        title="Buscar artigos sobre Bahia"
+                      >
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[42px] leading-none tracking-tight">Bahia</span>
+                      </div>
+
+                      {/* Palavras da Nuvem ajustadas para o container vertical */}
+                      <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[18%] left-[20%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Brasil</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[20%] right-[10%] text-[#0f4c64] font-extrabold text-2xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Educacao</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[40%] left-[10%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Saude</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[35%] right-[25%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Ensino</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[20%] left-[25%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Social</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute top-[60%] left-[30%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Analise</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[28%] left-[45%] text-slate-400 font-bold text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Estudo</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[25%] right-[15%] text-[#0f4c64] font-extrabold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Producao</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[35%] left-[5%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Estado</span>
+                      <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute top-[70%] left-[10%] text-slate-400 font-medium text-xs -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Experiencia</span>
+                    </div>
+
+                    {/* Barra de Pesquisa Fixa no Fundo */}
+                    <div 
+                      className="mt-auto p-4 sm:p-6 z-30 bg-gradient-to-t from-white via-white to-transparent pt-8"
+                      onClick={() => setIsSimccModalOpen(true)}
+                    >
+                      <div className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between gap-2 border-2 border-blue-500 shadow-lg cursor-pointer hover:bg-blue-50/50 transition-all">
+                        <div className="flex items-center gap-2.5 overflow-hidden">
+                          <span className="material-symbols-outlined text-blue-600 text-[20px]">search</span>
+                          <span className="text-sm font-medium text-slate-700 select-none truncate">Pesquisar...</span>
                         </div>
-                        <h3 className="font-bold text-[#0f4c64] text-sm leading-tight" dangerouslySetInnerHTML={{ __html: module.title.replace(' e ', ' e<br/>').replace(' de ', ' de<br/>').replace(' - ', ' -<br/>') }}></h3>
+                        <span className="material-symbols-outlined text-blue-600 text-[18px]">arrow_forward</span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                </div>
+              )}
+
+              {activeModuleTab === 'Vitrine de Infraestrutura' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 auto-rows-fr">
+                  
+                  {/* 1. Módulo Principal da Aba (VIP) */}
+                  <div 
+                    onClick={() => handleModuleClick('https://vip.uesc.br/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <img src="/LOGO-VIP.svg" alt="VIP" className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Vitrine de<br/>Infraestrutura</p>
+                  </div>
+
+                  {/* 2. Instituições */}
+                  <div 
+                    onClick={() => handleModuleClick('https://vip.uesc.br/pesquisar/I')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">account_balance</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Instituições</p>
+                  </div>
+
+                  {/* 3. Laboratórios */}
+                  <div 
+                    onClick={() => handleModuleClick('https://vip.uesc.br/pesquisar/L')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">science</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Laboratórios</p>
+                  </div>
+
+                  {/* 4. Equipamentos */}
+                  <div 
+                    onClick={() => handleModuleClick('https://vip.uesc.br/pesquisar/E')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">biotech</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Equipamentos</p>
+                  </div>
+
+                  {/* 5. Pesquisadores */}
+                  <div 
+                    onClick={() => handleModuleClick('https://vip.uesc.br/pesquisar/P')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">groups</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Pesquisadores</p>
+                  </div>
+
+                </div>
+              )}
+
+              {activeModuleTab === 'Clube de Ciência' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+                  {/* 1. Módulo Principal da Aba (Clube de Ciência) */}
+                  <div 
+                    onClick={() => handleModuleClick('http://simcc.uesc.br/ictite/v1/web/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <img src="/LOGO-CLUBE.png" alt="Clube de Ciência" className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Clube de<br/>Ciência</p>
+                  </div>
+
+                  {/* 2. Objetivos dos Clubes de Ciência */}
+                  <div 
+                    onClick={() => handleModuleClick('http://simcc.uesc.br/ictite/v1/web/clubes')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">hub</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Objetivos dos<br/>Clubes de Ciência</p>
+                  </div>
+
+                  {/* 3. Escolas */}
+                  <div 
+                    onClick={() => handleModuleClick('http://simcc.uesc.br/ictite/v1/web/escolas')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">school</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Escolas</p>
+                  </div>
+
+                  {/* 4. Gráficos Estatísticos */}
+                  <div 
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/ictite/v1/web/estatisticas/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">bar_chart</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Gráficos<br/>Estatísticos</p>
+                  </div>
+                </div>
+              )}
+
+              {activeModuleTab === 'Iniciativas de CT&I' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-fr">
+                  
+                  {/* 1. Módulo Principal da Aba (INCITE) */}
+                  <div 
+                    onClick={() => handleModuleClick('http://simcc.uesc.br/incites')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">account_balance</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Iniciativas de<br/>CT&I</p>
+                  </div>
+
+                  {/* 2. INCITE Indústria 4.0 */}
+                  <div 
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/industria4/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">factory</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">INCITE<br/>Indústria 4.0</p>
+                  </div>
+
+                  {/* 3. INCITE Agricultura Familiar */}
+                  <div 
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/agricultura-familiar/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">eco</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">INCITE<br/>Agricultura Familiar</p>
+                  </div>
+
+                  {/* 4. INCITE Agroindústria */}
+                  <div 
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/agroindustria/')} 
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">agriculture</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">INCITE<br/>Agroindústria</p>
+                  </div>
+
+                </div>
+              )}
             </div>
           </section>
 
           {/* COMPONENTE PESQUISADORES EM DESTAQUE IMPORTADO AQUI */}
           <FeaturedResearchers
             apiBaseUrl={apiBaseUrl}
-            maxItems={20}
+            maxItems={30}
             direction="left"
             speed="normal"
             pauseOnHover={true}
           />
 
-          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-8 border-t border-gray-100">
+          {/* SEÇÃO DE INSTITUIÇÕES */}
+          <section id="instituicoes" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-6 border-t border-gray-100">
             
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-200 pb-4 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
                 <p className="text-base text-slate-500">Acesse os dados e produções de cada instituição participante.</p>
@@ -445,13 +608,14 @@ export default function InitialHome() {
 
               <button 
                 onClick={() => handleModuleClick(instituicoesVerTodas.to)}
-                className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors"
+                className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors pb-2"
               >
                 Ver todas <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-2">
+            {/* Menu de Abas das Instituições COM LINHA DE SEPARAÇÃO E FLEX-WRAP (sem barra de scroll) */}
+            <div className="flex items-center gap-6 md:gap-8 flex-wrap border-b border-gray-200 mb-6 w-full">
               {[
                 { name: 'Todas', count: instituicoes.length, icon: 'account_balance' },
                 { name: 'Federais', count: instituicoes.filter(i => i.categoria === 'Federais').length, icon: 'account_balance' },
@@ -462,11 +626,11 @@ export default function InitialHome() {
                 <button
                   key={tab.name}
                   onClick={() => setActiveTab(tab.name)}
-                  className={`flex items-center gap-2 pb-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.name ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                  className={`flex items-center gap-2 pb-4 border-b-[3px] transition-all whitespace-nowrap cursor-pointer text-left -mb-[2px] ${activeTab === tab.name ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-gray-300'}`}
                 >
                   <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
                   <span className="font-bold text-sm">{tab.name}</span>
-                  <span className="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded-full font-bold">{tab.count}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${activeTab === tab.name ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>{tab.count}</span>
                 </button>
               ))}
             </div>
@@ -475,8 +639,8 @@ export default function InitialHome() {
               {filteredInstitutions.map((inst) => (
                 <div
                   key={inst.id}
-                  // Link dinâmico usando a URL externa do Observatório
-                  onClick={() => handleModuleClick(`https://observatoriocti.secti.ba.gov.br/instituicao?institution_id=${inst.id}&pagina=producoes`)}
+                  // 👇 NAVEGAÇÃO LOCAL PARA O MÓDULO DA INSTITUIÇÃO APLICADA AQUI 👇
+                  onClick={() => navigate(`/instituicao/${inst.id}`)}
                   className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                 >
                   <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />

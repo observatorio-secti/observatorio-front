@@ -105,16 +105,28 @@ export function HeroMetricCards({ data, loading }: { data: HomeQuantData; loadin
   return (
     <div className="flex flex-col sm:flex-row gap-4 w-full justify-center lg:justify-end mt-8 lg:mt-0">
       
-      {/* Card 1: Instituições */}
+      {/* Card 1: Instituições - AGORA COM O BOTÃO AZUL */}
       <div className="bg-white/90 backdrop-blur-md border border-blue-50 p-6 rounded-[20px] flex flex-col items-center justify-center min-w-[190px] flex-1 sm:flex-none shadow-2xl shadow-blue-900/5 transition-transform duration-300 hover:scale-105 hover:border-blue-200">
         <span className="material-symbols-outlined text-[36px] mb-2 text-blue-600">account_balance</span>
-        <h4 className="text-3xl font-extrabold mb-1 text-[#0f4c64]">11</h4>
+        <h4 className="text-3xl font-extrabold mb-3 text-[#0f4c64]">11</h4>
         
-        <div className="relative group flex items-center justify-center gap-1 mt-1 cursor-help">
-          <p className="text-xs text-slate-500 font-bold text-center leading-tight">Instituições <br/>Integradas</p>
-          <span className="material-symbols-outlined text-[14px] text-slate-400 group-hover:text-blue-600 transition-colors">info</span>
+        <div className="relative group flex items-center justify-center w-full">
+          {/* BOTÃO CLICÁVEL COM ANIMAÇÃO */}
+          <button 
+            onClick={() => {
+              const element = document.getElementById('instituicoes');
+              if (element) {
+                const y = element.getBoundingClientRect().top + window.scrollY - 64;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }}
+            className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 rounded-xl text-[11px] font-bold transition-colors shadow-md flex items-center gap-1.5 hover:-translate-y-1 duration-300 text-center"
+          >
+            Instituições Integradas
+            <span className="material-symbols-outlined text-[14px] transition-transform group-hover:translate-y-1">arrow_downward</span>
+          </button>
           
-          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[200px] bg-slate-800 text-white text-xs rounded-lg py-2 px-3 text-center z-50 shadow-lg font-normal">
+          <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[200px] bg-slate-800 text-white text-xs rounded-lg py-2 px-3 text-center z-50 shadow-lg font-normal">
             Universidades, Institutos Federais e Centros de Pesquisa parceiros.
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
           </div>

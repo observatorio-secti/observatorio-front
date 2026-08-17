@@ -8,16 +8,16 @@ export const quickAccessLinks = [
 
 export const instituicoes = [
   { id: 'dc6b3b63-2ada-49cb-bbca-f888ff31d56b', sigla: 'UFBA', nome: 'Universidade Federal da Bahia', categoria: 'Federais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'EBMSP', nome: 'Escola Bahiana de Medicina e Saúde Pública', categoria: 'Privadas' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', categoria: 'Estaduais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UFOB', nome: 'Universidade Federal do Oeste da Bahia', categoria: 'Federais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UFSB', nome: 'Universidade Federal do Sul da Bahia', categoria: 'Federais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UEFS', nome: 'Universidade Estadual de Feira de Santana', categoria: 'Estaduais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UESC', nome: 'Universidade Estadual de Santa Cruz', categoria: 'Estaduais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UFRB', nome: 'Universidade Federal do Recôncavo da Bahia', categoria: 'Federais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', categoria: 'Estaduais' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'IFBA', nome: 'Instituto Federal da Bahia', categoria: 'Institutos' },
-  { id: 'COLE_O_UUID_AQUI', sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', categoria: 'Institutos' },
+  { id: 'id-temp-ebmsp', sigla: 'EBMSP', nome: 'Escola Bahiana de Medicina e Saúde Pública', categoria: 'Privadas' },
+  { id: 'id-temp-uesb', sigla: 'UESB', nome: 'Universidade Estadual do Sudoeste da Bahia', categoria: 'Estaduais' },
+  { id: 'id-temp-ufob', sigla: 'UFOB', nome: 'Universidade Federal do Oeste da Bahia', categoria: 'Federais' },
+  { id: 'id-temp-ufsb', sigla: 'UFSB', nome: 'Universidade Federal do Sul da Bahia', categoria: 'Federais' },
+  { id: 'id-temp-uefs', sigla: 'UEFS', nome: 'Universidade Estadual de Feira de Santana', categoria: 'Estaduais' },
+  { id: 'id-temp-uesc', sigla: 'UESC', nome: 'Universidade Estadual de Santa Cruz', categoria: 'Estaduais' },
+  { id: 'id-temp-ufrb', sigla: 'UFRB', nome: 'Universidade Federal do Recôncavo da Bahia', categoria: 'Federais' },
+  { id: 'id-temp-uneb', sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', categoria: 'Estaduais' },
+  { id: 'id-temp-ifba', sigla: 'IFBA', nome: 'Instituto Federal da Bahia', categoria: 'Institutos' },
+  { id: 'id-temp-fiocruz', sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', categoria: 'Institutos' },
 ];
 
 export const categoriasAbas = [
