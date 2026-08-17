@@ -131,13 +131,15 @@ spacing:
 
 ## Brand & Style
 
-The design system is engineered for a research mapping and scientific observatory ecosystem. The brand personality is **academic, analytical, and high-precision**, signaling institutional authority in handling complex metadata while remaining accessible for collaborative exploration.
+The design system is engineered for a research mapping and scientific observatory ecosystem. Its core mission is to **"Explore dados integrados sobre produção científica, pesquisadores, instituições e inovações no estado da Bahia, apresentados com clareza e precisão."** 
 
-The visual direction follows a **Corporate / Modern** aesthetic with a heavy emphasis on **Information Architecture**. It prioritizes data density and technical legibility. The layout balances clean margins with a cold, professional palette of blues and grays, using strategic whitespace to organize indicators, patents, and bibliographies into a coherent knowledge map.
+The brand personality is **academic, analytical, and high-precision**, signaling institutional authority in handling complex metadata while remaining accessible for collaborative exploration. The visual direction follows a **Corporate / Modern** aesthetic with a heavy emphasis on **Information Architecture**. It prioritizes data density and technical legibility. The layout balances clean margins with a cold, professional palette of blues and grays, using strategic whitespace to organize indicators, patents, and bibliographies into a coherent knowledge map.
 
-## Colors
+## Colors & Gradients
 
 The chromatic strategy is anchored in **Principal Interactive Blue** (#559FB8), serving as the primary visual driver for active states, primary buttons, and core UI highlights. **Deep Navy** (#024A60) provides institutional weight, used for headers, sidebars, and hover states to denote depth and authority.
+
+To provide dynamic breaks and draw attention to key elements, a **Strong Blue to Red Gradient** (e.g., Tailwind's `from-blue-700 to-red-600`) is strategically used. This strong blue (#1D4ED8) paired with a bold red (#DC2626) break adds a striking contrast that energizes the UI without abandoning its professional academic roots. It is particularly applied to highlight important regional or thematic keywords, such as "Bahia".
 
 **Steel Blue** (#719CB8) acts as a secondary structural color, specifically reserved for content grouping and the signature left-border accent on researcher profiles. The neutral palette uses high-contrast whites for reading surfaces and subtle grays for background containment, ensuring technical data remains the focal point without visual fatigue.
 
@@ -188,5 +190,9 @@ The central interface component. Cards feature a white background, 12px roundedn
 ### Inputs & Fields
 Inputs maintain an 8px radius and a 40px standard height. Labels are positioned externally above the field in Label-md weight. 
 
+### Highlights & Hero Elements
+Text highlights in the hero section utilize the **Strong Blue to Red Gradient** (`bg-gradient-to-r from-blue-700 to-red-600`) with transparent text clip to create dynamic focal points on critical words without disrupting the layout.
+
 ### Indicators & Badges
-Numerical indicators (e.g., publication counts) use a light Steel Blue background with Deep Navy text to ensure high legibility within the data grid.
+Numerical indicators (e.g., publication counts) use a light Steel Blue background with Deep Navy text to ensure high legibility within the data grid. 
+Special thematic badges (e.g., "CT&I" highlights) feature a strong blue background with white text, complemented by a **bottom border break in red** (`border-b-[3px] border-red-600`) to provide sharp, energetic contrast while maintaining a structured pill shape.
