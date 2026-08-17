@@ -12,6 +12,8 @@ import {
 import FeaturedResearchers from './FeaturedResearchers';
 import HeroMetricCards from './HeroMetricCards';
 import { useHomeQuantitativeData } from '../hooks/useHomeQuantitativeData';
+import { useSimccWordCloud } from '../hooks/useSimccWordCloud';
+import { SimccWordCloud } from './ui/SimccWordCloud';
 import { getSecondWordSuggestions } from '../services/homeService';
 import { SIMCC_SEARCH_TYPES, type SimccSearchType } from '../constants/simccSearch';
 
@@ -20,6 +22,7 @@ export default function InitialHome() {
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
   const { data: quantData, isLoading: quantLoading } = useHomeQuantitativeData();
+  const { data: wordCloudData = [], isLoading: wordCloudLoading, isError: wordCloudError } = useSimccWordCloud();
 
   // Estados de UI e Navegação
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,8 +54,7 @@ export default function InitialHome() {
     setIsTypeDropdownOpen(false);
   };
 
-  const handleWordCloudClick = (e: React.MouseEvent, term: string) => {
-    e.stopPropagation();
+  const handleWordCloudClick = (term: string) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
       const url = `https://simcc.uesc.br/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
@@ -360,43 +362,12 @@ export default function InitialHome() {
                       <span className="text-[11px] font-semibold text-slate-400 tracking-wide mt-1">Busque por pesquisadores ou explore a nuvem de palavras</span>
                     </div>
 
-                    <div className="flex-grow relative w-full h-full min-h-[250px] select-none z-10 overflow-hidden font-sans">
-                      {/* Centro da Nuvem */}
-                      <div
-                        onClick={(e) => handleWordCloudClick(e, 'Bahia')}
-                        className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
-                        title="Buscar artigos sobre Bahia"
-                      >
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600 font-extrabold text-[42px] leading-none tracking-tight">Bahia</span>
-                      </div>
-
-                      {/* Palavras da Nuvem ajustadas para o container vertical */}
-                      <span onClick={(e) => handleWordCloudClick(e, 'Brasil')} className="absolute top-[18%] left-[20%] text-[#0f4c64] font-bold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Brasil</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Educação')} className="absolute top-[20%] right-[10%] text-[#0f4c64] font-extrabold text-2xl -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Educacao</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Saúde')} className="absolute bottom-[40%] left-[10%] text-[#0f4c64] font-bold text-xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Saude</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Ensino')} className="absolute bottom-[35%] right-[25%] text-slate-400 font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Ensino</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Social')} className="absolute bottom-[20%] left-[25%] text-[#0f4c64] font-bold text-base cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Social</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Análise')} className="absolute top-[60%] left-[30%] text-[#0f4c64] font-bold text-2xl cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Analise</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Estudo')} className="absolute top-[28%] left-[45%] text-slate-400 font-bold text-sm cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Estudo</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Produção')} className="absolute bottom-[25%] right-[15%] text-[#0f4c64] font-extrabold text-lg cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Producao</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Estado')} className="absolute top-[35%] left-[5%] text-[#0f4c64] font-bold text-sm -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Estado</span>
-                      <span onClick={(e) => handleWordCloudClick(e, 'Experiência')} className="absolute top-[70%] left-[10%] text-slate-400 font-medium text-xs -rotate-90 cursor-pointer hover:text-blue-600 hover:scale-110 transition-all">Experiencia</span>
+                    <div className="flex-1 w-full flex items-center justify-center p-2 z-10 relative">
+                      <SimccWordCloud words={wordCloudData} isLoading={wordCloudLoading} isError={wordCloudError} onWordClick={handleWordCloudClick} />
                     </div>
 
-                    {/* Barra de Pesquisa Fixa no Fundo */}
-                    <div
-                      className="mt-auto p-4 sm:p-6 z-30 bg-gradient-to-t from-white via-white to-transparent pt-8"
-                      onClick={() => setIsSimccModalOpen(true)}
-                    >
-                      <div className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between gap-2 border-2 border-blue-500 shadow-lg cursor-pointer hover:bg-blue-50/50 transition-all">
-                        <div className="flex items-center gap-2.5 overflow-hidden">
-                          <span className="material-symbols-outlined text-blue-600 text-[20px]">search</span>
-                          <span className="text-sm font-medium text-slate-700 select-none truncate">Pesquisar...</span>
-                        </div>
-                        <span className="material-symbols-outlined text-blue-600 text-[18px]">arrow_forward</span>
-                      </div>
-                    </div>
                   </div>
+
                 </div>
               )}
 
@@ -608,7 +579,7 @@ export default function InitialHome() {
                 <div
                   key={inst.id}
                   // 👇 NAVEGAÇÃO LOCAL PARA O MÓDULO DA INSTITUIÇÃO APLICADA AQUI 👇
-                  onClick={() => navigate(`/instituicao/${inst.id}`)}
+                  onClick={() => window.open(`https://simcc.uesc.br/instituicao/${inst.sigla}`, '_blank')}
                   className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                 >
                   <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />

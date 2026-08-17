@@ -15,7 +15,7 @@ if (typeof Highcharts === 'object' && typeof wordCloudModule === 'function') {
 }
 
 
-export function SimccWordCloud({ words = [], isLoading = false, isError = false }) {
+export function SimccWordCloud({ words = [], isLoading = false, isError = false, onWordClick }) {
   if (isLoading) {
     return (
       <div className="h-[300px] w-full flex flex-col items-center justify-center gap-3 text-outline">
@@ -49,27 +49,39 @@ export function SimccWordCloud({ words = [], isLoading = false, isError = false 
     series: [
       {
         type: 'wordcloud',
+        name: 'Ocorrências',
         data: words.map((word) => ({
           name: word.term,
           weight: word.among,
         })),
         style: {
           fontFamily: 'Ubuntu, sans-serif',
+          fontWeight: '700',
         },
       },
     ],
     title: {
       text: '',
     },
+    tooltip: {
+      pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.weight}</b><br/>'
+    },
     plotOptions: {
       wordcloud: {
-        borderRadius: 3,
-        borderWidth: "1px",
-        borderColor: 'blue',
-        BackgroundColor: 'red',
-        colors: ['#9CBCCE', '#284B5D', '#709CB6'],
+        colors: ['#559FB8', '#024A60', '#719CB8', '#07677E'],
         minFontSize: 8,
         maxFontSize: 22,
+        cursor: 'pointer',
+        point: {
+          events: {
+            click: function (e) {
+              if (onWordClick) {
+                if (e && e.stopPropagation) e.stopPropagation();
+                onWordClick(this.name);
+              }
+            }
+          }
+        }
       },
     },
   };

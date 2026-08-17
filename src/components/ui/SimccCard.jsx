@@ -15,6 +15,14 @@ export function SimccCard({ module }) {
     console.log('SIMCC Search:', text);
   };
 
+  const handleWordCloudClick = (term) => {
+    if (term && term.trim()) {
+      const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
+      const url = `https://simcc.uesc.br/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -87,7 +95,7 @@ export function SimccCard({ module }) {
 
       {/* Highcharts Word Cloud Container (Fixed height 300px to ensure card does not expand infinitely) */}
       <div className="relative z-10 w-full flex-grow flex items-center justify-center my-1">
-        <SimccWordCloud words={words} isLoading={isLoading} isError={isError} />
+        <SimccWordCloud words={words} isLoading={isLoading} isError={isError} onWordClick={handleWordCloudClick} />
       </div>
 
       {/* Bottom Search Bar Trigger & Centered Search Component */}
