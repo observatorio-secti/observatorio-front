@@ -1,9 +1,9 @@
 // src/constants/home-links.ts
 
 export const quickAccessLinks = [
-  { to: 'http://simcc.uesc.br/grupos-pesquisa/indicadores', title: 'Indicadores' },
-  { to: 'http://simcc.uesc.br/grupos-pesquisa/grupos-pesquisa', title: 'Grupos de Pesquisa' },
-  { to: 'http://simcc.uesc.br/grupos-pesquisa/listagens?tab=bolsistas', title: 'Bolsistas' },
+  { to: 'https://observatoriocti.secti.ba.gov.br/simcc/grupos-pesquisa/indicadores', title: 'Indicadores' },
+  { to: 'https://observatoriocti.secti.ba.gov.br/simcc/grupos-pesquisa/grupos-pesquisa', title: 'Grupos de Pesquisa' },
+  { to: 'https://observatoriocti.secti.ba.gov.br/simcc/grupos-pesquisa/listagens?tab=bolsistas', title: 'Bolsistas' },
 ];
 
 export const instituicoes = [

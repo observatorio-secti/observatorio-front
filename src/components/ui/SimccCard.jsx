@@ -18,7 +18,7 @@ export function SimccCard({ module }) {
   const handleWordCloudClick = (term) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
-      const url = `https://simcc.uesc.br/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
+      const url = `https://observatoriocti.secti.ba.gov.br/simcc/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
       window.open(url, '_blank');
     }
   };

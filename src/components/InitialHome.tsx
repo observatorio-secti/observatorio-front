@@ -47,7 +47,7 @@ export default function InitialHome() {
   const handleSubmitSimcc = (term: string, type: SimccSearchType = selectedSearchType) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
-      const url = `https://simcc.uesc.br/resultados?type_search=${type.type_search}&terms=${encodeURIComponent(cleanTerm)}`;
+      const url = `https://observatoriocti.secti.ba.gov.br/simcc/resultados?type_search=${type.type_search}&terms=${encodeURIComponent(cleanTerm)}`;
       window.open(url, '_blank');
     }
     setIsSimccModalOpen(false);
@@ -57,7 +57,7 @@ export default function InitialHome() {
   const handleWordCloudClick = (term: string) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
-      const url = `https://simcc.uesc.br/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
+      const url = `https://observatoriocti.secti.ba.gov.br/simcc/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
       window.open(url, '_blank');
     }
   };
@@ -289,7 +289,7 @@ export default function InitialHome() {
 
                     {/* 1. Módulo Principal da Aba (SIMCC) */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <img src="/LOGO-SIMCC.svg" alt="SIMCC" className="h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
@@ -298,7 +298,7 @@ export default function InitialHome() {
 
                     {/* 2. Indicadores Institucionais e Pós-graduação */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/indicadores')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/indicadores')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -309,7 +309,7 @@ export default function InitialHome() {
 
                     {/* 3. Programas de Pós-Graduação */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/pos-graduacao')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/pos-graduacao')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -320,7 +320,7 @@ export default function InitialHome() {
 
                     {/* 4. Produção Técnica e Inovação */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/listagens?tab=patent')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/listagens?tab=patent')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -331,7 +331,7 @@ export default function InitialHome() {
 
                     {/* 5. Grupos de Pesquisa */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/grupos-pesquisa')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/grupos-pesquisa')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -342,7 +342,7 @@ export default function InitialHome() {
 
                     {/* 6. Bolsistas de Produtividade */}
                     <div
-                      onClick={() => handleModuleClick('http://simcc.uesc.br/listagens?tab=bolsistas')}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/listagens?tab=bolsistas')}
                       className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                     >
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -481,7 +481,7 @@ export default function InitialHome() {
 
                   {/* 1. Módulo Principal da Aba (INCITE) */}
                   <div
-                    onClick={() => handleModuleClick('http://simcc.uesc.br/incites')}
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/incites')}
                     className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                   >
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -579,7 +579,7 @@ export default function InitialHome() {
                 <div
                   key={inst.id}
                   // 👇 NAVEGAÇÃO LOCAL PARA O MÓDULO DA INSTITUIÇÃO APLICADA AQUI 👇
-                  onClick={() => window.open(`https://simcc.uesc.br/instituicao/${inst.sigla}`, '_blank')}
+                  onClick={() => window.open(`https://observatoriocti.secti.ba.gov.br/simcc/instituicao/${inst.sigla}`, '_blank')}
                   className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                 >
                   <img src={`/university-logo/LOGO-${inst.sigla}.png`} alt={`Logo ${inst.sigla}`} className="inst-logo h-16 md:h-20 w-auto object-contain mb-4 group-hover:scale-110 transition-transform duration-500" />
