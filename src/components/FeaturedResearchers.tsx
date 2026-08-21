@@ -115,12 +115,17 @@ export default function FeaturedResearchers({
                   const badgeColor = isDT ? 'bg-orange-500' : 'bg-blue-600';
                   const areas = researcher.area ? researcher.area.split(';').slice(0, 2) : [];
 
+                  const lattesId = researcher.lattes_id || researcher.id;
+                  const profileUrl = `https://observatoriocti.secti.ba.gov.br/researcher?lattes_id=${lattesId}`;
+
                   return (
-                    <div
+                    <a
                       key={`${researcher.id}-${index}`}
-                      className="w-[260px] h-[360px] flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10"
-                    // TODO: Adicionar navegação para o perfil do pesquisador ao clicar
-                    // onClick={() => navigate(`/pesquisador/${researcher.id}`)}
+                      href={profileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[260px] h-[360px] flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10 block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label={`Ver perfil de ${researcher.name} no SIMCC`}
                     >
                       {/* Foto de Fundo */}
                       <img
@@ -169,7 +174,7 @@ export default function FeaturedResearchers({
                           </div>
                         )}
                       </div>
-                    </div>
+                    </a>
                   );
                 })}
               </div>

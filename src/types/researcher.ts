@@ -4,6 +4,7 @@ export interface Bolsista {
 
 export interface Researcher {
   id: string;
+  lattes_id?: string;
   name: string;
   university: string;
   area: string;
@@ -11,3 +12,4 @@ export interface Researcher {
   graduation: string;
   subsidy?: Bolsista[];
 }
+
