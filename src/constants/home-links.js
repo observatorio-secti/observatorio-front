@@ -1,4 +1,4 @@
-// src/constants/home-links.ts
+// src/constants/home-links.js
 
 export const quickAccessLinks = [
   { to: 'https://observatoriocti.secti.ba.gov.br/simcc/grupos-pesquisa/indicadores', title: 'Indicadores' },
@@ -28,7 +28,7 @@ export const categoriasAbas = [
   { value: 'Privadas' },
 ];
 
-export const filtrarInstituicoes = (categoriaAba: string) => {
+export const filtrarInstituicoes = (categoriaAba) => {
   if (categoriaAba === 'Todas') return instituicoes;
   return instituicoes.filter((inst) => inst.categoria === categoriaAba);
 };

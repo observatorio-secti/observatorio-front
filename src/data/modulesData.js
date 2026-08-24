@@ -1,4 +1,4 @@
-// src/data/modulesData.ts
+// src/data/modulesData.js
 
 export const modulesData = [
   {

@@ -1,15 +1,8 @@
-import type { HomeQuantData } from '../types/home';
-
-interface DadosDestaqueSectionProps {
-  data?: HomeQuantData | null;
-  loading?: boolean;
-}
-
-export function DadosDestaqueSection({ data, loading = false }: DadosDestaqueSectionProps) {
+export function DadosDestaqueSection({ data, loading = false }) {
   if (loading || !data) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-28 bg-slate-100 animate-pulse rounded-[20px]"></div>
         ))}
       </div>

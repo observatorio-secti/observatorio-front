@@ -1,18 +1,7 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { GraduationCap, MapPin } from 'lucide-react';
 import { useFeaturedResearchers } from '../hooks/useFeaturedResearchers';
 import { getResearcherImageUrl } from '../services/researcherService';
-import type { Researcher, Bolsista } from '../types/researcher';
-
-export type { Researcher, Bolsista };
-
-export interface FeaturedResearchersProps {
-  apiBaseUrl?: string;
-  maxItems?: number;
-  direction?: 'left' | 'right';
-  speed?: 'fast' | 'normal' | 'slow';
-  pauseOnHover?: boolean;
-}
 
 export default function FeaturedResearchers({
   apiBaseUrl,
@@ -20,9 +9,9 @@ export default function FeaturedResearchers({
   direction = 'left',
   speed = 'normal',
   pauseOnHover = true,
-}: FeaturedResearchersProps) {
+}) {
   const { data: researchers = [], isLoading, isError } = useFeaturedResearchers(maxItems);
-  const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef(null);
 
   // Configuração da velocidade da animação CSS
   const getSpeedDuration = () => {
@@ -37,7 +26,7 @@ export default function FeaturedResearchers({
   const animationDirection = direction === 'left' ? 'forwards' : 'reverse';
 
   // Fallback se erro de imagem
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleImageError = (e) => {
     e.currentTarget.style.display = 'none';
     e.currentTarget.parentElement?.classList.add('bg-slate-800'); // Fundo escuro alternativo
   };

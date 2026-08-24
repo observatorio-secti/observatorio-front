@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSimccWordCloud } from '@/hooks/useSimccWordCloud';
@@ -93,7 +92,7 @@ export function SimccCard({ module }) {
         </a>
       </div>
 
-      {/* Highcharts Word Cloud Container (Fixed height 300px to ensure card does not expand infinitely) */}
+      {/* Word Cloud Container */}
       <div className="relative z-10 w-full flex-grow flex items-center justify-center my-1">
         <SimccWordCloud words={words} isLoading={isLoading} isError={isError} onWordClick={handleWordCloudClick} />
       </div>
