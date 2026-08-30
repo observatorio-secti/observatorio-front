@@ -546,7 +546,7 @@ export default function InitialHome() {
               </div>
 
               <button
-                onClick={() => handleModuleClick(instituicoesVerTodas.to)}
+                onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/instituicao')}
                 className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors pb-2"
               >
                 Ver todas <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
