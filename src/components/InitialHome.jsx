@@ -496,7 +496,7 @@ export default function InitialHome() {
 
                   {/* 2. INCITE Indústria 4.0 */}
                   <div
-                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/industria4/')}
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/incite/industria4/')}
                     className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                   >
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -507,7 +507,7 @@ export default function InitialHome() {
 
                   {/* 3. INCITE Agricultura Familiar */}
                   <div
-                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/agricultura-familiar/')}
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/incite/agricultura-familiar')}
                     className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                   >
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
