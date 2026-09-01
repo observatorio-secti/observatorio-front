@@ -548,13 +548,6 @@ export default function InitialHome() {
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
                 <p className="text-base text-slate-500">Acesse os dados e produções de cada instituição participante.</p>
               </div>
-
-              <button
-                onClick={() => handleModuleClick(instituicoesVerTodas.to)}
-                className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors pb-2"
-              >
-                Ver todas <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </button>
             </div>
 
             {/* Menu de Abas das Instituições COM LINHA DE SEPARAÇÃO E FLEX-WRAP (sem barra de scroll) */}
