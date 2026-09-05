@@ -1,11 +1,4 @@
-export interface SimccSearchType {
-  id: string;
-  label: string;
-  color: string;
-  type_search: string;
-}
-
-export const SIMCC_SEARCH_TYPES: SimccSearchType[] = [
+export const SIMCC_SEARCH_TYPES = [
   { id: 'todos', label: 'Todos os tipos', color: '#94A3B8', type_search: 'article' },
   { id: 'artigos', label: 'Artigos', color: '#3B82F6', type_search: 'article' },
   { id: 'livros', label: 'Livros e capítulos', color: '#EC4899', type_search: 'book' },

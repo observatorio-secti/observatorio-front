@@ -1,7 +1,6 @@
-// src/components/InitialHome.tsx
+// src/components/InitialHome.jsx
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import {
   instituicoes,
@@ -15,10 +14,9 @@ import { useHomeQuantitativeData } from '../hooks/useHomeQuantitativeData';
 import { useSimccWordCloud } from '../hooks/useSimccWordCloud';
 import { SimccWordCloud } from './ui/SimccWordCloud';
 import { getSecondWordSuggestions } from '../services/homeService';
-import { SIMCC_SEARCH_TYPES, type SimccSearchType } from '../constants/simccSearch';
+import { SIMCC_SEARCH_TYPES } from '../constants/simccSearch';
 
 export default function InitialHome() {
-  const navigate = useNavigate();
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
   const { data: quantData, isLoading: quantLoading } = useHomeQuantitativeData();
@@ -37,14 +35,14 @@ export default function InitialHome() {
   // Estado e handler da busca SIMCC
   const [isSimccModalOpen, setIsSimccModalOpen] = useState(false);
   const [simccSearchQuery, setSimccSearchQuery] = useState('');
-  const [selectedSearchType, setSelectedSearchType] = useState<SimccSearchType>(SIMCC_SEARCH_TYPES[0]);
+  const [selectedSearchType, setSelectedSearchType] = useState(SIMCC_SEARCH_TYPES[0]);
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
 
   // Autocompletar da API secondWord
-  const [secondWordSuggestions, setSecondWordSuggestions] = useState<Array<{ word: string; freq: number }>>([]);
+  const [secondWordSuggestions, setSecondWordSuggestions] = useState([]);
   const [isSecondWordLoading, setIsSecondWordLoading] = useState(false);
 
-  const handleSubmitSimcc = (term: string, type: SimccSearchType = selectedSearchType) => {
+  const handleSubmitSimcc = (term, type = selectedSearchType) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
       const url = `https://observatoriocti.secti.ba.gov.br/simcc/resultados?type_search=${type.type_search}&terms=${encodeURIComponent(cleanTerm)}`;
@@ -54,7 +52,7 @@ export default function InitialHome() {
     setIsTypeDropdownOpen(false);
   };
 
-  const handleWordCloudClick = (term: string) => {
+  const handleWordCloudClick = (term) => {
     if (term && term.trim()) {
       const cleanTerm = term.trim().replace(/[?.,!;:]/g, '');
       const url = `https://observatoriocti.secti.ba.gov.br/simcc/resultados?type_search=article&terms=${encodeURIComponent(cleanTerm)}`;
@@ -77,7 +75,7 @@ export default function InitialHome() {
       getSecondWordSuggestions(query, controller.signal)
         .then((data) => {
           if (Array.isArray(data)) {
-            const frequencyMap = new Map<string, number>();
+            const frequencyMap = new Map();
             data.forEach((item) => {
               const normalized = item.word ? item.word.replace(/[?.,!;:]/g, '').trim().toLowerCase() : '';
               if (normalized) {
@@ -110,7 +108,7 @@ export default function InitialHome() {
   }, [simccSearchQuery]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isSimccModalOpen) {
         setIsSimccModalOpen(false);
         setIsTypeDropdownOpen(false);
@@ -126,8 +124,8 @@ export default function InitialHome() {
   const [isHighContrast, setIsHighContrast] = useState(false);
 
   const toggleHighContrast = () => setIsHighContrast(!isHighContrast);
-  const increaseText = () => setFontSize(prev => (prev < 150 ? prev + 10 : prev));
-  const decreaseText = () => setFontSize(prev => (prev > 80 ? prev - 10 : prev));
+  const increaseText = () => setFontSize((prev) => (prev < 150 ? prev + 10 : prev));
+  const decreaseText = () => setFontSize((prev) => (prev > 80 ? prev - 10 : prev));
   const resetText = () => setFontSize(100);
 
   useEffect(() => {
@@ -151,7 +149,7 @@ export default function InitialHome() {
     return () => sections.forEach((sec) => observer.unobserve(sec));
   }, []);
 
-  const scrollToSection = (e: React.MouseEvent<HTMLElement>, id: string) => {
+  const scrollToSection = (e, id) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
@@ -160,11 +158,9 @@ export default function InitialHome() {
     }
   };
 
-  const handleModuleClick = (link: string) => {
-    if (link.startsWith('http')) {
-      window.location.href = link;
-    } else {
-      navigate(link);
+  const handleModuleClick = (link) => {
+    if (link) {
+      window.open(link, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -197,7 +193,15 @@ export default function InitialHome() {
           <div className="flex justify-between items-center w-full px-6 md:px-12 h-full max-w-[1400px] mx-auto mt-[1px]">
             <div className="flex items-center h-full gap-4 md:gap-6">
               <div className="hidden md:flex items-center gap-2 border-r border-gray-200 pr-4 md:pr-6 h-10">
-                <img src="/ESTADO-BAHIA.svg" alt="Apoio Estado" className="h-8 md:h-10 w-auto object-contain" />
+                <a
+                  href="https://www.ba.gov.br/secti/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity flex items-center h-full cursor-pointer"
+                  title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+                >
+                  <img src="/ESTADO-BAHIA.svg" alt="SECTI - Governo do Estado da Bahia" className="h-8 md:h-10 w-auto object-contain" />
+                </a>
               </div>
               <a className="flex items-center h-full py-0 gap-3" href="#" onClick={(e) => scrollToSection(e, 'sobre')}>
                 <img alt="Símbolo Observatório" className="h-9 md:h-10 w-auto object-contain z-10 relative" src="/LOGO.png" />
@@ -557,10 +561,10 @@ export default function InitialHome() {
             <div className="flex items-center gap-6 md:gap-8 flex-wrap border-b border-gray-200 mb-6 w-full">
               {[
                 { name: 'Todas', count: instituicoes.length, icon: 'account_balance' },
-                { name: 'Federais', count: instituicoes.filter(i => i.categoria === 'Federais').length, icon: 'account_balance' },
-                { name: 'Estaduais', count: instituicoes.filter(i => i.categoria === 'Estaduais').length, icon: 'account_balance' },
-                { name: 'Institutos', count: instituicoes.filter(i => i.categoria === 'Institutos').length, icon: 'business' },
-                { name: 'Privadas', count: instituicoes.filter(i => i.categoria === 'Privadas').length, icon: 'domain' }
+                { name: 'Federais', count: instituicoes.filter((i) => i.categoria === 'Federais').length, icon: 'account_balance' },
+                { name: 'Estaduais', count: instituicoes.filter((i) => i.categoria === 'Estaduais').length, icon: 'account_balance' },
+                { name: 'Institutos', count: instituicoes.filter((i) => i.categoria === 'Institutos').length, icon: 'business' },
+                { name: 'Privadas', count: instituicoes.filter((i) => i.categoria === 'Privadas').length, icon: 'domain' }
               ].map((tab) => (
                 <button
                   key={tab.name}

@@ -1,15 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { getOutstandingResearchers } from '../services/researcherService';
-import type { Researcher } from '../types/researcher';
-
-export type * from '../types/researcher';
 
 /**
  * Hook para buscar pesquisadores em destaque utilizando React Query e Axios
- * @param maxItems Quantidade máxima de pesquisadores a retornar após embaralhar
+ * @param {number} maxItems Quantidade máxima de pesquisadores a retornar após embaralhar
  */
-export function useFeaturedResearchers(maxItems: number = 30) {
-  return useQuery<Researcher[]>({
+export function useFeaturedResearchers(maxItems = 30) {
+  return useQuery({
     queryKey: ['featuredResearchers', maxItems],
     queryFn: async () => {
       const data = await getOutstandingResearchers();

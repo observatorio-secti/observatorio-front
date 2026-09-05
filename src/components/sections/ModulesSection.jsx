@@ -1,4 +1,3 @@
-import React from 'react';
 import { modulesData } from '@/data/modulesData';
 import { BentoCard } from '@/components/ui/BentoCard';
 

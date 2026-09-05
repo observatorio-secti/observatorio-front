@@ -1,11 +1,4 @@
-import type { HomeQuantData } from '../types/home';
-
-interface HeroMetricCardsProps {
-  data?: HomeQuantData | null;
-  loading?: boolean;
-}
-
-export function HeroMetricCards({ data, loading = false }: HeroMetricCardsProps) {
+export function HeroMetricCards({ data, loading = false }) {
   // Skeleton quando carregando
   if (loading || !data) {
     return (

@@ -88,21 +88,37 @@ export function Header() {
           <div className="h-6 w-px bg-outline-variant/60 shrink-0" aria-hidden="true" />
 
           <div className="flex items-center gap-2.5 shrink-0">
-            <img
-              src="/ESTADO-BAHIA.svg"
-              alt="Governo do Estado da Bahia"
-              className="h-12 w-auto object-contain"
-            />
+            <a
+              href="https://www.ba.gov.br/secti/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity flex items-center cursor-pointer"
+              title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+            >
+              <img
+                src="/ESTADO-BAHIA.svg"
+                alt="SECTI - Governo do Estado da Bahia"
+                className="h-12 w-auto object-contain"
+              />
+            </a>
           </div>
         </div>
 
         <div className="flex items-center gap-3 md:hidden">
           <div className="flex items-center gap-1.5 shrink-0">
-            <img
-              src="/ESTADO-BAHIA.svg"
-              alt="Governo do Estado da Bahia"
-              className="h-6 w-auto object-contain"
-            />
+            <a
+              href="https://www.ba.gov.br/secti/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity flex items-center cursor-pointer"
+              title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+            >
+              <img
+                src="/ESTADO-BAHIA.svg"
+                alt="SECTI - Governo do Estado da Bahia"
+                className="h-6 w-auto object-contain"
+              />
+            </a>
           </div>
           <button
             type="button"
@@ -134,11 +150,19 @@ export function Header() {
             </a>
           ))}
           <div className="pt-3 border-t border-outline-variant/60 flex items-center justify-between">
-            <img
-              src="/ESTADO-BAHIA.svg"
-              alt="Governo do Estado da Bahia"
-              className="h-7 w-auto object-contain"
-            />
+            <a
+              href="https://www.ba.gov.br/secti/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity flex items-center cursor-pointer"
+              title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+            >
+              <img
+                src="/ESTADO-BAHIA.svg"
+                alt="SECTI - Governo do Estado da Bahia"
+                className="h-7 w-auto object-contain"
+              />
+            </a>
           </div>
         </div>
       )}

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { institutionsData } from '@/data/institutionsData';
 import { InstitutionCard } from '@/components/ui/InstitutionCard';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Landmark, GraduationCap, Building2, Award, Building, ArrowRight } from 'lucide-react';
+import { Landmark, GraduationCap, Building2, Award, Building } from 'lucide-react';
 
 const CATEGORIES = [
   { id: 'todas', label: 'Todas', icon: Landmark },

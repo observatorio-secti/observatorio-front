@@ -1,18 +1,7 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { GraduationCap, MapPin } from 'lucide-react';
 import { useFeaturedResearchers } from '../hooks/useFeaturedResearchers';
 import { getResearcherImageUrl } from '../services/researcherService';
-import type { Researcher, Bolsista } from '../types/researcher';
-
-export type { Researcher, Bolsista };
-
-export interface FeaturedResearchersProps {
-  apiBaseUrl?: string;
-  maxItems?: number;
-  direction?: 'left' | 'right';
-  speed?: 'fast' | 'normal' | 'slow';
-  pauseOnHover?: boolean;
-}
 
 export default function FeaturedResearchers({
   apiBaseUrl,
@@ -20,9 +9,9 @@ export default function FeaturedResearchers({
   direction = 'left',
   speed = 'normal',
   pauseOnHover = true,
-}: FeaturedResearchersProps) {
+}) {
   const { data: researchers = [], isLoading, isError } = useFeaturedResearchers(maxItems);
-  const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef(null);
 
   // Configuração da velocidade da animação CSS
   const getSpeedDuration = () => {
@@ -37,7 +26,7 @@ export default function FeaturedResearchers({
   const animationDirection = direction === 'left' ? 'forwards' : 'reverse';
 
   // Fallback se erro de imagem
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleImageError = (e) => {
     e.currentTarget.style.display = 'none';
     e.currentTarget.parentElement?.classList.add('bg-slate-800'); // Fundo escuro alternativo
   };
@@ -115,12 +104,17 @@ export default function FeaturedResearchers({
                   const badgeColor = isDT ? 'bg-orange-500' : 'bg-blue-600';
                   const areas = researcher.area ? researcher.area.split(';').slice(0, 2) : [];
 
+                  const lattesId = researcher.lattes_id || researcher.id;
+                  const profileUrl = `https://observatoriocti.secti.ba.gov.br/researcher?lattes_id=${lattesId}`;
+
                   return (
-                    <div
+                    <a
                       key={`${researcher.id}-${index}`}
-                      className="w-[260px] h-[360px] flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10"
-                    // TODO: Adicionar navegação para o perfil do pesquisador ao clicar
-                    // onClick={() => navigate(`/pesquisador/${researcher.id}`)}
+                      href={profileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[260px] h-[360px] flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10 block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label={`Ver perfil de ${researcher.name} no SIMCC`}
                     >
                       {/* Foto de Fundo */}
                       <img
@@ -169,7 +163,7 @@ export default function FeaturedResearchers({
                           </div>
                         )}
                       </div>
-                    </div>
+                    </a>
                   );
                 })}
               </div>

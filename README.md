@@ -73,3 +73,4 @@ export default defineConfig([
 ])
 
 ```
+docker build --output dist .
