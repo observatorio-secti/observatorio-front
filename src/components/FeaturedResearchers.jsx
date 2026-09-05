@@ -65,7 +65,7 @@ export default function FeaturedResearchers({
 
           <div className="flex flex-col justify-center z-10 w-full pl-4">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 leading-tight mb-4 tracking-tight">
-              Ciência<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">em Movimento</span>
+              Ciência <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">em Movimento</span>
             </h2>
             <p className="text-slate-500 text-sm md:text-base leading-relaxed">
               Pesquisadores da Bahia que atualizaram recentemente seus currículos Lattes. Acompanhe quem está produzindo conhecimento e mantenha um olhar atualizado sobre a ciência, tecnologia e inovação no estado.

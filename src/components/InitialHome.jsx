@@ -496,7 +496,7 @@ export default function InitialHome() {
 
                   {/* 2. INCITE Indústria 4.0 */}
                   <div
-                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/incite/industria4/')}
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/industria4/')}
                     className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                   >
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -507,7 +507,7 @@ export default function InitialHome() {
 
                   {/* 3. INCITE Agricultura Familiar */}
                   <div
-                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/incite/agricultura-familiar')}
+                    onClick={() => handleModuleClick('https://simcc.uesc.br/incite/agricultura-familiar/')}
                     className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
                   >
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
@@ -548,6 +548,13 @@ export default function InitialHome() {
                 <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Instituições integradas</h2>
                 <p className="text-base text-slate-500">Acesse os dados e produções de cada instituição participante.</p>
               </div>
+
+              <button
+                onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/simcc/instituicao')}
+                className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors pb-2"
+              >
+                Ver todas <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
             </div>
 
             {/* Menu de Abas das Instituições COM LINHA DE SEPARAÇÃO E FLEX-WRAP (sem barra de scroll) */}
