@@ -170,7 +170,7 @@ export default function InitialHome() {
     { name: 'Sistema de Mapeamento de Competências Científicas', label: 'Sistema de Mapeamento<br/>de Competências Científicas', icon: 'map' },
     { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
     { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
-    { name: 'Iniciativas de CT&I', label: 'Iniciativas<br/>de CT&I', icon: 'account_balance' }
+    { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' }
   ];
 
   return (
@@ -480,7 +480,7 @@ export default function InitialHome() {
                 </div>
               )}
 
-              {activeModuleTab === 'Iniciativas de CT&I' && (
+              {activeModuleTab === 'Institutos de CT&I' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-fr">
 
                   {/* 1. Módulo Principal da Aba (INCITE) */}
@@ -491,7 +491,7 @@ export default function InitialHome() {
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
                       <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">account_balance</span>
                     </div>
-                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Iniciativas de<br />CT&I</p>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Institutos de<br />CT&I</p>
                   </div>
 
                   {/* 2. INCITE Indústria 4.0 */}
