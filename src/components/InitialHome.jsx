@@ -170,7 +170,8 @@ export default function InitialHome() {
     { name: 'Sistema de Mapeamento de Competências Científicas', label: 'Sistema de Mapeamento<br/>de Competências Científicas', icon: 'map' },
     { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
     { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
-    { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' }
+    { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' },
+    { name: 'Infográficos', label: 'Infográficos', icon: 'insert_chart' }
   ];
 
   const infograficos = [
@@ -178,37 +179,80 @@ export default function InitialHome() {
       id: 'ciencia-em-numeros',
       title: 'A ciência baiana em números',
       description: 'Um retrato do que a Bahia produz em conhecimento, pesquisa e inovação.',
+      highlights: [
+        { value: '+11 mil', label: 'pesquisadores ativos' },
+        { value: '156 mil', label: 'produções científicas registradas' },
+        { value: '1.429', label: 'grupos de pesquisa' },
+        { value: '192', label: 'programas de pós-graduação' },
+        { value: '410', label: 'bolsistas de produtividade' },
+        { value: '2.116', label: 'produções técnicas' }
+      ],
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
-      link: null,
-      download: null
+      image: '/infograficos/ciencia-em-numeros.png',
+      download: '/infograficos/ciencia-em-numeros.png'
     },
     {
       id: 'quanto-bahia-produz',
       title: 'Quanto a Bahia produz',
       description: 'Da produção científica à patente.',
+      highlights: [
+        { value: '+156 mil', label: 'produção científica' },
+        { value: '70.068', label: 'artigos científicos' },
+        { value: '48.726', label: 'trabalhos em eventos' },
+        { value: '2.116', label: 'produção técnica' },
+        { value: '377', label: 'depósitos de patentes' }
+      ],
       period: '(2021-2026)',
-      updatedAt: null,
-      link: null,
-      download: null
+      updatedAt: '31 ago 2026',
+      image: '/infograficos/quanto-bahia-produz.png',
+      download: '/infograficos/quanto-bahia-produz.png'
+    },
+    {
+      id: 'quem-faz-ciencia-aqui',
+      title: 'Quem faz ciência aqui',
+      description: 'A ciência baiana é feita por uma comunidade altamente qualificada.',
+      highlights: [
+        { value: '+11 mil', label: 'pesquisadores ativos na Bahia' },
+        { value: '71,7%', label: 'têm doutorado' },
+        { value: '8.244', label: 'doutores' },
+        { value: '2.100', label: 'mestres' },
+        { value: '844', label: 'especialistas' }
+      ],
+      period: '(2021-2026)',
+      updatedAt: '31 ago 2026',
+      image: '/infograficos/quem-faz-ciencia-aqui.png',
+      download: '/infograficos/quem-faz-ciencia-aqui.png'
     },
     {
       id: 'ciencia-que-vira-tecnologia',
       title: 'Ciência que vira tecnologia',
       description: 'Da pesquisa para a sociedade.',
+      highlights: [
+        { value: '2.116', label: 'produções técnicas registradas' },
+        { value: '1.031', label: 'relatórios técnicos' },
+        { value: '672', label: 'programas de computador' },
+        { value: '377', label: 'depósitos de patentes' },
+        { value: '36', label: 'registros de marcas' }
+      ],
       period: '(2021-2026)',
-      updatedAt: null,
-      link: null,
-      download: null
+      updatedAt: '31 ago 2026',
+      image: '/infograficos/ciencia-que-vira-tecnologia.png',
+      download: '/infograficos/ciencia-que-vira-tecnologia.png'
     },
     {
       id: 'excelencia-reconhecida',
       title: 'Excelência reconhecida',
       description: 'Talento baiano que transforma o futuro.',
+      highlights: [
+        { value: '410', label: 'pesquisadores com bolsa de produtividade' },
+        { value: '383', label: 'produtividade em pesquisa (PQ)' },
+        { value: '27', label: 'desenvolvimento tecnológico (DT)' }
+      ],
       period: '(2021-2026)',
-      updatedAt: null,
-      link: null,
-      download: null
+      updatedAt: '31 ago 2026',
+      image: '/infograficos/excelencia-reconhecida.png',
+      download: '/infograficos/excelencia-reconhecida.png'
     }
   ];
 
@@ -217,6 +261,31 @@ export default function InitialHome() {
   const currentInfographic = infograficos[activeInfographic];
   const prevInfographic = () => setActiveInfographic((prev) => (prev === 0 ? infograficos.length - 1 : prev - 1));
   const nextInfographic = () => setActiveInfographic((prev) => (prev === infograficos.length - 1 ? 0 : prev + 1));
+
+  // Lightbox de Infográficos (visualização em tela cheia)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxId, setLightboxId] = useState(null);
+  const lightboxItem = infograficos.find((item) => item.id === lightboxId);
+
+  const openLightbox = (id) => {
+    setLightboxId(id);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+    setLightboxId(null);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isLightboxOpen) {
+        closeLightbox();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen]);
 
   return (
     <>
@@ -260,7 +329,6 @@ export default function InitialHome() {
               <nav className="hidden md:flex items-center gap-8 h-full">
                 <a href="#sobre" onClick={(e) => scrollToSection(e, 'sobre')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'sobre' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Sobre</a>
                 <a href="#modulos" onClick={(e) => scrollToSection(e, 'modulos')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'modulos' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Módulos</a>
-                <a href="#infograficos" onClick={(e) => scrollToSection(e, 'infograficos')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'infograficos' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Infográficos</a>
                 <a href="#instituicoes" onClick={(e) => scrollToSection(e, 'instituicoes')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'instituicoes' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Instituições</a>
               </nav>
               <div className="flex items-center gap-4">
@@ -292,7 +360,7 @@ export default function InitialHome() {
                       Acessar Módulos <span className="material-symbols-outlined transition-transform group-hover:translate-y-1">arrow_downward</span>
                     </button>
                     <button
-                      onClick={(e) => scrollToSection(e, 'infograficos')}
+                      onClick={(e) => { setActiveModuleTab('Infográficos'); scrollToSection(e, 'modulos'); }}
                       className="bg-white hover:bg-blue-50/50 text-blue-700 border-2 border-blue-200 hover:border-blue-400 px-8 py-3 rounded-xl font-bold transition-all shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300"
                     >
                       Explorar infográficos <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
@@ -300,14 +368,12 @@ export default function InitialHome() {
                   </div>
 
                   <div
-                    onClick={(e) => scrollToSection(e, 'infograficos')}
+                    onClick={(e) => { setActiveModuleTab('Infográficos'); scrollToSection(e, 'modulos'); }}
                     className="mt-2 w-full max-w-[580px] bg-white border border-blue-100 shadow-md rounded-[20px] p-5 flex items-center gap-5 cursor-pointer group hover:shadow-lg hover:border-blue-400 hover:-translate-y-1 transition-all duration-300"
                   >
-                    <div className="relative shrink-0 w-36 sm:w-40 bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col items-center justify-center py-5 px-3">
-                      <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
-                      <span className="text-[8px] font-bold text-slate-500 text-center leading-tight">Observatório de CT&I da Bahia</span>
-                      <img src="/LOGO.png" alt="Observatório de CT&I da Bahia" className="h-8 w-auto object-contain my-2" />
-                      <span className="text-[9px] font-extrabold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">Em breve</span>
+                    <div className="relative shrink-0 w-36 sm:w-40 bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
+                      <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600 z-10"></div>
+                      <img src="/infograficos/ciencia-em-numeros.png" alt="Infográfico A ciência baiana em números" className="h-36 w-full object-cover object-top" />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                       <span className="text-[11px] font-bold text-blue-700 tracking-[0.15em] uppercase">Infográficos</span>
@@ -602,138 +668,107 @@ export default function InitialHome() {
                 </div>
               )}
 
-            </div>
-          </section>
-
-          {/* SEÇÃO DE INFOGRÁFICOS */}
-          <section id="infograficos" className="scroll-mt-16 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-6 border-t border-gray-100 bg-[#F8FAFC]">
-
-            <div className="flex flex-col gap-2">
-              <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Infográficos</h2>
-              <p className="text-base text-slate-500">Bahia em dados — indicadores que revelam a força da ciência, tecnologia e inovação no estado.</p>
-            </div>
-
-            {/* INFOGRÁFICO EM DESTAQUE */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
-
-              {/* Preview do infográfico */}
-              <div className="relative bg-white border border-gray-200 rounded-[20px] overflow-hidden flex items-center justify-center min-h-[360px] group hover:shadow-lg hover:border-blue-400 transition-all duration-300">
-                <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
-                <span className="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-blue-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                  <span className="material-symbols-outlined text-[14px]">star</span>
-                  EM DESTAQUE
-                </span>
-                <div className="flex flex-col items-center justify-center gap-4 px-8 text-center z-10">
-                  <img src="/LOGO.png" alt="Observatório de CT&I da Bahia" className="h-16 w-auto object-contain" />
-                  <span className="text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full">Em breve</span>
-                </div>
-              </div>
-
-              {/* Painel de detalhes */}
-              <div className="bg-white border border-blue-100 shadow-sm rounded-[20px] p-8 flex flex-col justify-between relative overflow-hidden min-h-[360px]">
-                <div className="bento-bg absolute inset-0 opacity-[0.06] pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-right-bottom bg-contain z-0"></div>
-
-                <div className="relative z-10 flex flex-col gap-3">
-                  <span className="text-[11px] font-bold text-slate-400 tracking-[0.15em] uppercase">Observatório de CT&I da Bahia</span>
-                  <h3 className="text-2xl md:text-[32px] md:leading-tight font-extrabold text-slate-800">{currentInfographic.title}</h3>
-                  <p className="text-base text-slate-500 leading-relaxed">{currentInfographic.description}</p>
-                  {currentInfographic.updatedAt && (
-                    <span className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-                      <span className="material-symbols-outlined text-[16px]">calendar_month</span>
-                      Atualizado em {currentInfographic.updatedAt}
-                    </span>
-                  )}
-                </div>
-
-                <div className="relative z-10 flex flex-col gap-6 mt-8">
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => currentInfographic.link && handleModuleClick(currentInfographic.link)}
-                      disabled={!currentInfographic.link}
-                      className="bg-blue-700 hover:bg-blue-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-md flex items-center gap-2"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">visibility</span>
-                      Explorar infográfico
-                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    </button>
-                    <button
-                      onClick={() => currentInfographic.download && handleModuleClick(currentInfographic.download)}
-                      disabled={!currentInfographic.download}
-                      className="bg-white hover:bg-blue-50 disabled:text-gray-300 disabled:cursor-not-allowed text-slate-700 border border-gray-200 px-6 py-3 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">download</span>
-                      Baixar
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={prevInfographic}
-                        className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-slate-500 hover:text-blue-700 hover:border-blue-300 transition-colors cursor-pointer"
-                        aria-label="Infográfico anterior"
-                      >
-                        <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-                      </button>
-                      <span className="text-sm font-bold text-slate-700 tabular-nums">{String(activeInfographic + 1).padStart(2, '0')} / {String(infograficos.length).padStart(2, '0')}</span>
-                      <button
-                        onClick={nextInfographic}
-                        className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-slate-500 hover:text-blue-700 hover:border-blue-300 transition-colors cursor-pointer"
-                        aria-label="Próximo infográfico"
-                      >
-                        <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {infograficos.map((item, index) => (
-                        <button
-                          key={item.id}
-                          onClick={() => setActiveInfographic(index)}
-                          className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${index === activeInfographic ? 'bg-blue-700' : 'bg-gray-200 hover:bg-gray-300'}`}
-                          aria-label={`Ir para ${item.title}`}
-                        ></button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* OUTROS INFOGRÁFICOS */}
-            <div className="flex flex-col gap-4 w-full">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <h3 className="text-xl font-bold text-slate-800">Outros infográficos</h3>
-                <button className="text-red-600 hover:text-red-700 hover:underline font-bold text-sm flex items-center gap-1 transition-colors">
-                  Ver todos <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-                {infograficos.slice(1).map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white border border-gray-200 rounded-[20px] p-5 flex flex-col gap-4 hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 group"
-                  >
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="relative shrink-0 w-24 bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col items-center justify-center py-3 px-1.5">
-                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
-                        <span className="text-[7px] font-bold text-slate-500 text-center leading-tight">Observatório de CT&I da Bahia</span>
-                        <img src="/LOGO.png" alt="" className="h-5 w-auto object-contain my-1" />
-                        <span className="text-[8px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">Em breve</span>
+              {activeModuleTab === 'Infográficos' && (
+                <div className="flex flex-col gap-4 w-full">
+                  {/* Mini visualizador */}
+                  <div className="bg-white border border-gray-200 rounded-[20px] overflow-hidden flex flex-col w-full">
+                    <div className="h-[4px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
+                    <div className="p-4 md:p-5 flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <h4 className="text-lg font-extrabold text-slate-800 leading-tight">{currentInfographic.title}</h4>
+                        <p className="text-sm text-slate-500 leading-snug">{currentInfographic.description}</p>
                       </div>
-                      <div className="flex flex-col gap-1 flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-slate-800 leading-tight">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-snug">{item.description}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+                        <img
+                          src={currentInfographic.image}
+                          alt={currentInfographic.title}
+                          className="w-full max-h-[380px] object-contain mx-auto rounded-xl border border-gray-100 bg-slate-50"
+                        />
+                        <div className="bg-slate-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-3">
+                          <span className="text-[11px] font-bold text-slate-400 tracking-[0.15em] uppercase">Resumo</span>
+                          <ul className="flex flex-col gap-2.5">
+                            {currentInfographic.highlights.map((item) => (
+                              <li key={item.label} className="flex items-baseline gap-2">
+                                <span className="text-lg font-extrabold text-blue-700 whitespace-nowrap">{item.value}</span>
+                                <span className="text-xs text-slate-500">{item.label}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          {currentInfographic.updatedAt && (
+                            <span className="flex items-center gap-1.5 text-xs text-slate-400 mt-auto pt-2">
+                              <span className="material-symbols-outlined text-[16px]">calendar_month</span>
+                              Atualizado em {currentInfographic.updatedAt}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => openLightbox(currentInfographic.id)}
+                            className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-bold text-xs transition-colors shadow-sm flex items-center gap-1.5"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">visibility</span>
+                            Explorar
+                          </button>
+                          <a
+                            href={currentInfographic.download || currentInfographic.image}
+                            download
+                            className="bg-white hover:bg-blue-50 text-slate-700 border border-gray-200 px-4 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">download</span>
+                            Baixar
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={prevInfographic}
+                            className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-slate-500 hover:text-blue-700 hover:border-blue-300 transition-colors cursor-pointer"
+                            aria-label="Infográfico anterior"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                          </button>
+                          <span className="text-xs font-bold text-slate-700 tabular-nums">{String(activeInfographic + 1).padStart(2, '0')} / {String(infograficos.length).padStart(2, '0')}</span>
+                          <button
+                            onClick={nextInfographic}
+                            className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-slate-500 hover:text-blue-700 hover:border-blue-300 transition-colors cursor-pointer"
+                            aria-label="Próximo infográfico"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {infograficos.map((item, index) => (
+                            <button
+                              key={item.id}
+                              onClick={() => setActiveInfographic(index)}
+                              className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${index === activeInfographic ? 'bg-blue-700' : 'bg-gray-200 hover:bg-gray-300'}`}
+                              aria-label={`Ir para ${item.title}`}
+                            ></button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex justify-end">
-                      <span className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-slate-500 group-hover:bg-blue-700 group-hover:text-white group-hover:border-blue-700 transition-all duration-300">
-                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                      </span>
-                    </div>
                   </div>
-                ))}
-              </div>
+
+                  {/* Mini grade dos 5 infográficos */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {infograficos.map((item, index) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setActiveInfographic(index)}
+                        className={`bg-white border-2 rounded-2xl p-3 flex flex-col gap-2 cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${index === activeInfographic ? 'border-blue-700 shadow-sm' : 'border-gray-200 hover:border-blue-300'}`}
+                      >
+                        <div className="w-full h-20 rounded-lg overflow-hidden border border-gray-100">
+                          <img src={item.image} alt={item.title} className="h-full w-full object-cover object-top" />
+                        </div>
+                        <span className={`text-[11px] font-bold text-center leading-tight ${index === activeInfographic ? 'text-blue-700' : 'text-slate-500'}`}>{item.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           </section>
 
@@ -863,6 +898,45 @@ export default function InitialHome() {
           </button>
         </div>
       </div>
+
+      {/* LIGHTBOX DE INFOGRÁFICO (TELA CHEIA) */}
+      {isLightboxOpen && lightboxItem && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200"
+          onClick={closeLightbox}
+        >
+          <div
+            className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col max-h-[92vh] overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                  <span className="material-symbols-outlined text-[20px]">insert_chart</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-sm text-slate-800 truncate">{lightboxItem.title}</span>
+                  <span className="text-[10px] text-slate-400">Observatório de CT&I da Bahia</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={closeLightbox}
+                  className="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                  aria-label="Fechar infográfico"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto bg-gray-50 flex justify-center p-4">
+              <img src={lightboxItem.image} alt={lightboxItem.title} className="max-w-full h-auto rounded-lg shadow-md" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL DE BUSCA CENTRALIZADO SIMCC */}
       {isSimccModalOpen && (
