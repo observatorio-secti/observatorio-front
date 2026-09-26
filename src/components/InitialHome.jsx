@@ -16,6 +16,30 @@ import { SimccWordCloud } from './ui/SimccWordCloud';
 import { getSecondWordSuggestions } from '../services/homeService';
 import { SIMCC_SEARCH_TYPES } from '../constants/simccSearch';
 
+function WhatsAppShareIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="#25D366" className={className} aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  );
+}
+
+function XShareIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="#000000" className={className} aria-hidden="true">
+      <path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z" />
+    </svg>
+  );
+}
+
+function FacebookShareIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="#0866FF" className={className} aria-hidden="true">
+      <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z" />
+    </svg>
+  );
+}
+
 export default function InitialHome() {
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
@@ -190,7 +214,8 @@ export default function InitialHome() {
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
       image: '/infograficos/ciencia-em-numeros.png',
-      download: '/infograficos/ciencia-em-numeros.png'
+      png: '/infograficos/ciencia-em-numeros.png',
+      pdf: '/infograficos/ciencia-em-numeros.pdf'
     },
     {
       id: 'quanto-bahia-produz',
@@ -206,7 +231,8 @@ export default function InitialHome() {
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
       image: '/infograficos/quanto-bahia-produz.png',
-      download: '/infograficos/quanto-bahia-produz.png'
+      png: '/infograficos/quanto-bahia-produz.png',
+      pdf: '/infograficos/quanto-bahia-produz.pdf'
     },
     {
       id: 'quem-faz-ciencia-aqui',
@@ -222,7 +248,8 @@ export default function InitialHome() {
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
       image: '/infograficos/quem-faz-ciencia-aqui.png',
-      download: '/infograficos/quem-faz-ciencia-aqui.png'
+      png: '/infograficos/quem-faz-ciencia-aqui.png',
+      pdf: '/infograficos/quem-faz-ciencia-aqui.pdf'
     },
     {
       id: 'ciencia-que-vira-tecnologia',
@@ -238,7 +265,8 @@ export default function InitialHome() {
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
       image: '/infograficos/ciencia-que-vira-tecnologia.png',
-      download: '/infograficos/ciencia-que-vira-tecnologia.png'
+      png: '/infograficos/ciencia-que-vira-tecnologia.png',
+      pdf: '/infograficos/ciencia-que-vira-tecnologia.pdf'
     },
     {
       id: 'excelencia-reconhecida',
@@ -252,7 +280,8 @@ export default function InitialHome() {
       period: '(2021-2026)',
       updatedAt: '31 ago 2026',
       image: '/infograficos/excelencia-reconhecida.png',
-      download: '/infograficos/excelencia-reconhecida.png'
+      png: '/infograficos/excelencia-reconhecida.png',
+      pdf: '/infograficos/excelencia-reconhecida.pdf'
     }
   ];
 
@@ -261,6 +290,66 @@ export default function InitialHome() {
   const currentInfographic = infograficos[activeInfographic];
   const prevInfographic = () => setActiveInfographic((prev) => (prev === 0 ? infograficos.length - 1 : prev - 1));
   const nextInfographic = () => setActiveInfographic((prev) => (prev === infograficos.length - 1 ? 0 : prev + 1));
+
+  // Menu de formato de download (PNG / PDF)
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
+
+  const handleDownloadInfographic = (format) => {
+    const file = format === 'pdf' ? currentInfographic.pdf : currentInfographic.png;
+    if (!file) return;
+    const link = document.createElement('a');
+    link.href = file;
+    link.download = file.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsDownloadMenuOpen(false);
+  };
+
+  // Compartilhamento do infográfico atual (diálogo estilo YouTube)
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shareFeedback, setShareFeedback] = useState('');
+
+  const getShareUrl = () => `${window.location.origin}${window.location.pathname}#modulos`;
+
+  const openShareDialog = () => {
+    setShareFeedback('');
+    setIsShareOpen(true);
+  };
+
+  const handleShareNetwork = (network) => {
+    const text = encodeURIComponent(`${currentInfographic.title}: ${currentInfographic.description}`);
+    const url = encodeURIComponent(getShareUrl());
+    const links = {
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      x: `https://x.com/intent/tweet?text=${text}&url=${url}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      email: `mailto:?subject=${encodeURIComponent(currentInfographic.title)}&body=${text}%20${url}`
+    };
+    if (network === 'email') {
+      window.open(links.email, '_self');
+    } else {
+      window.open(links[network], '_blank', 'noopener,noreferrer');
+    }
+    setIsShareOpen(false);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setShareFeedback('Link copiado para a área de transferência');
+    } catch {
+      setShareFeedback('Não foi possível copiar o link');
+    }
+    setTimeout(() => setShareFeedback(''), 2500);
+  };
+
+  const shareNetworks = [
+    { id: 'whatsapp', label: 'WhatsApp', icon: <WhatsAppShareIcon /> },
+    { id: 'x', label: 'X', icon: <XShareIcon /> },
+    { id: 'facebook', label: 'Facebook', icon: <FacebookShareIcon /> },
+    { id: 'email', label: 'E-mail', icon: <span className="material-symbols-outlined text-[24px] text-slate-600">mail</span> }
+  ];
 
   // Lightbox de Infográficos (visualização em tela cheia)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -279,13 +368,15 @@ export default function InitialHome() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isLightboxOpen) {
-        closeLightbox();
+      if (e.key === 'Escape') {
+        if (isLightboxOpen) closeLightbox();
+        if (isDownloadMenuOpen) setIsDownloadMenuOpen(false);
+        if (isShareOpen) setIsShareOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLightboxOpen]);
+  }, [isLightboxOpen, isDownloadMenuOpen, isShareOpen]);
 
   return (
     <>
@@ -711,14 +802,58 @@ export default function InitialHome() {
                             <span className="material-symbols-outlined text-[16px]">visibility</span>
                             Explorar
                           </button>
-                          <a
-                            href={currentInfographic.download || currentInfographic.image}
-                            download
-                            className="bg-white hover:bg-blue-50 text-slate-700 border border-gray-200 px-4 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5"
+                          <div className="relative">
+                            <div className="bg-white text-slate-700 border border-gray-200 rounded-lg font-bold text-xs flex items-stretch overflow-hidden">
+                              <button
+                                onClick={() => handleDownloadInfographic('png')}
+                                className="hover:bg-blue-50 px-4 py-2 flex items-center gap-1.5 transition-colors cursor-pointer"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">download</span>
+                                Baixar
+                              </button>
+                              <button
+                                onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                                className="hover:bg-blue-50 px-2 border-l border-gray-200 flex items-center transition-colors cursor-pointer"
+                                aria-label="Escolher formato de download"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                              </button>
+                            </div>
+                            {isDownloadMenuOpen && (
+                              <>
+                                <div
+                                  className="fixed inset-0 z-40 bg-transparent"
+                                  onClick={() => setIsDownloadMenuOpen(false)}
+                                />
+                                <div className="absolute left-0 bottom-full mb-1.5 w-44 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
+                                  <div className="px-3.5 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
+                                    Formato
+                                  </div>
+                                  <button
+                                    onClick={() => handleDownloadInfographic('png')}
+                                    className="w-full px-3.5 py-2 text-xs font-medium flex items-center gap-2.5 hover:bg-blue-50 text-gray-700 transition-colors cursor-pointer"
+                                  >
+                                    <span className="material-symbols-outlined text-[16px] text-blue-600">image</span>
+                                    PNG (imagem)
+                                  </button>
+                                  <button
+                                    onClick={() => handleDownloadInfographic('pdf')}
+                                    className="w-full px-3.5 py-2 text-xs font-medium flex items-center gap-2.5 hover:bg-blue-50 text-gray-700 transition-colors cursor-pointer"
+                                  >
+                                    <span className="material-symbols-outlined text-[16px] text-red-600">picture_as_pdf</span>
+                                    PDF (documento)
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          <button
+                            onClick={openShareDialog}
+                            className="bg-white hover:bg-blue-50 text-slate-700 border border-gray-200 px-4 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-[16px]">download</span>
-                            Baixar
-                          </a>
+                            <span className="material-symbols-outlined text-[16px]">share</span>
+                            Compartilhar
+                          </button>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -934,6 +1069,59 @@ export default function InitialHome() {
             <div className="flex-1 overflow-y-auto bg-gray-50 flex justify-center p-4">
               <img src={lightboxItem.image} alt={lightboxItem.title} className="max-w-full h-auto rounded-lg shadow-md" />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* DIÁLOGO DE COMPARTILHAMENTO (ESTILO YOUTUBE) */}
+      {isShareOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setIsShareOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-5 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-800">Compartilhar</h3>
+              <button
+                type="button"
+                onClick={() => setIsShareOpen(false)}
+                className="p-1.5 rounded-full text-slate-500 hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label="Fechar compartilhamento"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="flex items-start justify-between gap-1">
+              {shareNetworks.map((net) => (
+                <button
+                  key={net.id}
+                  onClick={() => handleShareNetwork(net.id)}
+                  className="flex flex-col items-center gap-1.5 w-16 cursor-pointer group"
+                >
+                  <span className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                    {net.icon}
+                  </span>
+                  <span className="text-[11px] text-slate-600">{net.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full pl-4 pr-1.5 py-1.5">
+              <span className="flex-1 min-w-0 truncate text-sm text-slate-600">{getShareUrl()}</span>
+              <button
+                onClick={handleCopyLink}
+                className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold px-4 py-1.5 rounded-full transition-colors cursor-pointer shrink-0"
+              >
+                Copiar
+              </button>
+            </div>
+            {shareFeedback && (
+              <span className="-mt-3 text-xs font-medium text-slate-500">{shareFeedback}</span>
+            )}
           </div>
         </div>
       )}
