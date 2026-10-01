@@ -312,7 +312,31 @@ export default function InitialHome() {
 
   const getShareUrl = () => `${window.location.origin}${window.location.pathname}#modulos`;
 
-  const openShareDialog = () => {
+  const openShareDialog = async () => {
+    // Tenta anexar a imagem de verdade (funciona nos celulares).
+    // No computador, abre o diálogo de links (com prévia da imagem via meta tags).
+    try {
+      const res = await fetch(currentInfographic.png);
+      if (res.ok) {
+        const blob = await res.blob();
+        const fileName = currentInfographic.png.split('/').pop();
+        const file = new File([blob], fileName, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: currentInfographic.title,
+              text: `${currentInfographic.title}: ${currentInfographic.description}`
+            });
+          } catch {
+            // usuário cancelou o menu nativo
+          }
+          return;
+        }
+      }
+    } catch {
+      // segue para o diálogo de links
+    }
     setShareFeedback('');
     setIsShareOpen(true);
   };
@@ -1119,6 +1143,7 @@ export default function InitialHome() {
                 Copiar
               </button>
             </div>
+            <p className="-mt-3 text-xs text-slate-500">O link compartilhado exibe uma prévia com a imagem do infográfico.</p>
             {shareFeedback && (
               <span className="-mt-3 text-xs font-medium text-slate-500">{shareFeedback}</span>
             )}
