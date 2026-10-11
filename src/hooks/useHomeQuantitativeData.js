@@ -3,7 +3,7 @@ import { getHomeQuantitativeData } from '../services/homeService';
 
 // Tempo de cache: 1 semana (7 dias) em milissegundos
 const UMA_SEMANA = 7 * 24 * 60 * 60 * 1000;
-const CACHE_KEY = '@simcc:quantData';
+const CACHE_KEY = '@simcc:quantData:v2';
 
 /**
  * 1. FUNÇÃO SÍNCRONA: Lê o localStorage imediatamente (Tira o delay da tela)
