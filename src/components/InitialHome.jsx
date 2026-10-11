@@ -40,6 +40,14 @@ function FacebookShareIcon({ className = 'w-6 h-6' }) {
   );
 }
 
+function LinkedInShareIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="#0A66C2" className={className} aria-hidden="true">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
 export default function InitialHome() {
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
@@ -195,6 +203,7 @@ export default function InitialHome() {
     { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
     { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
     { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' },
+    { name: 'Eixos Temáticos', label: 'Eixos<br/>Temáticos', icon: 'layers' },
     { name: 'Infográficos', label: 'Infográficos', icon: 'insert_chart' }
   ];
 
@@ -312,50 +321,68 @@ export default function InitialHome() {
 
   const getShareUrl = () => `${window.location.origin}${window.location.pathname}#modulos`;
 
-  const openShareDialog = async () => {
-    // Tenta anexar a imagem de verdade (funciona nos celulares).
-    // No computador, abre o diálogo de links (com prévia da imagem via meta tags).
-    try {
-      const res = await fetch(currentInfographic.png);
-      if (res.ok) {
-        const blob = await res.blob();
-        const fileName = currentInfographic.png.split('/').pop();
-        const file = new File([blob], fileName, { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-              title: currentInfographic.title,
-              text: `${currentInfographic.title}: ${currentInfographic.description}`
-            });
-          } catch {
-            // usuário cancelou o menu nativo
-          }
-          return;
-        }
-      }
-    } catch {
-      // segue para o diálogo de links
-    }
+  const openShareDialog = () => {
+    // Abre direto o diálogo próprio (só links web em nova guia).
+    // O navigator.share não é usado para não acionar os apps instalados na máquina.
     setShareFeedback('');
     setIsShareOpen(true);
   };
 
-  const handleShareNetwork = (network) => {
-    const text = encodeURIComponent(`${currentInfographic.title}: ${currentInfographic.description}`);
-    const url = encodeURIComponent(getShareUrl());
-    const links = {
-      whatsapp: `https://wa.me/?text=${text}%20${url}`,
-      x: `https://x.com/intent/tweet?text=${text}&url=${url}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      email: `mailto:?subject=${encodeURIComponent(currentInfographic.title)}&body=${text}%20${url}`
+  const truncateWithEllipsis = (value, maxLength) => {
+    if (value.length <= maxLength) return value;
+    return `${value.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
+  };
+
+  const shareMessage = `Título: ${currentInfographic.title}\nDescrição: ${currentInfographic.description}`;
+
+  const shareTwitterMessage = (() => {
+    const totalLimit = 280;
+    const urlLength = 24;
+    const separator = '\n\n';
+    const full = `${shareMessage}${separator}${getShareUrl()}`;
+    if (full.length <= totalLimit) return full;
+    const budget = totalLimit - urlLength - separator.length;
+    return `${truncateWithEllipsis(shareMessage, budget)}${separator}${getShareUrl()}`;
+  })();
+
+  const shareLinks = (() => {
+    const encodedUrl = encodeURIComponent(getShareUrl());
+    const encodedMessage = encodeURIComponent(shareMessage);
+    const encodedTitle = encodeURIComponent(currentInfographic.title);
+    return {
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareMessage}\n\n${getShareUrl()}`)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedMessage}`,
+      x: `https://x.com/intent/tweet?text=${encodeURIComponent(shareTwitterMessage)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedMessage}`,
+      email: `mailto:?subject=${encodeURIComponent(`Infográfico: ${currentInfographic.title}`)}&body=${encodeURIComponent(`${shareMessage}\n\n${getShareUrl()}`)}`
     };
-    if (network === 'email') {
-      window.open(links.email, '_self');
-    } else {
-      window.open(links[network], '_blank', 'noopener,noreferrer');
+  })();
+
+  const shareNetworks = [
+    { id: 'whatsapp', label: 'WhatsApp', href: shareLinks.whatsapp, circle: 'bg-green-500/10 text-green-600', icon: <WhatsAppShareIcon /> },
+    { id: 'linkedin', label: 'LinkedIn', href: shareLinks.linkedin, circle: 'bg-sky-500/10 text-sky-600', icon: <LinkedInShareIcon /> },
+    { id: 'x', label: 'X', href: shareLinks.x, circle: 'bg-neutral-200 text-neutral-800', icon: <XShareIcon /> },
+    { id: 'facebook', label: 'Facebook', href: shareLinks.facebook, circle: 'bg-blue-600/10 text-blue-700', icon: <FacebookShareIcon /> },
+    { id: 'email', label: 'E-mail', href: shareLinks.email, circle: 'bg-amber-500/10 text-amber-600', icon: <span className="material-symbols-outlined text-[24px]">mail</span> }
+  ];
+
+  const copyInfographicImage = async () => {
+    try {
+      const res = await fetch(currentInfographic.png);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type || 'image/png']: blob })
+      ]);
+      return true;
+    } catch {
+      return false;
     }
-    setIsShareOpen(false);
+  };
+
+  const handleCopyImage = async () => {
+    const ok = await copyInfographicImage();
+    setShareFeedback(ok ? 'Imagem copiada! Cole com Ctrl+V onde quiser.' : 'Não foi possível copiar a imagem');
+    setTimeout(() => setShareFeedback(''), 3000);
   };
 
   const handleCopyLink = async () => {
@@ -367,13 +394,6 @@ export default function InitialHome() {
     }
     setTimeout(() => setShareFeedback(''), 2500);
   };
-
-  const shareNetworks = [
-    { id: 'whatsapp', label: 'WhatsApp', icon: <WhatsAppShareIcon /> },
-    { id: 'x', label: 'X', icon: <XShareIcon /> },
-    { id: 'facebook', label: 'Facebook', icon: <FacebookShareIcon /> },
-    { id: 'email', label: 'E-mail', icon: <span className="material-symbols-outlined text-[24px] text-slate-600">mail</span> }
-  ];
 
   // Lightbox de Infográficos (visualização em tela cheia)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -783,6 +803,23 @@ export default function InitialHome() {
                 </div>
               )}
 
+              {activeModuleTab === 'Eixos Temáticos' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+
+                  {/* 1. Eixo Energia */}
+                  <div
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/tema-energia/')}
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">bolt</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Eixo<br />Energia</p>
+                  </div>
+
+                </div>
+              )}
+
               {activeModuleTab === 'Infográficos' && (
                 <div className="flex flex-col gap-4 w-full">
                   {/* Mini visualizador */}
@@ -995,6 +1032,24 @@ export default function InitialHome() {
 
         <footer className="snap-start bg-slate-900 w-full mt-auto scroll-mt-16 relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-700 via-slate-800 to-red-600"></div>
+          <div className="bg-white w-full mt-1">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8 px-6 md:px-12 py-8 max-w-[1400px] mx-auto">
+              <span className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase shrink-0">Realização</span>
+              <div className="flex items-center gap-6 md:gap-10 flex-wrap justify-center">
+                <img src="/BRASAO-BAHIA.png" alt="Brasão do Estado da Bahia" className="h-16 md:h-20 w-auto object-contain" />
+                <div className="hidden sm:block w-px h-16 bg-gray-200" aria-hidden="true" />
+                <a
+                  href="https://www.ba.gov.br/secti/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity"
+                  title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+                >
+                  <img src="/GOVERNO-BAHIA-SECTI.png" alt="Governo da Bahia — Secretaria de Ciência, Tecnologia e Inovação" className="h-16 md:h-20 w-auto object-contain" />
+                </a>
+              </div>
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-12 max-w-[1400px] mx-auto gap-y-8 w-full mt-1">
             <div className="text-xl font-bold text-white tracking-widest uppercase flex items-center gap-2">Observatório</div>
             <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
@@ -1121,16 +1176,18 @@ export default function InitialHome() {
 
             <div className="flex items-start justify-between gap-1">
               {shareNetworks.map((net) => (
-                <button
+                <a
                   key={net.id}
-                  onClick={() => handleShareNetwork(net.id)}
+                  href={net.href}
+                  target={net.id === 'email' ? undefined : '_blank'}
+                  rel="noreferrer"
                   className="flex flex-col items-center gap-1.5 w-16 cursor-pointer group"
                 >
-                  <span className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                  <span className={`w-14 h-14 rounded-full ${net.circle} flex items-center justify-center group-hover:opacity-80 transition-opacity`}>
                     {net.icon}
                   </span>
                   <span className="text-[11px] text-slate-600">{net.label}</span>
-                </button>
+                </a>
               ))}
             </div>
 
@@ -1143,7 +1200,14 @@ export default function InitialHome() {
                 Copiar
               </button>
             </div>
-            <p className="-mt-3 text-xs text-slate-500">O link compartilhado exibe uma prévia com a imagem do infográfico.</p>
+            <button
+              onClick={handleCopyImage}
+              className="bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 hover:border-blue-400 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">image</span>
+              Copiar imagem do infográfico
+            </button>
+            <p className="-mt-3 text-xs text-slate-500">A imagem vai junto pelo botão "Copiar imagem" — cole com Ctrl+V na conversa. O link também gera prévia com a imagem.</p>
             {shareFeedback && (
               <span className="-mt-3 text-xs font-medium text-slate-500">{shareFeedback}</span>
             )}
