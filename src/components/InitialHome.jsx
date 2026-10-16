@@ -1036,8 +1036,6 @@ export default function InitialHome() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8 px-6 md:px-12 py-8 max-w-[1400px] mx-auto">
               <span className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase shrink-0">Realização</span>
               <div className="flex items-center gap-6 md:gap-10 flex-wrap justify-center">
-                <img src="/BRASAO-BAHIA.png" alt="Brasão do Estado da Bahia" className="h-16 md:h-20 w-auto object-contain" />
-                <div className="hidden sm:block w-px h-16 bg-gray-200" aria-hidden="true" />
                 <a
                   href="https://www.ba.gov.br/secti/"
                   target="_blank"
