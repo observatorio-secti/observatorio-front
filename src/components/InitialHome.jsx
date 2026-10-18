@@ -441,7 +441,7 @@ export default function InitialHome() {
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600"></div>
           <div className="flex justify-between items-center w-full px-6 md:px-12 h-full max-w-[1400px] mx-auto mt-[1px]">
             <div className="flex items-center h-full gap-4 md:gap-6">
-              <div className="hidden md:flex items-center gap-2 border-r border-gray-200 pr-4 md:pr-6 h-10">
+              <div className={`hidden md:flex items-center gap-2 border-r border-gray-200 pr-4 md:pr-6 transition-all duration-300 ${isScrolled ? 'h-12' : 'h-14'}`}>
                 <a
                   href="https://www.ba.gov.br/secti/"
                   target="_blank"
@@ -449,7 +449,7 @@ export default function InitialHome() {
                   className="hover:opacity-80 transition-opacity flex items-center h-full cursor-pointer"
                   title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
                 >
-                  <img src="/GOVERNO-BAHIA-SECTI.png" alt="Governo da Bahia — Secretaria de Ciência, Tecnologia e Inovação" className="h-8 md:h-10 w-auto object-contain" />
+                  <img src="/GOVERNO-BAHIA-SECTI.png" alt="Governo da Bahia — Secretaria de Ciência, Tecnologia e Inovação" className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-12' : 'h-14'}`} />
                 </a>
               </div>
               <a className="flex items-center h-full py-0 gap-3" href="#" onClick={(e) => scrollToSection(e, 'sobre')}>
