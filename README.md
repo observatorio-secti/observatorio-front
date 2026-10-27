@@ -1,76 +1,93 @@
-# React + TypeScript + Vite
+# Observatório CT&I Bahia · Portal Frontend (`observatorio-front`)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web principal (SPA) do **Observatório de Ciência, Tecnologia e Inovação do Estado da Bahia (SECTI)**. Apresenta indicadores agregados de produção científica, pesquisadores em destaque, nuvens de palavras temáticas, infográficos, eixos estratégicos (como Mulheres na Ciência) e integração com os demais módulos do ecossistema (**SimCC**, **Fomento**, **VIP** e **Maria**).
 
-Currently, two official plugins are available:
+> 🎨 **Design System**: As diretrizes visuais, paleta de cores (*Simcc Intelligence*), tipografia (`Lexend`) e regras de superfície estão documentadas em [`DESIGN.md`](DESIGN.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🧱 Stack e Arquitetura
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** + **Vite 8** + **React Router DOM 7**
+- **Tailwind CSS 3** para estilização baseada nos tokens do [`DESIGN.md`](DESIGN.md)
+- **TanStack React Query 5** + **Axios** para consumo de APIs, cache e sincronização de estado assíncrono
+- **Highcharts** (`highcharts-react-official`) e **React Wordcloud** para visualizações de dados e indicadores científicos
+- **Lucide React** para iconografia
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📁 Estrutura de Diretórios
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+observatorio-front/
+├── public/                        # Brasões, logos institucionais (SECTI, SIMCC, VIP, Universidades) e infográficos
+├── src/
+│   ├── assets/                    # Imagens estáticas da aplicação
+│   ├── components/
+│   │   ├── layout/                # Cabeçalho, rodapé e estrutura de navegação
+│   │   ├── sections/              # Seções temáticas da página inicial e painéis
+│   │   ├── ui/                    # Componentes visuais reutilizáveis
+│   │   ├── DadosDestaqueSection.jsx
+│   │   ├── FeaturedResearchers.jsx
+│   │   ├── HeroMetricCards.jsx
+│   │   └── InitialHome.jsx
+│   ├── constants/                 # Links institucionais e constantes de busca do SimCC
+│   ├── data/                      # Metadados de instituições parceiras e módulos do ecossistema
+│   ├── hooks/                     # Hooks React Query (pesquisadores destaque, métricas home, wordcloud)
+│   ├── lib/                       # Utilitários gerais (utils.js)
+│   ├── services/                  # Clientes HTTP Axios (api.js, homeService.js, researcherService.js, simccService.js)
+│   ├── App.jsx                    # Componente raiz e roteamento
+│   └── main.jsx                   # Ponto de montagem React e QueryClientProvider
+├── DESIGN.md                      # Especificação do Design System
+├── Dockerfile                     # Build multi-stage para distribuição estática
+├── compose.yaml                   # Serviço Docker para execução containerizada
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Como Executar
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Pré-requisitos
+- Node.js 20+ e `npm`
 
+### 1. Instalação
+```bash
+npm install
 ```
-  docker build --output dist .
+
+### 2. Executar em Modo de Desenvolvimento
+```bash
+npm run dev
+```
+A aplicação ficará disponível em `http://localhost:5173`.
+
+### 3. Build de Produção e Docker
+```bash
+# Gerar bundle estático em dist/
+npm run build
+
+# Ou exportar via Docker
+docker build --output dist .
+```
+
+---
+
+## ⚙️ Configuração (`.env`)
+
+O cliente HTTP em [`src/services/api.js`](src/services/api.js) utiliza a variável abaixo:
+
+| Variável | Descrição | Padrão |
+| :--- | :--- | :--- |
+| `VITE_API_URL` | URL base da API do SimCC/Observatório para busca de métricas e pesquisadores | `https://observatoriocti.secti.ba.gov.br/simcc/api` |
+
+---
+
+## 🧪 Qualidade e Scripts (`package.json`)
+
+| Comando | Descrição |
+| :--- | :--- |
+| `npm run dev` | Inicia o servidor Vite com Hot Module Replacement (HMR) |
+| `npm run build` | Compila e otimiza os ativos de produção na pasta `dist/` |
+| `npm run lint` | Executa a verificação estática com ESLint |
+| `npm run preview` | Serve localmente o pacote compilado em `dist/` |
