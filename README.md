@@ -24,7 +24,7 @@ observatorio-front/
 ├── src/
 │   ├── assets/                    # Imagens estáticas da aplicação
 │   ├── components/
-│   │   ├── layout/                # Cabeçalho, rodapé e estrutura de navegação
+│   │   ├── layout/                # Cabeçalho (com SSO), rodapé e estrutura de navegação
 │   │   ├── sections/              # Seções temáticas da página inicial e painéis
 │   │   ├── ui/                    # Componentes visuais reutilizáveis
 │   │   ├── DadosDestaqueSection.jsx
@@ -32,11 +32,13 @@ observatorio-front/
 │   │   ├── HeroMetricCards.jsx
 │   │   └── InitialHome.jsx
 │   ├── constants/                 # Links institucionais e constantes de busca do SimCC
+│   ├── context/                   # Contexto global de autenticação SSO (AuthContext.jsx)
 │   ├── data/                      # Metadados de instituições parceiras e módulos do ecossistema
-│   ├── hooks/                     # Hooks React Query (pesquisadores destaque, métricas home, wordcloud)
-│   ├── lib/                       # Utilitários gerais (utils.js)
-│   ├── services/                  # Clientes HTTP Axios (api.js, homeService.js, researcherService.js, simccService.js)
-│   ├── App.jsx                    # Componente raiz e roteamento
+│   ├── hooks/                     # Hooks React Query (useAuth, pesquisadores destaque, métricas home)
+│   ├── lib/                       # Utilitários gerais (utils.js, auth-storage.js)
+│   ├── pages/                     # Páginas da aplicação (AuthCallback.jsx)
+│   ├── services/                  # Clientes HTTP (api.js, authService.js, homeService.js, researcherService.js)
+│   ├── App.jsx                    # Componente raiz, provedores e roteamento
 │   └── main.jsx                   # Ponto de montagem React e QueryClientProvider
 ├── DESIGN.md                      # Especificação do Design System
 ├── Dockerfile                     # Build multi-stage para distribuição estática
@@ -75,11 +77,12 @@ docker build --output dist .
 
 ## ⚙️ Configuração (`.env`)
 
-O cliente HTTP em [`src/services/api.js`](src/services/api.js) utiliza a variável abaixo:
+As variáveis de ambiente configuram o acesso às APIs do ecossistema e ao provedor central de identidade (SSO):
 
 | Variável | Descrição | Padrão |
 | :--- | :--- | :--- |
 | `VITE_API_URL` | URL base da API do SimCC/Observatório para busca de métricas e pesquisadores | `https://observatoriocti.secti.ba.gov.br/simcc/api` |
+| `VITE_IDP_URL` | URL base do Observatório IdP para autenticação SSO via OAuth 2.0 PKCE | `https://observatoriocti.secti.ba.gov.br/idp/` |
 
 ---
 

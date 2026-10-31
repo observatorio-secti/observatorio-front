@@ -1,6 +1,8 @@
 // src/components/InitialHome.jsx
 
 import { useEffect, useState } from 'react';
+import { LogIn, LogOut, ExternalLink, ChevronDown } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 import {
   instituicoes,
@@ -49,6 +51,8 @@ function LinkedInShareIcon({ className = 'w-6 h-6' }) {
 }
 
 export default function InitialHome() {
+  const { user, isAuthenticated, isAdmin, login, logout } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
   const { data: quantData, isLoading: quantLoading } = useHomeQuantitativeData();
@@ -460,13 +464,74 @@ export default function InitialHome() {
               </a>
             </div>
 
-            <div className="flex items-center gap-8 h-full">
+            <div className="flex items-center gap-6 h-full">
               <nav className="hidden md:flex items-center gap-8 h-full">
                 <a href="#sobre" onClick={(e) => scrollToSection(e, 'sobre')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'sobre' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Sobre</a>
                 <a href="#modulos" onClick={(e) => scrollToSection(e, 'modulos')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'modulos' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Módulos</a>
                 <a href="#instituicoes" onClick={(e) => scrollToSection(e, 'instituicoes')} className={`font-medium text-sm h-full flex items-center border-b-[3px] transition-all duration-300 ${activeSection === 'instituicoes' ? 'text-blue-700 border-blue-700 font-bold' : 'text-slate-500 border-transparent hover:text-blue-700 hover:border-blue-200'}`}>Instituições</a>
               </nav>
-              <div className="flex items-center gap-4">
+
+              {/* Botão de Login / Menu do Usuário (SSO Observatório IdP) */}
+              <div className="flex items-center gap-3">
+                {isAuthenticated && user ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 shadow-xs transition-all focus:outline-hidden"
+                      title={user.name}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-[#024A60] text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                        {user.name ? user.name.charAt(0) : 'U'}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-700 max-w-[120px] truncate hidden md:inline-block">
+                        {user.name}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    </button>
+
+                    {userMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div className="px-3 py-2 border-b border-slate-100">
+                          <p className="text-xs font-semibold text-slate-800 truncate">{user.name}</p>
+                          <p className="text-[11px] text-slate-500 truncate">{user.email || ''}</p>
+                          {isAdmin && (
+                            <span className="inline-block mt-1 px-1.5 py-0.5 text-[10px] font-semibold bg-sky-100 text-[#024A60] rounded">
+                              Administrador
+                            </span>
+                          )}
+                        </div>
+
+                        <a
+                          href="/simcc"
+                          className="flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Acessar SimCC</span>
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            logout();
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors text-left"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>Sair da conta</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => login()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 hover:border-[#024A60] hover:bg-[#024A60]/5 text-slate-700 hover:text-[#024A60] text-xs font-semibold shadow-xs transition-all"
+                  >
+                    <LogIn className="w-3.5 h-3.5 text-[#024A60]" />
+                    <span>Entrar</span>
+                  </button>
+                )}
+
                 <button className="md:hidden text-slate-500">
                   <span className="material-symbols-outlined">menu</span>
                 </button>
