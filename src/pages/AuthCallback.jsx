@@ -9,11 +9,15 @@ export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { handleAuthCallback } = useAuth();
+  const processedRef = React.useRef(false);
 
   const [status, setStatus] = useState('loading');
   const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
+    if (processedRef.current) return;
+    processedRef.current = true;
+
     const code = searchParams.get('code');
     const token = searchParams.get('token');
     const error = searchParams.get('error');

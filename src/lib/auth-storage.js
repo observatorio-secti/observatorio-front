@@ -72,8 +72,10 @@ export const authStorage = {
   savePkceVerifier: (verifier, state) => {
     try {
       sessionStorage.setItem(PKCE_VERIFIER_KEY, verifier);
+      localStorage.setItem(PKCE_VERIFIER_KEY, verifier);
       if (state) {
         sessionStorage.setItem(`${PKCE_VERIFIER_KEY}_state`, state);
+        localStorage.setItem(`${PKCE_VERIFIER_KEY}_state`, state);
       }
     } catch (err) {
       console.error('Falha ao salvar verificador PKCE:', err);
@@ -82,7 +84,11 @@ export const authStorage = {
 
   getPkceVerifier: () => {
     try {
-      return sessionStorage.getItem(PKCE_VERIFIER_KEY);
+      return (
+        sessionStorage.getItem(PKCE_VERIFIER_KEY) ||
+        localStorage.getItem(PKCE_VERIFIER_KEY) ||
+        null
+      );
     } catch {
       return null;
     }
@@ -90,9 +96,14 @@ export const authStorage = {
 
   consumePkceVerifier: () => {
     try {
-      const verifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
+      const verifier =
+        sessionStorage.getItem(PKCE_VERIFIER_KEY) ||
+        localStorage.getItem(PKCE_VERIFIER_KEY) ||
+        null;
       sessionStorage.removeItem(PKCE_VERIFIER_KEY);
       sessionStorage.removeItem(`${PKCE_VERIFIER_KEY}_state`);
+      localStorage.removeItem(PKCE_VERIFIER_KEY);
+      localStorage.removeItem(`${PKCE_VERIFIER_KEY}_state`);
       return verifier;
     } catch {
       return null;

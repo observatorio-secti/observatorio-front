@@ -40,14 +40,30 @@ export function AuthProvider({ children }) {
       let activeAccessToken = directToken;
 
       if (code) {
-        const verifier = authStorage.consumePkceVerifier();
+        const existingToken = authStorage.getToken();
+        const verifier = authStorage.getPkceVerifier();
+
         if (!verifier) {
-          throw new Error('Sessão de autorização inválida ou expirada (código PKCE ausente).');
-        }
-        const tokenResponse = await authService.exchangeCodeForToken(code, verifier);
-        activeAccessToken = tokenResponse.access_token;
-        if (tokenResponse.refresh_token) {
-          authStorage.setRefreshToken(tokenResponse.refresh_token);
+          if (existingToken) {
+            activeAccessToken = existingToken;
+          } else {
+            throw new Error('Sessão de autorização inválida ou expirada (código PKCE ausente).');
+          }
+        } else {
+          try {
+            const tokenResponse = await authService.exchangeCodeForToken(code, verifier);
+            activeAccessToken = tokenResponse.access_token;
+            if (tokenResponse.refresh_token) {
+              authStorage.setRefreshToken(tokenResponse.refresh_token);
+            }
+            authStorage.consumePkceVerifier();
+          } catch (err) {
+            if (existingToken) {
+              activeAccessToken = existingToken;
+            } else {
+              throw err;
+            }
+          }
         }
       }
 
