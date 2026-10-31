@@ -73,12 +73,19 @@ export function AuthProvider({ children }) {
 
       authStorage.setToken(activeAccessToken);
       setToken(activeAccessToken);
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-      await refetch();
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+
+      try {
+        const profile = await authService.getCurrentUser(activeAccessToken);
+        queryClient.setQueryData(['auth', 'me'], profile);
+      } catch (profileErr) {
+        console.warn('Perfil será recarregado em segundo plano:', profileErr);
+      }
+
       const redirectUrl = authStorage.consumeRedirectUrl('/');
       return redirectUrl;
     },
-    [queryClient, refetch]
+    [queryClient]
   );
 
   const logout = useCallback(() => {

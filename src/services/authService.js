@@ -3,8 +3,26 @@
 import axios from 'axios';
 import { authStorage } from '../lib/auth-storage';
 
-const rawIdpUrl = import.meta.env.VITE_IDP_URL || 'https://observatoriocti.secti.ba.gov.br/idp/';
-export const baseURLIdp = rawIdpUrl.endsWith('/') ? rawIdpUrl : `${rawIdpUrl}/`;
+function resolveIdpBaseUrl() {
+  const envUrl = import.meta.env.VITE_IDP_URL;
+  if (envUrl) {
+    return envUrl.endsWith('/') ? envUrl : `${envUrl}/`;
+  }
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1')
+  ) {
+    return 'http://localhost:8000/';
+  }
+  return 'https://observatoriocti.secti.ba.gov.br/idp/';
+}
+
+export const baseURLIdp = resolveIdpBaseUrl();
+
+const httpIdp = axios.create({
+  timeout: 10000,
+});
 
 function base64UrlEncode(buffer) {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
@@ -77,7 +95,7 @@ export const authService = {
    */
   async exchangeCodeForToken(code, codeVerifier) {
     const redirectUri = this.getCallbackUrl();
-    const { data } = await axios.post(
+    const { data } = await httpIdp.post(
       `${baseURLIdp}token`,
       {
         grant_type: 'authorization_code',
@@ -104,7 +122,7 @@ export const authService = {
       throw new Error('Refresh token não encontrado');
     }
 
-    const { data } = await axios.post(
+    const { data } = await httpIdp.post(
       `${baseURLIdp}token`,
       {
         grant_type: 'refresh_token',
@@ -123,13 +141,13 @@ export const authService = {
   /**
    * Busca dados do perfil autenticado no IdP.
    */
-  async getCurrentUser() {
-    const token = authStorage.getToken();
+  async getCurrentUser(explicitToken) {
+    const token = explicitToken || authStorage.getToken();
     if (!token) {
       throw new Error('Usuário não autenticado');
     }
 
-    const { data } = await axios.get(`${baseURLIdp}me`, {
+    const { data } = await httpIdp.get(`${baseURLIdp}me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

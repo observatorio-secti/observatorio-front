@@ -45,11 +45,10 @@ export default function AuthCallback() {
         const redirectUrl = await handleAuthCallback({ code, token });
         if (isMounted) {
           setStatus('success');
-          setTimeout(() => {
-            navigate(redirectUrl, { replace: true });
-          }, 600);
+          navigate(redirectUrl || '/', { replace: true });
         }
       } catch (err) {
+        console.error('Erro no callback de autenticação:', err);
         if (isMounted) {
           setStatus('error');
           setErrorMessage(
