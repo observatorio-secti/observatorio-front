@@ -38,33 +38,25 @@ export default function AuthCallback() {
       return;
     }
 
-    let isMounted = true;
-
     const processLogin = async () => {
       try {
         const redirectUrl = await handleAuthCallback({ code, token });
-        if (isMounted) {
-          setStatus('success');
-          navigate(redirectUrl || '/', { replace: true });
-        }
+        setStatus('success');
+        const target = redirectUrl && !redirectUrl.includes('/auth/callback') ? redirectUrl : '/';
+        // Redireciona com substituição no histórico
+        window.location.replace(target);
       } catch (err) {
         console.error('Erro no callback de autenticação:', err);
-        if (isMounted) {
-          setStatus('error');
-          setErrorMessage(
-            err?.response?.data?.detail ||
-              err?.message ||
-              'Não foi possível validar as credenciais de acesso recebidas.'
-          );
-        }
+        setStatus('error');
+        setErrorMessage(
+          err?.response?.data?.detail ||
+            err?.message ||
+            'Não foi possível validar as credenciais de acesso recebidas.'
+        );
       }
     };
 
     processLogin();
-
-    return () => {
-      isMounted = false;
-    };
   }, [searchParams, handleAuthCallback, navigate]);
 
   return (

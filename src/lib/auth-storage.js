@@ -112,7 +112,9 @@ export const authStorage = {
 
   saveRedirectUrl: (url) => {
     try {
-      sessionStorage.setItem(REDIRECT_URL_KEY, url);
+      if (url && !url.includes('/auth/callback')) {
+        sessionStorage.setItem(REDIRECT_URL_KEY, url);
+      }
     } catch (err) {
       console.error('Falha ao salvar redirect URL:', err);
     }
@@ -122,7 +124,10 @@ export const authStorage = {
     try {
       const url = sessionStorage.getItem(REDIRECT_URL_KEY);
       sessionStorage.removeItem(REDIRECT_URL_KEY);
-      return url || defaultUrl;
+      if (!url || url.includes('/auth/callback')) {
+        return defaultUrl;
+      }
+      return url;
     } catch {
       return defaultUrl;
     }
