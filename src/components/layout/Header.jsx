@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, LogOut, ExternalLink, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 export function Header() {
+  const { user, isAuthenticated, isAdmin, login, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('sobre');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,6 +90,70 @@ export function Header() {
 
           <div className="h-6 w-px bg-outline-variant/60 shrink-0" aria-hidden="true" />
 
+          {/* Autenticação SSO Observatório IdP */}
+          <div className="flex items-center gap-2 shrink-0">
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-outline-variant hover:border-primary/50 bg-surface-container-lowest hover:bg-surface-container-low transition-all"
+                  title={user.name}
+                >
+                  <div className="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                    {user.name ? user.name.charAt(0) : 'U'}
+                  </div>
+                  <span className="text-xs font-semibold text-on-surface max-w-[120px] truncate hidden lg:inline-block">
+                    {user.name}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant" />
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-surface rounded-xl shadow-xl border border-outline-variant py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-2 border-b border-outline-variant/50">
+                      <p className="text-xs font-semibold text-on-surface truncate">{user.name}</p>
+                      <p className="text-[11px] text-on-surface-variant truncate">{user.email || ''}</p>
+                      {isAdmin && (
+                        <span className="inline-block mt-1 px-1.5 py-0.5 text-[10px] font-semibold bg-primary/10 text-primary rounded">
+                          Administrador
+                        </span>
+                      )}
+                    </div>
+
+                    <a
+                      href="/simcc"
+                      className="flex items-center gap-2 px-3 py-2 text-xs text-on-surface hover:bg-surface-container-low transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-on-surface-variant" />
+                      <span>Acessar SimCC</span>
+                    </a>
+
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error-container/20 transition-colors text-left"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sair da conta</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => login()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 text-on-surface hover:text-primary text-xs font-semibold transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5 text-primary" />
+                <span>Entrar</span>
+              </button>
+            )}
+          </div>
+
+          <div className="h-6 w-px bg-outline-variant/60 shrink-0" aria-hidden="true" />
+
           <div className="flex items-center gap-2.5 shrink-0">
             <a
               href="https://www.ba.gov.br/secti/"
@@ -149,20 +216,53 @@ export function Header() {
               {item.label}
             </a>
           ))}
-          <div className="pt-3 border-t border-outline-variant/60 flex items-center justify-between">
-            <a
-              href="https://www.ba.gov.br/secti/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity flex items-center cursor-pointer"
-              title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
-            >
-              <img
-                src="/ESTADO-BAHIA.svg"
-                alt="SECTI - Governo do Estado da Bahia"
-                className="h-7 w-auto object-contain"
-              />
-            </a>
+          <div className="pt-3 border-t border-outline-variant/60 flex flex-col gap-3">
+            {isAuthenticated && user ? (
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-[10px] uppercase">
+                    {user.name ? user.name.charAt(0) : 'U'}
+                  </div>
+                  <span className="text-xs font-medium text-on-surface truncate max-w-[160px]">{user.name}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="text-xs text-error font-medium"
+                >
+                  Sair
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  login();
+                }}
+                className="text-xs text-primary font-semibold flex items-center gap-1.5"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Entrar no Observatório</span>
+              </button>
+            )}
+
+            <div className="flex items-center justify-between">
+              <a
+                href="https://www.ba.gov.br/secti/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity flex items-center cursor-pointer"
+                title="Secretaria de Ciência, Tecnologia e Inovação - Governo da Bahia"
+              >
+                <img
+                  src="/ESTADO-BAHIA.svg"
+                  alt="SECTI - Governo do Estado da Bahia"
+                  className="h-7 w-auto object-contain"
+                />
+              </a>
+            </div>
           </div>
         </div>
       )}
