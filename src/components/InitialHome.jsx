@@ -203,6 +203,7 @@ export default function InitialHome() {
     { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
     { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
     { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' },
+    { name: 'Fomento', label: 'Fomento', icon: 'savings' },
     { name: 'Eixos Temáticos', label: 'Eixos<br/>Temáticos', icon: 'layers' },
     { name: 'Infográficos', label: 'Infográficos', icon: 'insert_chart' }
   ];
@@ -798,6 +799,23 @@ export default function InitialHome() {
                       <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">agriculture</span>
                     </div>
                     <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">INCITE<br />Agroindústria</p>
+                  </div>
+
+                </div>
+              )}
+
+              {activeModuleTab === 'Fomento' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+
+                  {/* Observatório de Bolsistas FAPESB */}
+                  <div
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/fomento/')}
+                    className="bg-white border border-gray-200 rounded-[20px] p-6 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group min-h-[160px]"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-50/60 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-500">
+                      <span className="material-symbols-outlined text-[#0f4c64] text-[32px] md:text-[40px] group-hover:text-blue-700 transition-colors duration-300">savings</span>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-500 text-center font-medium group-hover:text-blue-700 transition-colors px-2">Observatório de<br />Bolsistas FAPESB</p>
                   </div>
 
                 </div>
