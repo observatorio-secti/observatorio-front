@@ -53,6 +53,7 @@ function LinkedInShareIcon({ className = 'w-6 h-6' }) {
 export default function InitialHome() {
   const { user, isAuthenticated, isAdmin, login, logout } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Custom Hook de Dados Quantitativos da Home (React Query + Axios)
   const { data: quantData, isLoading: quantLoading } = useHomeQuantitativeData();
@@ -533,20 +534,51 @@ export default function InitialHome() {
                   </button>
                 )}
 
-                <button className="md:hidden text-slate-500">
-                  <span className="material-symbols-outlined">menu</span>
+                <button
+                  className="md:hidden text-slate-500"
+                  onClick={() => setMobileMenuOpen((open) => !open)}
+                  aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+                  aria-expanded={mobileMenuOpen}
+                >
+                  <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
                 </button>
               </div>
             </div>
 
           </div>
+
+          {mobileMenuOpen && (
+            <nav className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg md:hidden z-40">
+              <a
+                href="#sobre"
+                onClick={(e) => { scrollToSection(e, 'sobre'); setMobileMenuOpen(false); }}
+                className="block px-6 py-4 text-sm font-semibold text-slate-700 border-b border-gray-100 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              >
+                Sobre
+              </a>
+              <a
+                href="#modulos"
+                onClick={(e) => { scrollToSection(e, 'modulos'); setMobileMenuOpen(false); }}
+                className="block px-6 py-4 text-sm font-semibold text-slate-700 border-b border-gray-100 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              >
+                Módulos
+              </a>
+              <a
+                href="#instituicoes"
+                onClick={(e) => { scrollToSection(e, 'instituicoes'); setMobileMenuOpen(false); }}
+                className="block px-6 py-4 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              >
+                Instituições
+              </a>
+            </nav>
+          )}
         </header>
 
         <main className="flex-grow flex flex-col items-center w-full">
           <section id="sobre" className="scroll-mt-16 w-full relative min-h-[calc(100vh-64px)] flex flex-col justify-between items-center overflow-hidden pt-12 pb-8">
             <div className="hero-bg absolute inset-0 pointer-events-none bg-[url('/BG-OBSERVATORIO.png')] bg-no-repeat bg-center bg-cover z-0"></div>
             <div className="my-auto relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
-              <div className="flex flex-col items-start text-left gap-8">
+              <div className="flex flex-col items-start text-left gap-8 min-w-0">
                 <h1 className="text-4xl md:text-[56px] md:leading-[64px] text-slate-800 font-extrabold tracking-tight">
                   Observatório <br />
                   de <span className="bg-blue-800 text-white px-5 py-1 rounded-[20px] inline-flex items-center justify-center align-middle -translate-y-1 mx-1 border-b-[3px] border-red-600 shadow-sm">CT&I</span> da <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-600">Bahia</span>
@@ -570,13 +602,13 @@ export default function InitialHome() {
 
                   <div
                     onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/fomento/')}
-                    className="mt-2 w-full max-w-[580px] bg-white border border-blue-100 shadow-md rounded-[20px] p-5 flex items-center gap-5 cursor-pointer group hover:shadow-lg hover:border-blue-400 hover:-translate-y-1 transition-all duration-300"
+                    className="mt-2 w-full max-w-[580px] bg-white border border-blue-100 shadow-md rounded-[20px] p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 cursor-pointer group hover:shadow-lg hover:border-blue-400 hover:-translate-y-1 transition-all duration-300"
                   >
-                    <div className="relative shrink-0 w-36 sm:w-40 h-28 sm:h-32 bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center justify-center p-3">
+                    <div className="relative shrink-0 w-full sm:w-40 h-24 sm:h-32 bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center justify-center p-3">
                       <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600 z-10"></div>
                       <img src="/LOGO-LICURI.jpeg" alt="Licuri — Plataforma de Monitoramento e Inteligência Territorial dos Bolsistas de Pesquisa da Bahia" className="w-full h-full object-contain" />
                     </div>
-                    <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <div className="flex flex-col gap-1.5 flex-1 min-w-0 w-full sm:w-auto">
                       <span className="text-[11px] font-bold text-blue-700 tracking-[0.15em] uppercase">Fomento</span>
                       <h3 className="text-lg md:text-xl font-extrabold text-slate-800 leading-tight">Licuri</h3>
                       <p className="text-xs md:text-sm text-slate-500 leading-snug">Plataforma de Monitoramento e Inteligência Territorial dos Bolsistas de Pesquisa da Bahia.</p>
@@ -587,7 +619,9 @@ export default function InitialHome() {
                   </div>
                 </div>
               </div>
-              <HeroMetricCards data={quantData} loading={quantLoading} />
+              <div className="min-w-0 w-full">
+                <HeroMetricCards data={quantData} loading={quantLoading} />
+              </div>
             </div>
 
             <a
