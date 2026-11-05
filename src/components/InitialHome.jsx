@@ -207,7 +207,7 @@ export default function InitialHome() {
     { name: 'Vitrine de Infraestrutura', label: 'Vitrine de<br/>Infraestrutura', icon: 'domain' },
     { name: 'Clube de Ciência', label: 'Clube de<br/>Ciência', icon: 'biotech' },
     { name: 'Institutos de CT&I', label: 'Institutos<br/>de CT&I', icon: 'account_balance' },
-    { name: 'Fomento', label: 'Fomento', icon: 'savings' },
+    { name: 'Fomento', label: 'Fomento', icon: 'monitoring' },
     { name: 'Eixos Temáticos', label: 'Eixos<br/>Temáticos', icon: 'layers' },
     { name: 'Infográficos', label: 'Infográficos', icon: 'insert_chart' }
   ];
@@ -561,27 +561,27 @@ export default function InitialHome() {
                       Acessar Módulos <span className="material-symbols-outlined transition-transform group-hover:translate-y-1">arrow_downward</span>
                     </button>
                     <button
-                      onClick={(e) => { setActiveModuleTab('Infográficos'); scrollToSection(e, 'modulos'); }}
+                      onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/fomento/')}
                       className="bg-white hover:bg-blue-50/50 text-blue-700 border-2 border-blue-200 hover:border-blue-400 px-8 py-3 rounded-xl font-bold transition-all shadow-md flex items-center gap-2 hover:-translate-y-1 duration-300"
                     >
-                      Explorar infográficos <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+                      Conhecer a Licuri <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
                     </button>
                   </div>
 
                   <div
-                    onClick={(e) => { setActiveModuleTab('Infográficos'); scrollToSection(e, 'modulos'); }}
+                    onClick={() => handleModuleClick('https://observatoriocti.secti.ba.gov.br/fomento/')}
                     className="mt-2 w-full max-w-[580px] bg-white border border-blue-100 shadow-md rounded-[20px] p-5 flex items-center gap-5 cursor-pointer group hover:shadow-lg hover:border-blue-400 hover:-translate-y-1 transition-all duration-300"
                   >
-                    <div className="relative shrink-0 w-36 sm:w-40 bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
+                    <div className="relative shrink-0 w-36 sm:w-40 h-28 sm:h-32 bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center justify-center p-3">
                       <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-700 via-blue-500 to-red-600 z-10"></div>
-                      <img src="/infograficos/ciencia-em-numeros.png" alt="Infográfico A ciência baiana em números" className="h-36 w-full object-cover object-top" />
+                      <img src="/LOGO-LICURI.jpeg" alt="Licuri — Plataforma de Monitoramento e Inteligência Territorial dos Bolsistas de Pesquisa da Bahia" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                      <span className="text-[11px] font-bold text-blue-700 tracking-[0.15em] uppercase">Infográficos</span>
-                      <h3 className="text-lg md:text-xl font-extrabold text-slate-800 leading-tight">Bahia em dados</h3>
-                      <p className="text-xs md:text-sm text-slate-500 leading-snug">Indicadores que revelam a força da ciência, tecnologia e inovação no estado.</p>
+                      <span className="text-[11px] font-bold text-blue-700 tracking-[0.15em] uppercase">Fomento</span>
+                      <h3 className="text-lg md:text-xl font-extrabold text-slate-800 leading-tight">Licuri</h3>
+                      <p className="text-xs md:text-sm text-slate-500 leading-snug">Plataforma de Monitoramento e Inteligência Territorial dos Bolsistas de Pesquisa da Bahia.</p>
                       <span className="text-red-600 font-bold text-sm flex items-center gap-1 mt-1 group-hover:gap-2 transition-all duration-300">
-                        Ver infográfico <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        Conhecer a plataforma <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                       </span>
                     </div>
                   </div>
