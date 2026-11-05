@@ -11,32 +11,34 @@ export default function AuthCallback() {
   const { handleAuthCallback } = useAuth();
   const processedRef = React.useRef(false);
 
-  const [status, setStatus] = useState('loading');
-  const [errorMessage, setErrorMessage] = useState(null);
+  const code = searchParams.get('code');
+  const token = searchParams.get('token');
+  const error = searchParams.get('error');
+
+  let decodedError = null;
+  if (error) {
+    try {
+      decodedError = decodeURIComponent(error);
+    } catch {
+      decodedError = error;
+    }
+  }
+
+  const initialError = error
+    ? decodedError || 'Houve um problema durante o processo de autenticação externa.'
+    : !code && !token
+      ? 'Nenhum código ou token de autorização foi identificado no retorno do provedor.'
+      : null;
+
+  const [status, setStatus] = useState(initialError ? 'error' : 'loading');
+  const [errorMessage, setErrorMessage] = useState(initialError);
 
   useEffect(() => {
     if (processedRef.current) return;
     processedRef.current = true;
 
-    const code = searchParams.get('code');
-    const token = searchParams.get('token');
-    const error = searchParams.get('error');
-
-    if (error) {
-      setStatus('error');
-      setErrorMessage(
-        decodeURIComponent(error) || 'Houve um problema durante o processo de autenticação externa.'
-      );
-      return;
-    }
-
-    if (!code && !token) {
-      setStatus('error');
-      setErrorMessage(
-        'Nenhum código ou token de autorização foi identificado no retorno do provedor.'
-      );
-      return;
-    }
+    // Erros de retorno (ou ausência de credenciais) já são exibidos pelo estado inicial.
+    if (initialError) return;
 
     const processLogin = async () => {
       try {
@@ -57,7 +59,7 @@ export default function AuthCallback() {
     };
 
     processLogin();
-  }, [searchParams, handleAuthCallback, navigate]);
+  }, [code, token, initialError, handleAuthCallback]);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 bg-[#F8FAFC] text-slate-800">
