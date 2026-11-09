@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import InitialHome from './components/InitialHome';
 import AuthCallback from './pages/AuthCallback';
+import VerificacaoConsistencia from './pages/VerificacaoConsistencia';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +24,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<InitialHome />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/verificacao-consistencia" element={<VerificacaoConsistencia />} />
           </Routes>
         </Router>
       </AuthProvider>

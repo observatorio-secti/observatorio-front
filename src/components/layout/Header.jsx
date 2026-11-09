@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, LogIn, LogOut, ExternalLink, ChevronDown } from 'lucide-react';
+import { Menu, X, LogIn, LogOut, ExternalLink, ChevronDown, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -119,6 +119,14 @@ export function Header() {
                         </span>
                       )}
                     </div>
+
+                    <a
+                      href="/verificacao-consistencia"
+                      className="flex items-center gap-2 px-3 py-2 text-xs text-on-surface hover:bg-surface-container-low transition-colors"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-on-surface-variant" />
+                      <span>Verificação de consistência</span>
+                    </a>
 
                     <a
                       href="/simcc"

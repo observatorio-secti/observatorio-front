@@ -31,13 +31,13 @@ observatorio-front/
 │   │   ├── FeaturedResearchers.jsx
 │   │   ├── HeroMetricCards.jsx
 │   │   └── InitialHome.jsx
-│   ├── constants/                 # Links institucionais e constantes de busca do SimCC
+│   ├── constants/                 # Links institucionais, constantes de busca do SimCC e metadados do módulo de consistência
 │   ├── context/                   # Contexto global de autenticação SSO (AuthContext.jsx)
 │   ├── data/                      # Metadados de instituições parceiras e módulos do ecossistema
-│   ├── hooks/                     # Hooks React Query (useAuth, pesquisadores destaque, métricas home)
-│   ├── lib/                       # Utilitários gerais (utils.js, auth-storage.js)
-│   ├── pages/                     # Páginas da aplicação (AuthCallback.jsx)
-│   ├── services/                  # Clientes HTTP (api.js, authService.js, homeService.js, researcherService.js)
+│   ├── hooks/                     # Hooks React Query (useAuth, pesquisadores destaque, métricas home, consistência)
+│   ├── lib/                       # Utilitários gerais (utils.js, auth-storage.js, consistencia.js)
+│   ├── pages/                     # Páginas da aplicação (AuthCallback.jsx, VerificacaoConsistencia/)
+│   ├── services/                  # Clientes HTTP (api.js, authService.js, consistenciaService.js, homeService.js, researcherService.js)
 │   ├── App.jsx                    # Componente raiz, provedores e roteamento
 │   └── main.jsx                   # Ponto de montagem React e QueryClientProvider
 ├── DESIGN.md                      # Especificação do Design System
