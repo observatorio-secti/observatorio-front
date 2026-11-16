@@ -15,15 +15,17 @@
 //      se ETL_API_KEY estiver definida);
 //   3. Grava um arquivo JSON em `snapshots/` e atualiza `snapshots/index.json`.
 //
-// A comparação antes/depois NÃO depende de estar rodando no exato momento da
-// carga: o front usa o `coletado_em` de cada foto contra `iniciado_em` e
-// `finalizado_em` registrados pelo ETL. Por isso rodar de hora em hora basta —
-// e a marcação `em_andamento` é só um reforço.
+// Cadência: uma foto por mês. As cargas do ETL são mensais, então uma foto
+// mensal já registra o estado entre uma carga e outra. A comparação não depende
+// de estar rodando no momento da carga: o front usa o `coletado_em` de cada foto
+// contra `iniciado_em` e `finalizado_em` registrados pelo ETL. Quando o par de
+// fotos fica muito afastado da janela da carga, a tabela mostra as datas das
+// fotos em vez de atribuir a diferença a uma carga só.
 //
 // Uso:
 //   node scripts/coletor-snapshots.mjs                    # grava em ./snapshots
 //   node scripts/coletor-snapshots.mjs --saida ./public/snapshots
-//   node scripts/coletor-snapshots.mjs --reter 720        # 30 dias de hora em hora
+//   node scripts/coletor-snapshots.mjs --reter 60         # 5 anos de fotos mensais
 //
 // Variáveis de ambiente:
 //   API_URL         base da API do portal (padrão: produção)
@@ -37,7 +39,7 @@ import path from 'node:path';
 
 const API_PADRAO = 'https://observatoriocti.secti.ba.gov.br/simcc/api';
 const ETL_PADRAO = 'https://simcc.uesc.br/etl';
-const RETENCAO_PADRAO = 720;
+const RETENCAO_PADRAO = 60;
 
 /** Campos numéricos que interessam do endpoint de instituições */
 const CAMPOS_METRICAS = [

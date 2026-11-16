@@ -1,8 +1,13 @@
 name: Coletor de snapshots por instituição
 
-# Guarda uma "foto" dos totais por instituição de hora em hora.
+# Guarda uma "foto" dos totais por instituição uma vez por mês.
 # O front compara a foto anterior com a posterior de cada carga registrada pelo
 # ETL, o que permite dizer quanto cada instituição ganhou ou perdeu.
+#
+# Cadência mensal: as cargas do ETL são mensais e a comparação é feita entre
+# fotos, então uma foto por mês é o suficiente. O custo é que o par de fotos
+# pode estar mais afastado da janela da carga — a tabela marca essas linhas
+# como "fotos mensais" em vez de atribuir a diferença a uma carga só.
 #
 # As fotos ficam no branch `dados-snapshots` (não afeta o build do site) e são
 # lidas pelo front via raw.githubusercontent.com. Para trocar de destino, mude
@@ -10,8 +15,8 @@ name: Coletor de snapshots por instituição
 
 on:
   schedule:
-    # de hora em hora, alguns minutos depois da hora cheia
-    - cron: '7 * * * *'
+    # todo dia 1º às 04:07 UTC (01:07 em America/Bahia)
+    - cron: '7 4 1 * *'
   workflow_dispatch:
 
 permissions:

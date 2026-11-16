@@ -12,6 +12,7 @@ import {
   nomeRotina,
   rotuloSituacao,
 } from '../../lib/consistencia';
+import { janelaDaCarga } from '../../lib/snapshots';
 
 const TH = ({ children, className = '' }) => (
   <th
@@ -111,6 +112,11 @@ export function TabelaMetricas({ linhas, carregando, mensagemVazia }) {
                           <span className="block font-data-tabular text-[10px] opacity-60">
                             {formatarDataHora(linha.finalizadoEm || linha.iniciadoEm)}
                           </span>
+                          {!janelaDaCarga(linha) && (
+                            <span className="mt-1 inline-block rounded bg-secondary-container/60 px-1.5 py-0.5 text-[10px] font-semibold text-on-secondary-container">
+                              fotos mensais
+                            </span>
+                          )}
                         </>
                       )}
                     </td>
@@ -140,7 +146,7 @@ export function TabelaMetricas({ linhas, carregando, mensagemVazia }) {
                       {formatarVariacao(linha.variacao)}
                     </td>
 
-                    <td className="border-b border-outline-variant/30 px-3 py-2.5 font-data-tabular text-data-tabular">
+                    <td className="border-b border-outline-variant/30 px-3 py-2.5 font-data-tabular text-data-tabular whitespace-nowrap">
                       −{Math.abs(linha.limites.queda)}% / +{linha.limites.alta}%
                     </td>
 

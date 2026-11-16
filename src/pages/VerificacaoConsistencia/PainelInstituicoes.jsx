@@ -1,5 +1,5 @@
 // src/pages/VerificacaoConsistencia/PainelInstituicoes.jsx
-// Aba "Por instituição": compara as fotos horárias de `GET /institution`
+// Aba "Por instituição": compara as fotos mensais de `GET /institution`
 // usando a janela de cada carga registrada pelo ETL.
 //
 // A filtragem e o cálculo da situação ficam em `index.jsx` para que a
@@ -62,8 +62,8 @@ export function PainelInstituicoes({
         </span>
 
         <span className="text-label-md text-on-surface-variant">
-          Coleta automática de hora em hora. A comparação usa a foto anterior ao início da
-          carga e a primeira posterior ao fim.
+          Coleta automática uma vez por mês. A comparação usa a foto anterior ao início da carga e
+          a primeira posterior ao fim.
         </span>
 
         <button
@@ -197,7 +197,9 @@ export function PainelInstituicoes({
 
       <p className="text-label-md text-on-surface-variant">
         A comparação usa a foto anterior ao início da carga e a primeira posterior ao fim. Passe o
-        mouse sobre a coluna “Carga” para ver as fotos usadas.
+        mouse sobre a coluna “Carga” para ver as fotos usadas. Como a coleta é mensal, o par pode
+        ficar distante da carga — nesse caso a linha marca “fotos mensais” e a diferença inclui
+        outras mudanças do período.
       </p>
     </div>
   );

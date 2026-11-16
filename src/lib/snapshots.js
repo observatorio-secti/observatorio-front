@@ -1,15 +1,17 @@
 // src/lib/snapshots.js
 // Regras de comparação das fotos por instituição.
 //
-// O coletor grava uma foto de `GET /simcc/api/institution` a cada hora.
+// O coletor grava uma foto de `GET /simcc/api/institution` uma vez por mês.
 // Para cada métrica, a janela de comparação vem da execução do ETL que a
 // atualiza:
 //   antes  = última foto anterior ao `iniciado_em` da carga
 //   depois = primeira foto posterior ao `finalizado_em` da carga
 // Assim a comparação fica amarrada na carga real, sem depender de alguém
-// estar com a página aberta.
+// estar com a página aberta. Quando as fotos estão distantes da janela (o
+// normal com cadência mensal), a linha avisa que a diferença é "entre fotos"
+// e não pode ser atribuída a uma carga só.
 
-import { METRICAS_INSTITUICAO } from '../constants/consistencia';
+import { METRICAS_INSTITUICAO, TOLERANCIA_JANELA_CARGA } from '../constants/consistencia';
 
 const ESTADOS_COM_MEDICAO = ['CONCLUIDO', 'CONCLUIDO_PARCIAL'];
 
@@ -77,6 +79,27 @@ export const ultimasDuasFotos = (entradas) => {
     antes: ordenadas[ordenadas.length - 2],
     depois: ordenadas[ordenadas.length - 1],
   };
+};
+
+/**
+ * O par de fotos usado para uma carga está próximo dela?
+ *
+ * Com fotos mensais, a foto "antes" pode ser de semanas antes do início e a
+ * "depois" de semanas depois do fim. Nesse caso a diferença não é só daquela
+ * carga, então a tabela mostra as datas das fotos. Quando o par envolve a
+ * janela com folga pequena, a diferença pode ser atribuída à carga.
+ */
+export const janelaDaCarga = (linha, tolerancia = TOLERANCIA_JANELA_CARGA) => {
+  if (!linha || linha.origem !== 'carga') return false;
+
+  const antes = instante(linha.coletadoAntesEm);
+  const inicio = instante(linha.iniciadoEm);
+  const fim = instante(linha.finalizadoEm || linha.iniciadoEm);
+  const depois = instante(linha.coletadoDepoisEm);
+
+  if (antes == null || inicio == null || fim == null || depois == null) return false;
+
+  return inicio - antes <= tolerancia && depois - fim <= tolerancia;
 };
 
 /**

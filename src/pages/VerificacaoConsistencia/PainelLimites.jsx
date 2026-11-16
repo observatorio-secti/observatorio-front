@@ -3,7 +3,7 @@
 // e aplicação em tempo real na tabela.
 //
 // A persistência é local (navegador) porque a comparação por instituição é
-// feita no próprio portal, a partir das fotos horárias — não existe um
+// feita no próprio portal, a partir das fotos mensais — não existe um
 // endpoint de limites no backend.
 
 import { useState } from 'react';
