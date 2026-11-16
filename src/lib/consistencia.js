@@ -1,13 +1,8 @@
 // src/lib/consistencia.js
 // Utilitários do módulo de Verificação de Consistência de Dados
+// (contrato do SimCC ETL: `/etl/consistencia/export`)
 
-import {
-  CHAVE_LIMITES,
-  ESCOPOS,
-  LIMITES_PADRAO,
-  METRICAS,
-  SITUACOES_COMPARACAO,
-} from '../constants/consistencia';
+import { ESTADOS, MEDIDAS, ROTINAS } from '../constants/consistencia';
 
 /* ---------- Formatação ---------- */
 
@@ -22,140 +17,286 @@ export const formatarDataHora = (iso) =>
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
+        timeZone: 'America/Bahia',
       })
     : '—';
+
+export const formatarData = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        timeZone: 'America/Bahia',
+      })
+    : '—';
+
+/** Duração em milissegundos -> texto curto (ex.: "1 h 23 min") */
+export const formatarDuracao = (ms) => {
+  if (ms == null || Number.isNaN(Number(ms))) return '—';
+  const total = Number(ms);
+  if (total < 1000) return `${total} ms`;
+  const segundos = Math.round(total / 1000);
+  if (segundos < 60) return `${segundos} s`;
+  const minutos = Math.floor(segundos / 60);
+  const resto = segundos % 60;
+  if (minutos < 60) return resto ? `${minutos} min ${resto} s` : `${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  const minutosRestantes = minutos % 60;
+  return minutosRestantes ? `${horas} h ${minutosRestantes} min` : `${horas} h`;
+};
 
 export const formatarVariacao = (percentual) =>
   percentual == null
     ? '—'
-    : `${Number(percentual).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+    : `${percentual > 0 ? '+' : ''}${Number(percentual).toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
       })}%`;
 
-export const nomeMetrica = (chave) => METRICAS[chave] || chave;
+/* ---------- Leitura do relatório ---------- */
 
-export const rotuloSituacao = (status) => SITUACOES_COMPARACAO[status] || status;
+export const nomeRotina = (tipo) => ROTINAS[tipo]?.rotulo || tipo || '—';
 
-export const rotuloEscopo = (escopo) => ESCOPOS[escopo] || escopo;
+export const categoriaRotina = (tipo) => ROTINAS[tipo]?.categoria || '—';
 
-/* ---------- Limites de variação (painel de simulação) ---------- */
+export const afetaRotina = (tipo) => ROTINAS[tipo]?.afeta || '—';
+
+export const infoEstado = (estado) =>
+  ESTADOS[estado] || {
+    rotulo: estado || '—',
+    descricao: '',
+    destaque: false,
+    classes: 'bg-surface-container-high text-on-surface-variant',
+  };
+
+export const nomeMedida = (chave) => MEDIDAS[chave] || chave;
+
+/** Data usada para ordenar e exibir a execução */
+export const dataExecucao = (relatorio) =>
+  relatorio?.iniciado_em || relatorio?.finalizado_em || null;
+
+/** Verifica se a execução registrou alguma medição numérica */
+export const temMedicao = (relatorio) =>
+  medicaoDaExecucao(relatorio).length > 0;
 
 /**
- * Carrega os limites salvos no navegador; recai para os padrões do contrato.
- * Observação: no protótipo a persistência é local — na produção os limites
- * oficiais ficam no backend (ver seção "Decisões" do relatório de testes).
+ * Extrai as medidas de uma execução, comparando `antes` e `depois`.
+ * Ignora `probe_unavailable` (é um sinalizador, não uma contagem).
  */
-export const limitesCarregados = () => {
-  try {
-    const cru = localStorage.getItem(CHAVE_LIMITES);
-    if (cru) {
-      const l = JSON.parse(cru);
-      if (typeof l.queda === 'number' && typeof l.alta === 'number') {
-        return { queda: l.queda, alta: l.alta, excecoes: l.excecoes || {} };
-      }
-    }
-  } catch (erro) {
-    console.error('Erro ao ler limites de consistência:', erro);
-  }
-  return { ...LIMITES_PADRAO, excecoes: {} };
+export const medicaoDaExecucao = (relatorio) => {
+  if (!relatorio) return [];
+  const antes = relatorio.antes || {};
+  const depois = relatorio.depois || {};
+  const chaves = new Set([...Object.keys(antes), ...Object.keys(depois)]);
+  const medidas = [];
+
+  chaves.forEach((chave) => {
+    if (chave === 'probe_unavailable') return;
+    const valorAntes = antes[chave];
+    const valorDepois = depois[chave];
+    if (typeof valorAntes === 'boolean' || typeof valorDepois === 'boolean') return;
+    if (typeof valorAntes !== 'number' && typeof valorDepois !== 'number') return;
+
+    const delta =
+      relatorio.resultado?.[`delta_${chave}`] ??
+      (typeof valorAntes === 'number' && typeof valorDepois === 'number'
+        ? valorDepois - valorAntes
+        : null);
+
+    medidas.push({
+      chave,
+      rotulo: nomeMedida(chave),
+      antes: valorAntes ?? null,
+      depois: valorDepois ?? null,
+      delta,
+      variacao:
+        typeof valorAntes === 'number' && valorAntes !== 0 && typeof valorDepois === 'number'
+          ? ((valorDepois - valorAntes) / valorAntes) * 100
+          : null,
+    });
+  });
+
+  return medidas;
 };
 
-export const limitesSalvar = (limites) => {
-  try {
-    localStorage.setItem(CHAVE_LIMITES, JSON.stringify(limites));
-  } catch (erro) {
-    console.error('Erro ao salvar limites de consistência:', erro);
-  }
-};
+/** `true` quando a rotina não conseguiu medir o estado do banco */
+export const semMedicao = (relatorio) => relatorio?.antes?.probe_unavailable === true;
 
-export const limitesValidos = (limites) =>
-  limites && typeof limites.queda === 'number' && typeof limites.alta === 'number';
-
-/** Limites aplicáveis a uma métrica (exceção sobrepõe o padrão) */
-export const limitesDe = (limites, metrica) => {
-  const excecao = limites.excecoes && limites.excecoes[metrica];
-  return excecao && typeof excecao.queda === 'number'
-    ? excecao
-    : { queda: limites.queda, alta: limites.alta };
-};
-
-/** Corpo de finalização da carga aceito por POST /internal/.../{id}/finish */
-export const limitesParaJson = (limites) => ({
-  lower_tolerance: Math.abs(Number(limites.queda)),
-  upper_tolerance: Number(limites.alta),
+/** Detalhes de uma execução (stats, cobertura, duração, origem) */
+export const detalhesExecucao = (relatorio) => ({
+  stats: relatorio?.resultado?.stats || null,
+  cobertura: relatorio?.resultado?.cobertura || null,
+  duracao: relatorio?.resultado?.duration_ms ?? null,
+  origem: relatorio?.resultado?.origem || null,
+  etlRunId: relatorio?.resultado?.etl_run_id || null,
+  erro: relatorio?.erro || null,
 });
 
+/* ---------- Agrupamentos ---------- */
+
 /**
- * Estado exibido para uma linha de métrica.
- * Sem simulação: usa exatamente o que o backend calculou (status/is_warning).
- * Com simulação: reavalia os limites contra a variação JÁ calculada pelo
- * backend — a variação nunca é recalculada na frente (ver consistencia-dados.md).
+ * Agrupa as execuções por tipo de rotina.
+ * Com `apenas_ultimos=true` o endpoint devolve a última tentativa e, quando
+ * diferente, a última conclusão íntegra — guardamos as duas.
  */
-export const statusEfetivo = (linha, simular, limites) => {
-  if (!simular) return { status: linha.status, isWarning: linha.is_warning };
-  if (linha.before_value === 0 && linha.after_value > 0) {
-    return { status: 'NEW_SCOPE', isWarning: false };
-  }
-  if (linha.variation_percent == null) {
-    return { status: linha.status, isWarning: linha.is_warning };
-  }
-  const l = limitesDe(limites, linha.metric_key);
-  const v = linha.variation_percent;
-  const fora = v <= l.queda || v >= l.alta;
-  return { status: fora ? 'WARNING' : 'NORMAL', isWarning: fora };
+export const agruparPorTipo = (relatorios) => {
+  const mapa = new Map();
+  (relatorios || []).forEach((relatorio) => {
+    const tipo = relatorio?.resultado?.tipo || relatorio?.tipo || 'desconhecido';
+    const atual = mapa.get(tipo) || { tipo, ultima: null, ultimaIntegra: null };
+    const momento = new Date(dataExecucao(relatorio) || 0).getTime();
+
+    if (!atual.ultima || momento > new Date(dataExecucao(atual.ultima) || 0).getTime()) {
+      atual.ultima = relatorio;
+    }
+    if (relatorio.estado === 'CONCLUIDO') {
+      const momentoIntegra = new Date(dataExecucao(relatorio) || 0).getTime();
+      if (
+        !atual.ultimaIntegra ||
+        momentoIntegra > new Date(dataExecucao(atual.ultimaIntegra) || 0).getTime()
+      ) {
+        atual.ultimaIntegra = relatorio;
+      }
+    }
+    mapa.set(tipo, atual);
+  });
+
+  return [...mapa.values()].sort((a, b) => {
+    const ta = new Date(dataExecucao(a.ultima) || 0).getTime();
+    const tb = new Date(dataExecucao(b.ultima) || 0).getTime();
+    return tb - ta;
+  });
+};
+
+/** Execução mais recente de toda a lista */
+export const ultimaExecucaoGeral = (relatorios) =>
+  (relatorios || []).reduce((maisRecente, relatorio) => {
+    if (!maisRecente) return relatorio;
+    const a = new Date(dataExecucao(relatorio) || 0).getTime();
+    const b = new Date(dataExecucao(maisRecente) || 0).getTime();
+    return a > b ? relatorio : maisRecente;
+  }, null);
+
+/** Contagem por estado para os cartões de resumo */
+export const resumoExecucoes = (relatorios) => {
+  const resumo = {
+    total: (relatorios || []).length,
+    concluidos: 0,
+    parciais: 0,
+    falhas: 0,
+    emAndamento: 0,
+    comFalhasDeRegistro: 0,
+  };
+
+  (relatorios || []).forEach((relatorio) => {
+    if (relatorio.estado === 'CONCLUIDO') resumo.concluidos += 1;
+    if (relatorio.estado === 'CONCLUIDO_PARCIAL') resumo.parciais += 1;
+    if (relatorio.estado === 'FALHA') resumo.falhas += 1;
+    if (relatorio.estado === 'EM_ANDAMENTO') resumo.emAndamento += 1;
+    if ((relatorio.resultado?.stats?.failed || 0) > 0) resumo.comFalhasDeRegistro += 1;
+  });
+
+  return resumo;
 };
 
 /* ---------- Exportação CSV ---------- */
 
+const escapar = (valor) =>
+  String(valor ?? '')
+    .replace(/;/g, ',')
+    .replace(/\r?\n/g, ' ')
+    .trim();
+
 /**
- * Exporta as linhas visíveis com o estado aplicado em cada uma.
- * Aceita ';' como separador e vírgula decimal (padrão Excel pt-BR).
+ * Exporta uma linha por rotina (visão principal da tela).
+ * Separador `;` e vírgula decimal, padrão do Excel em pt-BR.
  */
-export const exportarCsv = (linhasVisiveis) => {
-  if (!linhasVisiveis.length) return;
+export const exportarCsv = (grupos) => {
+  if (!grupos || grupos.length === 0) return;
+
   const cabecalho = [
-    'Instituição',
-    'metric_key',
-    'Métrica',
-    'Escopo',
+    'Rotina',
+    'Categoria',
+    'O que atualiza',
+    'Última execução',
+    'Estado',
+    'Cobertura',
+    'Duração',
+    'Medida',
     'Antes',
     'Depois',
     'Diferença',
     'Variação %',
-    'Situação publicada pelo backend',
-    'Situação em exibição',
+    'Encontrados',
+    'Falharam',
+    'Erro',
   ].join(';');
 
-  const conteudo = [cabecalho]
-    .concat(
-      linhasVisiveis.map((linha) =>
-        [
-          linha.institution_name || '',
-          linha.metric_key || '',
-          nomeMetrica(linha.metric_key),
-          rotuloEscopo(linha.scope),
-          linha.before_value,
-          linha.after_value,
-          linha.absolute_difference,
-          linha.variation_percent == null
-            ? ''
-            : String(linha.variation_percent).replace('.', ','),
-          SITUACOES_COMPARACAO[linha.status] || linha.status,
-          SITUACOES_COMPARACAO[linha.statusEfetivo] || linha.statusEfetivo,
-        ]
-          .map((campo) => String(campo ?? '').replace(/;/g, ',').replace(/\n/g, ' '))
-          .join(';'),
-      ),
-    )
-    .join('\n');
+  const linhas = [];
 
+  grupos.forEach(({ tipo, ultima }) => {
+    const estado = infoEstado(ultima?.estado);
+    const detalhes = detalhesExecucao(ultima);
+    const medidas = medicaoDaExecucao(ultima);
+
+    if (medidas.length === 0) {
+      linhas.push(
+        [
+          nomeRotina(tipo),
+          categoriaRotina(tipo),
+          afetaRotina(tipo),
+          formatarDataHora(dataExecucao(ultima)),
+          estado.rotulo,
+          detalhes.cobertura || '',
+          formatarDuracao(detalhes.duracao),
+          '—',
+          '',
+          '',
+          '',
+          '',
+          detalhes.stats?.found ?? '',
+          detalhes.stats?.failed ?? '',
+          detalhes.erro || '',
+        ]
+          .map(escapar)
+          .join(';'),
+      );
+      return;
+    }
+
+    medidas.forEach((medida) => {
+      linhas.push(
+        [
+          nomeRotina(tipo),
+          categoriaRotina(tipo),
+          afetaRotina(tipo),
+          formatarDataHora(dataExecucao(ultima)),
+          estado.rotulo,
+          detalhes.cobertura || '',
+          formatarDuracao(detalhes.duracao),
+          medida.rotulo,
+          medida.antes ?? '',
+          medida.depois ?? '',
+          medida.delta ?? '',
+          medida.variacao == null ? '' : String(medida.variacao.toFixed(1)).replace('.', ','),
+          detalhes.stats?.found ?? '',
+          detalhes.stats?.failed ?? '',
+          detalhes.erro || '',
+        ]
+          .map(escapar)
+          .join(';'),
+      );
+    });
+  });
+
+  const conteudo = [cabecalho, ...linhas].join('\n');
   const blob = new Blob([`\ufeff${conteudo}`], { type: 'text/csv;charset=utf-8' });
   const endereco = URL.createObjectURL(blob);
   const ancora = document.createElement('a');
   const hoje = new Date().toISOString().slice(0, 10);
   ancora.href = endereco;
-  ancora.download = `verificacao-consistencia_${hoje}.csv`;
+  ancora.download = `cargas-etl_${hoje}.csv`;
   ancora.click();
   URL.revokeObjectURL(endereco);
 };

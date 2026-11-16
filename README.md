@@ -83,6 +83,8 @@ As variáveis de ambiente configuram o acesso às APIs do ecossistema e ao prove
 | :--- | :--- | :--- |
 | `VITE_API_URL` | URL base da API do SimCC/Observatório para busca de métricas e pesquisadores | `https://observatoriocti.secti.ba.gov.br/simcc/api` |
 | `VITE_IDP_URL` | URL base do Observatório IdP para autenticação SSO via OAuth 2.0 PKCE | `https://observatoriocti.secti.ba.gov.br/idp/` |
+| `VITE_ETL_URL` | URL base do SimCC ETL, que expõe os relatórios de consistência das cargas | `https://simcc.uesc.br/etl` |
+| `VITE_ETL_API_KEY` | Chave enviada em `X-ETL-API-Key` para o endpoint de exportação do ETL | *(obrigatória)* |
 
 ---
 

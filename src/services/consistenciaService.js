@@ -1,43 +1,42 @@
 // src/services/consistenciaService.js
-// Cliente HTTP do módulo de Verificação de Consistência de Dados
-// Documentação: `consistencia-dados.md` (endpoints públicos `/data-consistency`)
+// Cliente HTTP do módulo de Verificação de Consistência de Dados.
+// Fonte: SimCC ETL (`GET /etl/consistencia/export`).
+//
+// Autenticação: header `X-ETL-API-Key`. A chave vem de `VITE_ETL_API_KEY`
+// e fica embutida no bundle do site — o ETL liberou CORS para o domínio do
+// portal e o endpoint é somente leitura. Risco conhecido, documentado no PR:
+// o ideal no futuro é intermediar por um proxy no backend.
 
-import api from './api';
+import axios from 'axios';
+
+const etl = axios.create({
+  baseURL: import.meta.env.VITE_ETL_URL || 'https://simcc.uesc.br/etl',
+  timeout: 25000,
+  headers: {
+    'X-ETL-API-Key': import.meta.env.VITE_ETL_API_KEY || '',
+  },
+});
 
 /**
- * Último relatório validado.
- * Retorna `null` quando ainda não existe carga validada (404 esperado).
+ * Lista os relatórios de consistência.
+ *
+ * @param {object} filtros
+ * @param {boolean} [filtros.apenas_ultimos] última tentativa por tipo
+ *   (e a última conclusão íntegra, quando diferente)
+ * @param {string}  [filtros.tipo] rotina específica
+ * @param {string}  [filtros.desde] data inicial em ISO-8601
+ * @param {number}  [filtros.limit] 1..500 (padrão do backend: 100)
+ * @param {number}  [filtros.offset] deslocamento da paginação
  */
-export const getUltimoRelatorio = async () => {
-  try {
-    const { data } = await api.get('/data-consistency/latest');
-    return data;
-  } catch (erro) {
-    if (erro.response && erro.response.status === 404) return null;
-    throw erro;
-  }
-};
+export const getRelatoriosConsistencia = async (filtros = {}) => {
+  const params = Object.fromEntries(
+    Object.entries(filtros).filter(([, valor]) => valor !== '' && valor != null),
+  );
 
-/**
- * Histórico de execuções. Filtros aceitos pelo backend:
- * `load_type`, `status`, `date_from`, `date_to`, `limit`.
- */
-export const getHistoricoCargas = async (filtros = {}) => {
-  const { data } = await api.get('/data-consistency/history', { params: filtros });
+  const { data } = await etl.get('/consistencia/export', { params });
   return Array.isArray(data) ? data : [];
 };
 
-/**
- * Última execução por tipo de carga. A forma da resposta (objeto por tipo
- * ou lista) ainda pode variar conforme o backend — normalizada na página.
- */
-export const getUltimasCargasPorTipo = async () => {
-  const { data } = await api.get('/data-consistency/loads/latest');
-  return data;
-};
-
 export default {
-  getUltimoRelatorio,
-  getHistoricoCargas,
-  getUltimasCargasPorTipo,
+  getRelatoriosConsistencia,
 };

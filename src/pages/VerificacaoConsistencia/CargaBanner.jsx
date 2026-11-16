@@ -1,61 +1,82 @@
 // src/pages/VerificacaoConsistencia/CargaBanner.jsx
-// Faixa de destaque com a carga do último relatório validado
+// Faixa com a execução mais recente registrada pelo ETL
 
-import { formatarDataHora } from '../../lib/consistencia';
+import { Clock, Database, PlayCircle } from 'lucide-react';
+
 import {
-  classeSituacaoCarga,
-  nomeCarga,
-  rotuloOrigem,
-  rotuloSituacaoCarga,
-} from './rotulosExtras';
+  dataExecucao,
+  detalhesExecucao,
+  formatarDataHora,
+  formatarDuracao,
+  infoEstado,
+  nomeRotina,
+} from '../../lib/consistencia';
+import { COBERTURAS } from '../../constants/consistencia';
 
-export function CargaBanner({ carga }) {
-  if (!carga) return null;
-  const estilo = classeSituacaoCarga(carga.status);
+export function CargaBanner({ relatorio }) {
+  if (!relatorio) return null;
+
+  const estado = infoEstado(relatorio.estado);
+  const detalhes = detalhesExecucao(relatorio);
 
   return (
     <section className="bg-surface-container-lowest rounded-xl p-4 md:p-5 shadow-sm">
       <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
-        <div>
-          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">
-            Tipo de carga
+        <div className="flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <PlayCircle className="h-4 w-4" />
           </span>
-          <span className="font-title-lg text-navy-deep">{nomeCarga(carga)}</span>
+          <div>
+            <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">
+              Última carga registrada
+            </span>
+            <span className="font-title-lg text-navy-deep">{nomeRotina(relatorio.resultado?.tipo)}</span>
+          </div>
+        </div>
+
+        <div>
+          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Quando</span>
+          <span className="text-body-md">{formatarDataHora(dataExecucao(relatorio))}</span>
         </div>
 
         <div>
           <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Situação</span>
-          <span className={`inline-block rounded-full px-3 py-0.5 text-label-md font-semibold ${estilo}`}>
-            {rotuloSituacaoCarga(carga)}
+          <span className={`inline-block rounded-full px-3 py-0.5 text-label-md font-semibold ${estado.classes}`}>
+            {estado.rotulo}
           </span>
         </div>
 
         <div>
-          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Origem</span>
-          <span className="text-body-md">{rotuloOrigem(carga)}</span>
+          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Duração</span>
+          <span className="inline-flex items-center gap-1.5 text-body-md">
+            <Clock className="h-3.5 w-3.5 text-on-surface-variant" />
+            {formatarDuracao(detalhes.duracao)}
+          </span>
         </div>
 
-        <div>
-          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Início</span>
-          <span className="text-body-md">{formatarDataHora(carga.started_at)}</span>
-        </div>
+        {detalhes.cobertura && (
+          <div>
+            <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Cobertura</span>
+            <span className="text-body-md">{COBERTURAS[detalhes.cobertura] || detalhes.cobertura}</span>
+          </div>
+        )}
 
-        <div>
-          <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Término</span>
-          <span className="text-body-md">{formatarDataHora(carga.finished_at)}</span>
-        </div>
-
-        {carga.id && (
-          <div className="hidden lg:block">
-            <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">Carga (id)</span>
-            <code className="font-data-tabular text-data-tabular text-on-surface-variant">{carga.id}</code>
+        {detalhes.etlRunId && (
+          <div className="hidden xl:block">
+            <span className="block text-label-md text-on-surface-variant uppercase tracking-wide">
+              Execução do ETL
+            </span>
+            <code className="inline-flex items-center gap-1.5 font-data-tabular text-data-tabular text-on-surface-variant">
+              <Database className="h-3.5 w-3.5" />
+              {String(detalhes.etlRunId).slice(0, 8)}
+            </code>
           </div>
         )}
       </div>
 
-      {carga.error_detail && (
+      {detalhes.erro && (
         <p className="mt-3 rounded-lg bg-error-container/40 px-3 py-2 text-body-md text-on-error-container">
-          <strong className="font-semibold">Falha registrada:</strong> {carga.error_detail}
+          <strong className="font-semibold">Erro registrado:</strong> {detalhes.erro}
         </p>
       )}
     </section>
