@@ -2,7 +2,15 @@
 // Utilitários do módulo de Verificação de Consistência de Dados
 // (contrato do SimCC ETL: `/etl/consistencia/export`)
 
-import { ESTADOS, MEDIDAS, ROTINAS } from '../constants/consistencia';
+import {
+  CHAVE_LIMITES,
+  ESTADOS,
+  LIMITES_PADRAO,
+  MEDIDAS,
+  METRICAS_INSTITUICAO,
+  ROTINAS,
+  SITUACOES_COMPARACAO,
+} from '../constants/consistencia';
 
 /* ---------- Formatação ---------- */
 
@@ -297,6 +305,139 @@ export const exportarCsv = (grupos) => {
   const hoje = new Date().toISOString().slice(0, 10);
   ancora.href = endereco;
   ancora.download = `cargas-etl_${hoje}.csv`;
+  ancora.click();
+  URL.revokeObjectURL(endereco);
+};
+
+/* ---------- Comparação por instituição ---------- */
+
+export const nomeMetricaInstituicao = (chave) =>
+  METRICAS_INSTITUICAO[chave]?.rotulo || chave;
+
+export const rotinaDaMetrica = (chave) => METRICAS_INSTITUICAO[chave]?.rotina || null;
+
+export const descricaoMetrica = (chave) => METRICAS_INSTITUICAO[chave]?.descricao || '';
+
+export const rotuloSituacao = (status) => SITUACOES_COMPARACAO[status] || status || '—';
+
+/* ---------- Limites de variação (preferências locais) ---------- */
+
+/**
+ * Limites salvos no navegador; recai para o par oficial (−5% / +10%).
+ * Observação: aqui a persistência é local porque os limites oficiais por
+ * métrica ainda não existem no backend — a comparação é feita no próprio front.
+ */
+export const limitesCarregados = () => {
+  try {
+    const cru = localStorage.getItem(CHAVE_LIMITES);
+    if (cru) {
+      const salvo = JSON.parse(cru);
+      if (typeof salvo.queda === 'number' && typeof salvo.alta === 'number') {
+        return { queda: salvo.queda, alta: salvo.alta, excecoes: salvo.excecoes || {} };
+      }
+    }
+  } catch (erro) {
+    console.error('Erro ao ler os limites de consistência:', erro);
+  }
+  return { ...LIMITES_PADRAO, excecoes: {} };
+};
+
+export const limitesSalvar = (limites) => {
+  try {
+    localStorage.setItem(CHAVE_LIMITES, JSON.stringify(limites));
+  } catch (erro) {
+    console.error('Erro ao salvar os limites de consistência:', erro);
+  }
+};
+
+export const limitesValidos = (limites) =>
+  Boolean(limites) && typeof limites.queda === 'number' && typeof limites.alta === 'number';
+
+/** Limites de uma métrica: a exceção sobrepõe o padrão */
+export const limitesDe = (limites, metrica) => {
+  const excecao = limites?.excecoes?.[metrica];
+  return excecao && typeof excecao.queda === 'number'
+    ? excecao
+    : { queda: limites?.queda ?? LIMITES_PADRAO.queda, alta: limites?.alta ?? LIMITES_PADRAO.alta };
+};
+
+/**
+ * Situação exibida para uma linha de instituição.
+ * Com `simular` desligado, vale o par oficial; ligado, valem os limites editados.
+ */
+export const statusEfetivo = (linha, simular, limites) => {
+  const usados = simular ? limitesDe(limites, linha.metrica) : { ...LIMITES_PADRAO };
+
+  if (linha.antes === 0 && linha.depois > 0) {
+    return { status: 'NEW_SCOPE', isWarning: false, limites: usados };
+  }
+  if (linha.depois === 0 && linha.antes > 0) {
+    return { status: 'WARNING', isWarning: true, limites: usados };
+  }
+  if (linha.variacao == null || Math.abs(linha.variacao) < 0.0001) {
+    return { status: 'UNCHANGED', isWarning: false, limites: usados };
+  }
+  const fora = linha.variacao <= usados.queda || linha.variacao >= usados.alta;
+  return { status: fora ? 'WARNING' : 'NORMAL', isWarning: fora, limites: usados };
+};
+
+/**
+ * Exporta a comparação por instituição (uma linha por instituição × métrica).
+ * Separador `;` e vírgula decimal, padrão do Excel em pt-BR.
+ */
+export const exportarCsvMetricas = (linhas) => {
+  if (!linhas || linhas.length === 0) return;
+
+  const cabecalho = [
+    'Instituição',
+    'Sigla',
+    'Métrica',
+    'Rotina que atualiza',
+    'Origem da comparação',
+    'Início da carga',
+    'Fim da carga',
+    'Foto anterior',
+    'Foto posterior',
+    'Antes',
+    'Depois',
+    'Diferença',
+    'Variação %',
+    'Limites',
+    'Situação',
+  ].join(';');
+
+  const conteudo = [cabecalho]
+    .concat(
+      linhas.map((linha) =>
+        [
+          linha.instituicaoNome,
+          linha.sigla,
+          nomeMetricaInstituicao(linha.metrica),
+          nomeRotina(linha.rotina),
+          linha.origem === 'fotos' ? 'Duas últimas fotos' : 'Janela da carga',
+          linha.iniciadoEm ? formatarDataHora(linha.iniciadoEm) : '',
+          linha.finalizadoEm ? formatarDataHora(linha.finalizadoEm) : '',
+          formatarDataHora(linha.coletadoAntesEm),
+          formatarDataHora(linha.coletadoDepoisEm),
+          linha.antes,
+          linha.depois,
+          linha.diferenca,
+          linha.variacao == null ? '' : String(linha.variacao.toFixed(1)).replace('.', ','),
+          `${linha.limites.queda}% / +${linha.limites.alta}%`,
+          rotuloSituacao(linha.statusEfetivo),
+        ]
+          .map(escapar)
+          .join(';'),
+      ),
+    )
+    .join('\n');
+
+  const blob = new Blob([`\ufeff${conteudo}`], { type: 'text/csv;charset=utf-8' });
+  const endereco = URL.createObjectURL(blob);
+  const ancora = document.createElement('a');
+  const hoje = new Date().toISOString().slice(0, 10);
+  ancora.href = endereco;
+  ancora.download = `consistencia-instituicoes_${hoje}.csv`;
   ancora.click();
   URL.revokeObjectURL(endereco);
 };

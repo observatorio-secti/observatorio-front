@@ -1,29 +1,40 @@
-// src/pages/VerificacaoConsistencia/index.jsx
+﻿// src/pages/VerificacaoConsistencia/index.jsx
 // Página do Módulo de Verificação de Consistência de Dados.
-// Fonte: SimCC ETL (`GET /etl/consistencia/export`), que registra o estado
-// do banco antes e depois de cada rotina de carga.
+//
+// Duas leituras, uma do lado da outra:
+//  1. Cargas por rotina — o que o SimCC ETL registrou antes/depois de cada
+//     rotina, em totais globais (`GET /etl/consistencia/export`).
+//  2. Por instituição — comparação das fotos horárias de `GET /institution`,
+//     amarrada à janela de cada carga. É o que responde "a UESC estava com
+//     1.100 pesquisadores e ficou com 1.124 depois da carga".
 
 import { useMemo, useState } from 'react';
-import { FileDown, LogIn, Printer, RefreshCw, ShieldAlert } from 'lucide-react';
+import { FileDown, LogIn, Printer, RefreshCw, Settings2, ShieldAlert } from 'lucide-react';
 
 import { useHistoricoExecucoes, useUltimasExecucoes } from '../../hooks/useConsistencia';
+import { useComparacaoInstituicoes } from '../../hooks/useSnapshots';
 import { useAuth } from '../../hooks/useAuth';
-import { TAMANHO_PAGINA } from '../../constants/consistencia';
+import { LIMITES_PADRAO, TAMANHO_PAGINA } from '../../constants/consistencia';
 import {
   agruparPorTipo,
   exportarCsv,
+  exportarCsvMetricas,
+  limitesCarregados,
+  limitesSalvar,
   resumoExecucoes,
+  statusEfetivo,
   ultimaExecucaoGeral,
 } from '../../lib/consistencia';
 import CargaBanner from './CargaBanner';
 import CartoesResumo from './CartoesResumo';
 import PainelHistorico from './PainelHistorico';
+import PainelInstituicoes from './PainelInstituicoes';
 import TabelaCargas from './TabelaCargas';
 
 export function VerificacaoConsistencia() {
   const { isAuthenticated, login } = useAuth();
 
-  const [aba, setAba] = useState('ultimas');
+  const [aba, setAba] = useState('cargas');
   const [expandidos, setExpandidos] = useState(() => new Set());
   const [pagina, setPagina] = useState(0);
   const [filtrosHistorico, setFiltrosHistorico] = useState({
@@ -31,6 +42,19 @@ export function VerificacaoConsistencia() {
     status: '',
     desdeData: '',
   });
+  const [filtrosInstituicoes, setFiltrosInstituicoes] = useState({
+    instituicao: '',
+    metrica: '',
+    soAlertas: false,
+  });
+
+  // Limites de variação (preferências locais)
+  const [limites, setLimites] = useState(() => {
+    const salvos = limitesCarregados();
+    return { ...salvos, excecoes: salvos.excecoes || {} };
+  });
+  const [simular, setSimular] = useState(true);
+  const [painelAberto, setPainelAberto] = useState(false);
 
   const {
     data: relatorios = [],
@@ -42,6 +66,8 @@ export function VerificacaoConsistencia() {
   const grupos = useMemo(() => agruparPorTipo(relatorios), [relatorios]);
   const resumo = useMemo(() => resumoExecucoes(grupos.map((g) => g.ultima)), [grupos]);
   const ultimaGeral = useMemo(() => ultimaExecucaoGeral(relatorios), [relatorios]);
+
+  const comparacao = useComparacaoInstituicoes(grupos);
 
   const historico = useHistoricoExecucoes(
     {
@@ -59,6 +85,72 @@ export function VerificacaoConsistencia() {
     return lista.filter((relatorio) => relatorio.estado === filtrosHistorico.status);
   }, [historico.data, filtrosHistorico.status]);
 
+  /* ---------- Comparação por instituição ---------- */
+
+  const linhasInstituicoes = useMemo(() => {
+    return comparacao.linhas
+      .map((linha) => {
+        const estado = statusEfetivo(linha, simular, limites);
+        return {
+          ...linha,
+          statusEfetivo: estado.status,
+          isWarning: estado.isWarning,
+          limites: estado.limites,
+        };
+      })
+      .filter((linha) => {
+        if (
+          filtrosInstituicoes.instituicao &&
+          !`${linha.sigla} ${linha.instituicaoNome}`
+            .toLowerCase()
+            .includes(filtrosInstituicoes.instituicao.toLowerCase())
+        ) {
+          return false;
+        }
+        if (filtrosInstituicoes.metrica && linha.metrica !== filtrosInstituicoes.metrica) {
+          return false;
+        }
+        if (
+          filtrosInstituicoes.soAlertas &&
+          !(linha.isWarning || linha.statusEfetivo === 'NEW_SCOPE')
+        ) {
+          return false;
+        }
+        return true;
+      });
+  }, [comparacao.linhas, simular, limites, filtrosInstituicoes]);
+
+  const contadoresInstituicoes = useMemo(
+    () => ({
+      total: linhasInstituicoes.length,
+      emAtencao: linhasInstituicoes.filter((linha) => linha.isWarning).length,
+      novas: linhasInstituicoes.filter((linha) => linha.statusEfetivo === 'NEW_SCOPE').length,
+    }),
+    [linhasInstituicoes],
+  );
+
+  const acoesLimites = {
+    atualizarPadroes: (queda, alta) => setLimites((atual) => ({ ...atual, queda, alta })),
+    adicionarExcecao: (metrica, queda, alta) =>
+      setLimites((atual) => ({
+        ...atual,
+        excecoes: { ...(atual.excecoes || {}), [metrica]: { queda, alta } },
+      })),
+    atualizarExcecao: (metrica, queda, alta) =>
+      setLimites((atual) => ({
+        ...atual,
+        excecoes: { ...(atual.excecoes || {}), [metrica]: { queda, alta } },
+      })),
+    removerExcecao: (metrica) =>
+      setLimites((atual) => {
+        const excecoes = { ...(atual.excecoes || {}) };
+        delete excecoes[metrica];
+        return { ...atual, excecoes };
+      }),
+    salvar: () => limitesSalvar(limites),
+    restaurar: () => setLimites({ ...LIMITES_PADRAO, excecoes: {} }),
+  };
+
   const alternar = (tipo) =>
     setExpandidos((atual) => {
       const proximo = new Set(atual);
@@ -66,6 +158,16 @@ export function VerificacaoConsistencia() {
       else proximo.add(tipo);
       return proximo;
     });
+
+  const atualizarTudo = () => {
+    refetch();
+    comparacao.indice.refetch();
+  };
+
+  const exportarAtual = () => {
+    if (aba === 'instituicoes') exportarCsvMetricas(linhasInstituicoes);
+    else exportarCsv(grupos);
+  };
 
   const mensagemErro = error ? String(error.message || error) : '';
 
@@ -102,8 +204,8 @@ export function VerificacaoConsistencia() {
               Verificação de Consistência de Dados
             </h1>
             <p className="mt-1 max-w-2xl text-body-md text-on-surface-variant">
-              Mostra a diferença de registros antes e depois de cada rotina de carga do
-              SimCC e a data da última execução — para saber se um dado já deveria
+              Mostra a diferença de registros antes e depois de cada rotina de carga — no total e
+              por instituição — e a data da última execução, para saber se um dado já deveria
               aparecer no portal.
             </p>
           </div>
@@ -111,15 +213,17 @@ export function VerificacaoConsistencia() {
           <div className="flex flex-wrap gap-2 print:hidden">
             <button
               type="button"
-              onClick={() => refetch()}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-label-md font-semibold text-on-primary hover:opacity-90"
+              onClick={() => {
+                setAba('instituicoes');
+                setPainelAberto((aberto) => !aberto);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-4 py-2 text-label-md font-semibold text-on-surface hover:border-primary hover:text-primary"
             >
-              <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-              {isFetching ? 'Atualizando…' : 'Atualizar'}
+              <Settings2 className="h-4 w-4" /> Limites de variação
             </button>
             <button
               type="button"
-              onClick={() => exportarCsv(grupos)}
+              onClick={exportarAtual}
               className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-4 py-2 text-label-md font-semibold text-on-surface hover:border-primary hover:text-primary"
             >
               <FileDown className="h-4 w-4" /> Exportar CSV
@@ -131,10 +235,18 @@ export function VerificacaoConsistencia() {
             >
               <Printer className="h-4 w-4" /> Imprimir
             </button>
+            <button
+              type="button"
+              onClick={atualizarTudo}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-label-md font-semibold text-on-primary hover:opacity-90"
+            >
+              <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              {isFetching ? 'Atualizando…' : 'Atualizar'}
+            </button>
           </div>
         </div>
 
-        {/* Erro de conexão */}
+        {/* Erro de conexão com o ETL */}
         {error && !isFetching && (
           <p className="mt-6 rounded-xl bg-error-container/40 px-4 py-3 text-body-md text-on-error-container">
             Não foi possível consultar o ETL ({mensagemErro}). Verifique se o endereço em{' '}
@@ -163,14 +275,25 @@ export function VerificacaoConsistencia() {
             <div className="mt-8 flex gap-1.5 border-b border-outline-variant print:hidden">
               <button
                 type="button"
-                onClick={() => setAba('ultimas')}
+                onClick={() => setAba('cargas')}
                 className={`rounded-t-xl border border-b-0 border-outline-variant px-5 py-2.5 text-label-md font-bold uppercase tracking-wide ${
-                  aba === 'ultimas'
+                  aba === 'cargas'
                     ? 'bg-surface-container-lowest text-navy-deep'
                     : 'bg-surface-container text-on-surface-variant hover:text-primary'
                 }`}
               >
-                Últimas cargas
+                Cargas por rotina
+              </button>
+              <button
+                type="button"
+                onClick={() => setAba('instituicoes')}
+                className={`rounded-t-xl border border-b-0 border-outline-variant px-5 py-2.5 text-label-md font-bold uppercase tracking-wide ${
+                  aba === 'instituicoes'
+                    ? 'bg-surface-container-lowest text-navy-deep'
+                    : 'bg-surface-container text-on-surface-variant hover:text-primary'
+                }`}
+              >
+                Por instituição
               </button>
               <button
                 type="button"
@@ -185,7 +308,7 @@ export function VerificacaoConsistencia() {
               </button>
             </div>
 
-            {aba === 'ultimas' ? (
+            {aba === 'cargas' && (
               <>
                 <div className="mt-4 mb-3 flex flex-wrap items-center gap-4 text-label-md text-on-surface-variant">
                   <span>
@@ -196,33 +319,59 @@ export function VerificacaoConsistencia() {
                   <span>Clique em uma rotina para ver todas as medidas e os detalhes.</span>
                 </div>
 
-                <TabelaCargas
-                  grupos={grupos}
-                  expandidos={expandidos}
-                  alternar={alternar}
-                />
+                <TabelaCargas grupos={grupos} expandidos={expandidos} alternar={alternar} />
               </>
-            ) : (
-              <PainelHistorico
-                relatorios={historicoVisivel}
-                carregando={historico.isFetching}
-                erro={historico.error}
-                filtros={filtrosHistorico}
-                setFiltros={setFiltrosHistorico}
-                pagina={pagina}
-                setPagina={setPagina}
-                tamanhoPagina={TAMANHO_PAGINA}
-                refetch={() => {
-                  setPagina(0);
-                  historico.refetch();
-                }}
-              />
+            )}
+
+            {aba === 'instituicoes' && (
+              <div className="pt-4">
+                <PainelInstituicoes
+                  linhas={linhasInstituicoes}
+                  contadores={contadoresInstituicoes}
+                  planos={comparacao.planos}
+                  entradas={comparacao.entradas}
+                  carregando={comparacao.carregando}
+                  erro={comparacao.erro}
+                  disponivel={comparacao.disponivel}
+                  filtros={filtrosInstituicoes}
+                  setFiltros={setFiltrosInstituicoes}
+                  painelAberto={painelAberto}
+                  limites={limites}
+                  acoesLimites={acoesLimites}
+                  simular={simular}
+                  setSimular={setSimular}
+                  onAtualizar={() => comparacao.indice.refetch()}
+                />
+              </div>
+            )}
+
+            {aba === 'historico' && (
+              <div className="pt-4">
+                <PainelHistorico
+                  relatorios={historicoVisivel}
+                  carregando={historico.isFetching}
+                  erro={historico.error}
+                  filtros={filtrosHistorico}
+                  setFiltros={setFiltrosHistorico}
+                  pagina={pagina}
+                  setPagina={setPagina}
+                  tamanhoPagina={TAMANHO_PAGINA}
+                  refetch={() => {
+                    setPagina(0);
+                    historico.refetch();
+                  }}
+                />
+              </div>
             )}
 
             <p className="mt-5 flex flex-wrap items-center gap-1.5 text-label-md text-on-surface-variant">
-              Fonte: SimCC ETL —
+              Fonte: SimCC ETL —{' '}
               <code className="font-data-tabular text-data-tabular">
                 GET /etl/consistencia/export
+              </code>{' '}
+              · fotos por instituição de{' '}
+              <code className="font-data-tabular text-data-tabular">
+                GET /simcc/api/institution
               </code>
               . Atualiza automaticamente a cada 2 minutos.
             </p>

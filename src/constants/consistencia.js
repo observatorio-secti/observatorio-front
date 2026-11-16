@@ -198,3 +198,64 @@ export const TAMANHO_PAGINA = 25;
 
 /** Intervalo de atualização automática da tela (2 minutos) */
 export const INTERVALO_ATUALIZACAO = 1000 * 60 * 2;
+
+/**
+ * Métricas por instituição que o coletor fotografa a cada hora.
+ * Fonte: `GET /simcc/api/institution`.
+ *
+ * `rotina` é a carga do ETL responsável por atualizar a métrica — é ela que
+ * define a janela usada para comparar a foto de antes com a de depois.
+ * (O mapeamento dos campos vem do SQL de `simcc/v1/queries/institution_query.py`.)
+ */
+export const METRICAS_INSTITUICAO = {
+  count_r: {
+    rotulo: 'Pesquisadores',
+    rotina: 'hop_index',
+    descricao: 'Currículos Lattes vinculados à instituição',
+  },
+  count_gp: {
+    rotulo: 'Programas de pós-graduação',
+    rotina: 'capes_programs',
+    descricao: 'Programas de pós-graduação da instituição',
+  },
+  count_gpr: {
+    rotulo: 'Docentes dos programas',
+    rotina: 'capes_researchers',
+    descricao: 'Docentes vinculados aos programas de pós-graduação',
+  },
+  count_foment: {
+    rotulo: 'Bolsistas de produtividade',
+    rotina: 'foment_scholars',
+    descricao: 'Pesquisadores com bolsa de produtividade (CNPq)',
+  },
+  count_rg: {
+    rotulo: 'Grupos de pesquisa',
+    rotina: 'oda_research_groups',
+    descricao: 'Grupos de pesquisa liderados por pesquisadores da instituição',
+  },
+};
+
+/**
+ * Campos que o backend devolve mas ainda não alimenta — ficam fora da comparação
+ * para não poluir a tela com linhas sempre zeradas.
+ * (`count_d` e `count_t` são `0::BIGINT` fixos no SQL; `count_gps` depende da
+ * carga de estudantes, que ainda não está ativa.)
+ */
+export const METRICAS_SEM_DADOS = ['count_gps', 'count_d', 'count_t'];
+
+/** Situação da comparação calculada a partir da variação */
+export const SITUACOES_COMPARACAO = {
+  NORMAL: 'Dentro',
+  WARNING: 'Atenção',
+  NEW_SCOPE: 'Novo',
+  UNCHANGED: 'Inalterado',
+};
+
+/** Limites padrão de variação: queda −5%, alta +10% */
+export const LIMITES_PADRAO = { queda: -5, alta: 10 };
+
+/** Chave de armazenamento local das preferências de limites */
+export const CHAVE_LIMITES = '@observatorio:consistencia-limites:v2';
+
+/** O coletor roda de hora em hora; 10 minutos de cache é folgado */
+export const INTERVALO_SNAPSHOTS = 1000 * 60 * 10;
