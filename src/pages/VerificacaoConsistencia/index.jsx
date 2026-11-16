@@ -160,7 +160,7 @@ export function VerificacaoConsistencia() {
             </div>
 
             {/* Abas */}
-            <div className="mt-8 flex gap-1.5 print:hidden">
+            <div className="mt-8 flex gap-1.5 border-b border-outline-variant print:hidden">
               <button
                 type="button"
                 onClick={() => setAba('ultimas')}
@@ -187,7 +187,7 @@ export function VerificacaoConsistencia() {
 
             {aba === 'ultimas' ? (
               <>
-                <div className="mb-3 flex flex-wrap items-center gap-4 text-label-md text-on-surface-variant">
+                <div className="mt-4 mb-3 flex flex-wrap items-center gap-4 text-label-md text-on-surface-variant">
                   <span>
                     <span className="mr-1.5 inline-block h-3.5 w-3.5 rounded bg-error-container align-middle" />
                     <strong className="text-on-error-container">atenção</strong> — execução parcial

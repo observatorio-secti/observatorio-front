@@ -125,7 +125,7 @@ export function TabelaCargas({ grupos, expandidos, alternar }) {
                     <td className="border-b border-outline-variant/30 px-3 py-2.5">
                       {medidas.length === 0 ? (
                         <span className="text-body-md text-on-surface-variant">
-                          {semMedicao(ultima) ? 'sem medição' : '—'}
+                          {semMedicao(ultima) ? 'sem medição' : 'não mede'}
                         </span>
                       ) : (
                         <div>
