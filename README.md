@@ -85,27 +85,30 @@ As variáveis de ambiente configuram o acesso às APIs do ecossistema e ao prove
 | `VITE_IDP_URL` | URL base do Observatório IdP para autenticação SSO via OAuth 2.0 PKCE | `https://observatoriocti.secti.ba.gov.br/idp/` |
 | `VITE_ETL_URL` | URL base do SimCC ETL, que expõe os relatórios de consistência das cargas | `https://simcc.uesc.br/etl` |
 | `VITE_ETL_API_KEY` | Chave enviada em `X-ETL-API-Key` para o endpoint de exportação do ETL | *(obrigatória)* |
-| `VITE_SNAPSHOTS_URL` | Onde estão as fotos mensais por instituição (`index.json` + arquivos JSON) | branch `dados-snapshots` via raw.githubusercontent |
+| `VITE_SNAPSHOTS_URL` | Onde estão as fotos por instituição (`index.json` + arquivos JSON) | branch `dados-snapshots` via raw.githubusercontent |
 
 ### Fotos por instituição (`/verificacao-consistencia`)
 
 O ETL registra `antes`/`depois` apenas em totais globais. Para mostrar a variação
 por instituição ("a UESC estava com 1.100 pesquisadores e ficou com 1.124"), o
-portal fotografa `GET /simcc/api/institution` **uma vez por mês** e compara as fotos.
+portal fotografa `GET /simcc/api/institution` **sempre que os números mudam** e
+compara as fotos.
 
 - **Coletor:** `scripts/coletor-snapshots.mjs` (`npm run snapshots`), agendado em
-  `.github/workflows/snapshots.yaml` (cron `7 4 1 * *` — todo dia 1º).
+  `.github/workflows/snapshots.yaml` (cron `7 * * * *`).
+- **Uma foto por carga, não por hora:** o workflow checa de hora em hora, mas só
+  grava (e só commita) quando alguma contagem muda ou quando uma rotina do ETL
+  termina. Banco parado não gera arquivo nem commit.
 - **Destino:** branch `dados-snapshots` do próprio repositório — não entra no
   build do site e é lido por `raw.githubusercontent.com` (CORS livre).
 - **Comparação com carga:** `antes` = última foto anterior ao `iniciado_em`;
-  `depois` = primeira foto posterior ao `finalizado_em`.
-- **Janela larga:** com cadência mensal o par de fotos costuma ficar distante da
-  carga. Quando passa de 12 horas de folga, a linha mostra as datas das fotos e
-  marca **"fotos mensais"**, porque a diferença inclui outras mudanças do período
-  e não pode ser atribuída a uma carga só.
+  `depois` = primeira foto posterior ao `finalizado_em`. Como só existe foto
+  quando algo mudou, a foto "antes" é o estado exatamente anterior à carga —
+  mesmo que seja de um mês atrás.
 - **Sem carga registrada:** `hop_index` e `foment_scholars` não aparecem no
   export do ETL; para essas métricas o portal compara as duas últimas fotos.
-- **Retenção:** 60 fotos (5 anos) por padrão; ajuste com `--reter N`.
+- **Retenção:** 240 fotos (~2 anos) por padrão; ajuste com `--reter N`.
+- **Forçar uma foto:** `npm run snapshots -- --forcar`.
 - **Limites:** −5% / +10% calculados no front, com exceções por métrica salvas
   no navegador.
 

@@ -200,7 +200,8 @@ export const TAMANHO_PAGINA = 25;
 export const INTERVALO_ATUALIZACAO = 1000 * 60 * 2;
 
 /**
- * Métricas por instituição que o coletor fotografa uma vez por mês.
+ * Métricas por instituição que o coletor fotografa quando os números mudam
+ * (na prática, uma foto por carga).
  * Fonte: `GET /simcc/api/institution`.
  *
  * `rotina` é a carga do ETL responsável por atualizar a métrica — é ela que
@@ -257,12 +258,5 @@ export const LIMITES_PADRAO = { queda: -5, alta: 10 };
 /** Chave de armazenamento local das preferências de limites */
 export const CHAVE_LIMITES = '@observatorio:consistencia-limites:v2';
 
-/** O coletor roda uma vez por mês; 1 hora de cache é folgado */
-export const INTERVALO_SNAPSHOTS = 1000 * 60 * 60;
-
-/**
- * Quanto o par de fotos pode se afastar da janela da carga e ainda ser
- * atribuído a ela. Com fotos mensais o par costuma ficar bem mais longe, e
- * nesse caso a tabela mostra as datas das fotos em vez da carga.
- */
-export const TOLERANCIA_JANELA_CARGA = 1000 * 60 * 60 * 12;
+/** A foto é gravada quando algo muda; o índice é checado a cada 15 minutos */
+export const INTERVALO_SNAPSHOTS = 1000 * 60 * 15;

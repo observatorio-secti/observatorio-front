@@ -11,7 +11,6 @@ import {
   ROTINAS,
   SITUACOES_COMPARACAO,
 } from '../constants/consistencia';
-import { janelaDaCarga } from './snapshots';
 
 /* ---------- Formatação ---------- */
 
@@ -415,11 +414,7 @@ export const exportarCsvMetricas = (linhas) => {
           linha.sigla,
           nomeMetricaInstituicao(linha.metrica),
           nomeRotina(linha.rotina),
-          linha.origem === 'fotos'
-            ? 'Duas últimas fotos'
-            : janelaDaCarga(linha)
-              ? 'Janela da carga'
-              : 'Fotos mensais',
+          linha.origem === 'fotos' ? 'Duas últimas fotos' : 'Janela da carga',
           linha.iniciadoEm ? formatarDataHora(linha.iniciadoEm) : '',
           linha.finalizadoEm ? formatarDataHora(linha.finalizadoEm) : '',
           formatarDataHora(linha.coletadoAntesEm),

@@ -15,17 +15,17 @@
 //      se ETL_API_KEY estiver definida);
 //   3. Grava um arquivo JSON em `snapshots/` e atualiza `snapshots/index.json`.
 //
-// Cadência: uma foto por mês. As cargas do ETL são mensais, então uma foto
-// mensal já registra o estado entre uma carga e outra. A comparação não depende
-// de estar rodando no momento da carga: o front usa o `coletado_em` de cada foto
-// contra `iniciado_em` e `finalizado_em` registrados pelo ETL. Quando o par de
-// fotos fica muito afastado da janela da carga, a tabela mostra as datas das
-// fotos em vez de atribuir a diferença a uma carga só.
+// Cadência: o workflow checa de hora em hora, mas uma foto só é gravada quando
+// os números mudam ou quando uma rotina do ETL termina. Na prática isso dá
+// ~1 foto por carga (mensal), em vez de 720 fotos idênticas por mês.
+// A comparação não depende de estar rodando no momento da carga: o front usa o
+// `coletado_em` de cada foto contra `iniciado_em` e `finalizado_em` do ETL.
 //
 // Uso:
 //   node scripts/coletor-snapshots.mjs                    # grava em ./snapshots
 //   node scripts/coletor-snapshots.mjs --saida ./public/snapshots
-//   node scripts/coletor-snapshots.mjs --reter 60         # 5 anos de fotos mensais
+//   node scripts/coletor-snapshots.mjs --reter 240        # ~2 anos de fotos
+//   node scripts/coletor-snapshots.mjs --forcar           # grava mesmo sem mudança
 //
 // Variáveis de ambiente:
 //   API_URL         base da API do portal (padrão: produção)
@@ -39,7 +39,7 @@ import path from 'node:path';
 
 const API_PADRAO = 'https://observatoriocti.secti.ba.gov.br/simcc/api';
 const ETL_PADRAO = 'https://simcc.uesc.br/etl';
-const RETENCAO_PADRAO = 60;
+const RETENCAO_PADRAO = 240;
 
 /** Campos numéricos que interessam do endpoint de instituições */
 const CAMPOS_METRICAS = [
@@ -59,6 +59,7 @@ function lerArgumentos(argv) {
     const atual = argv[i];
     if (atual === '--saida') opcoes.saida = argv[i + 1];
     if (atual === '--reter') opcoes.reter = Number(argv[i + 1]);
+    if (atual === '--forcar') opcoes.forcar = true;
     if (atual === '--ajuda' || atual === '-h') opcoes.ajuda = true;
   }
   return opcoes;
@@ -113,9 +114,10 @@ async function coletarEtl(etlUrl, chave) {
     if (!Array.isArray(registros)) return null;
 
     const emAndamento = registros.filter((registro) => registro.estado === 'EM_ANDAMENTO');
-    const ultima = registros
+    const concluidas = registros
       .filter((registro) => registro.finalizado_em)
-      .sort((a, b) => new Date(b.finalizado_em) - new Date(a.finalizado_em))[0];
+      .sort((a, b) => new Date(a.finalizado_em) - new Date(b.finalizado_em));
+    const ultima = concluidas[concluidas.length - 1];
 
     return {
       em_andamento: emAndamento
@@ -129,6 +131,9 @@ async function coletarEtl(etlUrl, chave) {
             finalizado_em: ultima.finalizado_em || null,
           }
         : null,
+      // Quando a rotina mais recente terminou. Serve para gravar a foto
+      // "depois" da carga mesmo quando ela não mudou nenhum número.
+      concluida_em: ultima?.finalizado_em || null,
     };
   } catch (erro) {
     console.warn(`Aviso: não foi possível ler o ETL (${erro.message}).`);
@@ -163,10 +168,34 @@ async function aplicarRetencao(pasta, entradas, reter) {
   return entradas.slice(-reter);
 }
 
+/** Conteúdo da foto mais recente, para comparar antes de gravar outra */
+async function lerUltimaFoto(pasta, entradas) {
+  const ultima = entradas[entradas.length - 1];
+  if (!ultima?.arquivo) return null;
+  try {
+    return JSON.parse(await readFile(path.join(pasta, ultima.arquivo), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Assinatura dos números que interessam.
+ * Muda apenas quando alguma contagem de instituição muda — que é justamente o
+ * efeito de uma carga. Nome e sigla ficam de fora para uma correção de texto
+ * não gerar foto.
+ */
+const assinatura = (instituicoes) =>
+  (instituicoes || [])
+    .map((instituicao) => `${instituicao.id}:${CAMPOS_METRICAS.map((campo) => instituicao[campo] ?? 0).join(',')}`)
+    .join('|');
+
 async function principal() {
   const opcoes = lerArgumentos(process.argv.slice(2));
   if (opcoes.ajuda) {
-    console.log('Uso: node scripts/coletor-snapshots.mjs [--saida pasta] [--reter N]');
+    console.log(
+      'Uso: node scripts/coletor-snapshots.mjs [--saida pasta] [--reter N] [--forcar]',
+    );
     return;
   }
 
@@ -183,6 +212,26 @@ async function principal() {
     coletarEtl(etlUrl, process.env.ETL_API_KEY || ''),
   ]);
 
+  const anteriores = await lerIndice(pasta);
+  const ultimaFoto = await lerUltimaFoto(pasta, anteriores);
+
+  // A foto é a régua da carga: só vale gravar quando algo mudou ou quando uma
+  // rotina do ETL terminou depois da última foto. Rodar de hora em hora e não
+  // gravar nada quando o banco está parado mantém ~1 foto por carga.
+  const numerosMudaram = !ultimaFoto || assinatura(ultimaFoto.instituicoes) !== assinatura(instituicoes);
+  const cargaConcluidaDepois =
+    Boolean(etl?.concluida_em && ultimaFoto) &&
+    new Date(etl.concluida_em) > new Date(ultimaFoto.coletado_em);
+
+  if (!opcoes.forcar && ultimaFoto && !numerosMudaram && !cargaConcluidaDepois) {
+    const total = instituicoes.reduce((soma, item) => soma + item.count_r, 0);
+    console.log(
+      `Sem mudança desde ${ultimaFoto.coletado_em} (${instituicoes.length} instituições, ` +
+        `${total} pesquisadores) — foto não gravada.`,
+    );
+    return;
+  }
+
   const fotografia = {
     coletado_em: coletadoEm,
     fonte: `${apiUrl}/institution`,
@@ -193,7 +242,6 @@ async function principal() {
   const arquivo = nomeArquivo(coletadoEm);
   await writeFile(path.join(pasta, arquivo), `${JSON.stringify(fotografia)}\n`, 'utf8');
 
-  const anteriores = await lerIndice(pasta);
   const entradas = [
     ...anteriores.filter((entrada) => entrada.arquivo !== arquivo),
     {
@@ -215,6 +263,7 @@ async function principal() {
   const totalPesquisadores = instituicoes.reduce((soma, item) => soma + item.count_r, 0);
   console.log(
     `Foto ${arquivo}: ${instituicoes.length} instituições, ${totalPesquisadores} pesquisadores` +
+      (numerosMudaram ? ' (números mudaram)' : ' (carga concluída)') +
       (etl?.em_andamento?.length ? `, ETL em andamento (${etl.em_andamento.join(', ')})` : '') +
       ` — ${mantidas.length} fotos guardadas.`,
   );

@@ -4,7 +4,7 @@
 // Duas leituras, uma do lado da outra:
 //  1. Cargas por rotina — o que o SimCC ETL registrou antes/depois de cada
 //     rotina, em totais globais (`GET /etl/consistencia/export`).
-//  2. Por instituição — comparação das fotos mensais de `GET /institution`,
+//  2. Por instituição — comparação das fotos de `GET /institution`,
 //     amarrada à janela de cada carga. É o que responde "a UESC estava com
 //     1.100 pesquisadores e ficou com 1.124 depois da carga".
 
