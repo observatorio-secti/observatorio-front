@@ -15,9 +15,9 @@
 //      se ETL_API_KEY estiver definida);
 //   3. Grava um arquivo JSON em `snapshots/` e atualiza `snapshots/index.json`.
 //
-// Cadência: o workflow checa de hora em hora, mas uma foto só é gravada quando
+// Cadência: o workflow checa a cada 6 horas, mas uma foto só é gravada quando
 // os números mudam ou quando uma rotina do ETL termina. Na prática isso dá
-// ~1 foto por carga (mensal), em vez de 720 fotos idênticas por mês.
+// ~1 foto por carga (mensal), em vez de 1460 fotos idênticas por mês.
 // A comparação não depende de estar rodando no momento da carga: o front usa o
 // `coletado_em` de cada foto contra `iniciado_em` e `finalizado_em` do ETL.
 //
@@ -216,7 +216,7 @@ async function principal() {
   const ultimaFoto = await lerUltimaFoto(pasta, anteriores);
 
   // A foto é a régua da carga: só vale gravar quando algo mudou ou quando uma
-  // rotina do ETL terminou depois da última foto. Rodar de hora em hora e não
+  // rotina do ETL terminou depois da última foto. Rodar a cada 6 horas e não
   // gravar nada quando o banco está parado mantém ~1 foto por carga.
   const numerosMudaram = !ultimaFoto || assinatura(ultimaFoto.instituicoes) !== assinatura(instituicoes);
   const cargaConcluidaDepois =

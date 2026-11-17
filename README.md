@@ -95,8 +95,8 @@ portal fotografa `GET /simcc/api/institution` **sempre que os números mudam** e
 compara as fotos.
 
 - **Coletor:** `scripts/coletor-snapshots.mjs` (`npm run snapshots`), agendado em
-  `.github/workflows/snapshots.yaml` (cron `7 * * * *`).
-- **Uma foto por carga, não por hora:** o workflow checa de hora em hora, mas só
+  `.github/workflows/snapshots.yaml` (cron `7 */6 * * *`).
+- **Uma foto por carga, não por checagem:** o workflow checa a cada 6 horas, mas só
   grava (e só commita) quando alguma contagem muda ou quando uma rotina do ETL
   termina. Banco parado não gera arquivo nem commit.
 - **Destino:** branch `dados-snapshots` do próprio repositório — não entra no

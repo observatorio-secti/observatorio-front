@@ -62,7 +62,7 @@ export function PainelInstituicoes({
         </span>
 
         <span className="text-label-md text-on-surface-variant">
-          Checagem de hora em hora; a foto só é gravada quando os números mudam ou quando uma carga
+          Checagem a cada 6 horas; a foto só é gravada quando os números mudam ou quando uma carga
           termina.
         </span>
 

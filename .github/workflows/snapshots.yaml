@@ -1,8 +1,13 @@
 name: Coletor de snapshots por instituição
 
-# Checa os totais por instituição de hora em hora, mas só grava (e só commita)
+# Checa os totais por instituição a cada 6 horas, mas só grava (e só commita)
 # quando os números mudam ou quando uma rotina do ETL termina. Na prática são
-# poucas fotos por mês — uma por carga — e não 720 fotos idênticas.
+# poucas fotos por mês — uma por carga — e não 1460 fotos idênticas.
+#
+# Por que 6 horas: a checagem só serve para perceber a mudança rápido. As cargas
+# do SimCC são um lote de rotinas que roda de vez em quando, então a cada 6 horas
+# a foto "depois" sai no máximo 6 h após o fim da carga — de sobra para um painel
+# de conferência — e o banco recebe 4× menos consultas que de hora em hora.
 #
 # O front compara a foto anterior com a posterior de cada carga registrada pelo
 # ETL, o que permite dizer quanto cada instituição ganhou ou perdeu.
@@ -13,8 +18,8 @@ name: Coletor de snapshots por instituição
 
 on:
   schedule:
-    # de hora em hora, alguns minutos depois da hora cheia
-    - cron: '7 * * * *'
+    # a cada 6 horas, alguns minutos depois da hora cheia
+    - cron: '7 */6 * * *'
   workflow_dispatch:
 
 permissions:
