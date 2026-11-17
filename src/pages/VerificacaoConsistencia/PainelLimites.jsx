@@ -43,6 +43,11 @@ export function PainelLimites({ limites, acoes, simular, setSimular }) {
         de <strong>+10%</strong> a linha entra em <strong>atenção</strong>. As exceções por
         métrica servem para métricas naturalmente mais voláteis.
       </p>
+      <p className="mt-2 max-w-3xl rounded-lg bg-surface-container-low px-3 py-2 text-label-md text-on-surface-variant">
+        Os limites oficiais são fixos (<strong>−5% / +10%</strong>). Os campos abaixo são uma
+        simulação para testar o funcionamento — desmarque “aplicar na tabela” para voltar ao par
+        oficial.
+      </p>
 
       <div className="mt-4 flex flex-wrap items-end gap-4">
         <label className="text-label-md font-semibold text-on-surface-variant">
