@@ -10,15 +10,45 @@ import { useState } from 'react';
 import { RotateCcw, Save } from 'lucide-react';
 
 import { METRICAS_INSTITUICAO } from '../../constants/consistencia';
-import { nomeMetricaInstituicao } from '../../lib/consistencia';
+import {
+  formatarVariacao,
+  limitesDe,
+  nomeMetricaInstituicao,
+  rotuloSituacao,
+  statusEfetivo,
+} from '../../lib/consistencia';
+
+/** Variações usadas na prévia da regra (uma linha de exemplo com 100 registros) */
+const VARIACOES_PREVIA = [-12, -8, 0, 3, 14];
 
 export function PainelLimites({ limites, acoes, simular, setSimular }) {
   const [novaMetrica, setNovaMetrica] = useState('');
   const [novaQueda, setNovaQueda] = useState('-15');
   const [novaAlta, setNovaAlta] = useState('25');
+  const [metricaPrevia, setMetricaPrevia] = useState('count_r');
   const [feedback, setFeedback] = useState('');
 
   const excecoes = Object.entries(limites.excecoes || {});
+
+  // A prévia usa uma linha de exemplo (100 registros) só para conferir a regra:
+  // responde na hora, sem depender de existir um par de fotos.
+  const limitesPrevia = simular
+    ? limitesDe(limites, metricaPrevia)
+    : { queda: limitesDe({}, metricaPrevia).queda, alta: limitesDe({}, metricaPrevia).alta };
+
+  const previa = VARIACOES_PREVIA.map((variacao) => {
+    const antes = 100;
+    const depois = Math.round(antes * (1 + variacao / 100));
+    const estado = statusEfetivo({ metrica: metricaPrevia, antes, depois, variacao }, simular, limites);
+    return { variacao, ...estado };
+  });
+
+  const classesSituacao = {
+    NORMAL: 'bg-primary/10 text-primary',
+    WARNING: 'bg-error-container text-on-error-container',
+    NEW_SCOPE: 'bg-secondary-container text-on-secondary-container',
+    UNCHANGED: 'bg-surface-container text-on-surface-variant',
+  };
 
   const avisar = (mensagem) => {
     setFeedback(mensagem);
@@ -79,6 +109,51 @@ export function PainelLimites({ limites, acoes, simular, setSimular }) {
           />
           aplicar na tabela em tempo real
         </label>
+      </div>
+
+      <div className="mt-4 rounded-lg border border-outline-variant/50 bg-surface px-3 py-2.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <span className="text-label-sm uppercase tracking-wide text-on-surface-variant">
+            Prévia da regra
+          </span>
+          <select
+            value={metricaPrevia}
+            onChange={(e) => setMetricaPrevia(e.target.value)}
+            aria-label="Métrica usada na prévia"
+            className="rounded-md border border-outline-variant bg-surface-container-lowest px-2 py-1 text-label-md text-on-surface focus:border-primary focus:outline-none"
+          >
+            {Object.entries(METRICAS_INSTITUICAO).map(([chave, meta]) => (
+              <option key={chave} value={chave}>
+                {meta.rotulo}
+              </option>
+            ))}
+          </select>
+          <span className="text-label-md text-on-surface-variant">
+            limites usados:{' '}
+            <strong className="font-data-tabular text-on-surface">
+              {formatarVariacao(limitesPrevia.queda)} / {formatarVariacao(limitesPrevia.alta)}
+            </strong>
+          </span>
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {previa.map(({ variacao, status }) => (
+            <span
+              key={variacao}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-label-md font-semibold ${
+                classesSituacao[status] || classesSituacao.UNCHANGED
+              }`}
+            >
+              <span className="font-data-tabular">{formatarVariacao(variacao)}</span>
+              {rotuloSituacao(status)}
+            </span>
+          ))}
+        </div>
+
+        <p className="mt-1.5 text-label-md text-on-surface-variant">
+          Linha de exemplo com 100 registros. A prévia acompanha os campos acima — serve para
+          conferir a regra mesmo sem uma comparação na tabela.
+        </p>
       </div>
 
       <table className="mt-4 w-full max-w-2xl border-collapse">

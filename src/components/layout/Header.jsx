@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, LogIn, LogOut, ExternalLink, ChevronDown, ShieldCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
+
+/** Junta classes condicionais (o projeto não tem `clsx` instalado). */
+const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 export function Header() {
   const { user, isAuthenticated, isAdmin, login, logout } = useAuth();
@@ -32,18 +34,22 @@ export function Header() {
   }, []);
 
   const navItems = [
-    { label: 'Sobre', href: '#sobre', id: 'sobre' },
-    { label: 'Módulos', href: '#modulos', id: 'modulos' },
-    { label: 'Instituições', href: '#instituicoes', id: 'instituicoes' },
+    { label: 'Sobre', href: '/#sobre', id: 'sobre' },
+    { label: 'Módulos', href: '/#modulos', id: 'modulos' },
+    { label: 'Instituições', href: '/#instituicoes', id: 'instituicoes' },
   ];
 
-  const showName = activeSection !== 'sobre';
+  // Fora da home os links levam para as seções da home; nada fica destacado.
+  const naHome = typeof window !== 'undefined' && window.location.pathname === '/';
+  const secaoAtiva = naHome ? activeSection : null;
+
+  const showName = !naHome || activeSection !== 'sobre';
 
   return (
     <header className="bg-surface/95 backdrop-blur-sm border-b border-outline-variant w-full sticky top-0 z-50 h-16 transition-all duration-300">
       <div className="flex justify-between items-center w-full px-4 md:px-16 h-full max-w-[1280px] mx-auto">
         {/* Brand Logo */}
-        <a className="flex items-center h-16 py-2 overflow-hidden group" href="#sobre">
+        <a className="flex items-center h-16 py-2 overflow-hidden group" href="/#sobre">
           <div className="relative flex items-center h-full">
             {/* Logo Icon */}
             <img
@@ -78,9 +84,9 @@ export function Header() {
                 href={item.href}
                 className={cn(
                   'font-medium text-xs md:text-sm transition-colors duration-200 py-1 border-b-2',
-                  activeSection === item.id
+                  secaoAtiva === item.id
                     ? 'text-primary border-primary font-semibold'
-                    : 'text-on-surface-variant border-transparent hover:text-primary'
+                    : 'text-on-surface-variant border-transparent hover:text-primary',
                 )}
               >
                 {item.label}
@@ -216,9 +222,9 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
                 'text-sm py-2 px-3 rounded-md transition-colors',
-                activeSection === item.id
+                secaoAtiva === item.id
                   ? 'bg-surface-container text-primary font-semibold'
-                  : 'text-on-surface-variant hover:bg-surface-container-low'
+                  : 'text-on-surface-variant hover:bg-surface-container-low',
               )}
             >
               {item.label}

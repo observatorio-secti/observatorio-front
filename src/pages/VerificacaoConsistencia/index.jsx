@@ -14,6 +14,8 @@ import { FileDown, LogIn, Printer, RefreshCw, Settings2, ShieldAlert } from 'luc
 import { useHistoricoExecucoes, useUltimasExecucoes } from '../../hooks/useConsistencia';
 import { useComparacaoInstituicoes } from '../../hooks/useSnapshots';
 import { useAuth } from '../../hooks/useAuth';
+import { Footer } from '../../components/layout/Footer';
+import { Header } from '../../components/layout/Header';
 import { LIMITES_PADRAO, TAMANHO_PAGINA } from '../../constants/consistencia';
 import {
   agruparPorTipo,
@@ -172,42 +174,62 @@ export function VerificacaoConsistencia() {
   const mensagemErro = error ? String(error.message || error) : '';
 
   /* ---------- Portão de autenticação ---------- */
-  if (!isAuthenticated) {
+  // Atalho local para inspecionar a página sem o IdP no ar (VITE_AUTH_DESLIGADA).
+  // Só vale no servidor de desenvolvimento: em build de produção `DEV` é false.
+  const autenticacaoDesligada =
+    import.meta.env.DEV && import.meta.env.VITE_AUTH_DESLIGADA === 'true';
+
+  if (!autenticacaoDesligada && !isAuthenticated) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-surface px-4">
-        <div className="max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-sm">
-          <ShieldAlert className="mx-auto h-10 w-10 text-primary" />
-          <h1 className="mt-3 font-headline-lg text-navy-deep">Acesso restrito</h1>
-          <p className="mt-2 text-body-md text-on-surface-variant">
-            O acompanhamento das cargas é ferramenta interna da equipe do Observatório.
-            Entre com sua conta institucional para ver o histórico.
-          </p>
-          <button
-            type="button"
-            onClick={() => login()}
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-label-md font-semibold text-on-primary hover:opacity-90"
-          >
-            <LogIn className="h-4 w-4" /> Entrar
-          </button>
-        </div>
-      </main>
+      <div className="flex min-h-screen flex-col bg-surface">
+        <Header />
+        <main className="flex flex-grow items-center justify-center px-4 py-16">
+          <div className="max-w-md rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-8 text-center shadow-sm">
+            <ShieldAlert className="mx-auto h-10 w-10 text-primary" />
+            <h1 className="mt-3 font-display text-2xl font-bold text-navy-deep">Acesso restrito</h1>
+            <p className="mt-2 text-body-md text-on-surface-variant">
+              O acompanhamento das cargas é ferramenta interna da equipe do Observatório.
+              Entre com sua conta institucional para ver o histórico.
+            </p>
+            <button
+              type="button"
+              onClick={() => login()}
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-label-md font-semibold text-on-primary transition-colors hover:bg-navy-deep"
+            >
+              <LogIn className="h-4 w-4" /> Entrar
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-surface px-4 py-8 md:px-16 print:px-0">
-      <div className="mx-auto max-w-[1320px]">
+    <div className="flex min-h-screen flex-col bg-surface">
+      <div className="print:hidden">
+        <Header />
+      </div>
+
+      <main className="flex-grow px-4 py-8 md:px-16 print:px-0">
+        <div className="mx-auto w-full max-w-[1280px]">
         {/* Cabeçalho */}
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-display text-2xl text-navy-deep">
-              Verificação de Consistência de Dados
-            </h1>
-            <p className="mt-1 max-w-2xl text-body-md text-on-surface-variant">
-              Mostra a diferença de registros antes e depois de cada rotina de carga — no total e
-              por instituição — e a data da última execução, para saber se um dado já deveria
-              aparecer no portal.
-            </p>
+          <div className="flex items-start gap-3">
+            <span
+              aria-hidden="true"
+              className="mt-1 h-9 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-primary via-secondary to-error"
+            />
+            <div>
+              <h1 className="font-display text-2xl font-bold tracking-tight text-navy-deep md:text-3xl">
+                Verificação de Consistência de Dados
+              </h1>
+              <p className="mt-1 max-w-2xl text-body-md text-on-surface-variant">
+                Mostra a diferença de registros antes e depois de cada rotina de carga — no total e
+                por instituição — e a data da última execução, para saber se um dado já deveria
+                aparecer no portal.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 print:hidden">
@@ -377,8 +399,13 @@ export function VerificacaoConsistencia() {
             </p>
           </>
         )}
+        </div>
+      </main>
+
+      <div className="print:hidden">
+        <Footer />
       </div>
-    </main>
+    </div>
   );
 }
 
