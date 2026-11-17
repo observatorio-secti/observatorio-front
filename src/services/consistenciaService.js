@@ -1,5 +1,5 @@
 // src/services/consistenciaService.js
-// Cliente HTTP do módulo de Verificação de Consistência de Dados.
+// Cliente HTTP do módulo de Consistência de Dados.
 // Fonte: SimCC ETL (`GET /etl/consistencia/export`).
 //
 // Autenticação: header `X-ETL-API-Key`. A chave vem de `VITE_ETL_API_KEY`

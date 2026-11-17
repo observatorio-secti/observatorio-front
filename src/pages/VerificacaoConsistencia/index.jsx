@@ -1,5 +1,5 @@
 ﻿// src/pages/VerificacaoConsistencia/index.jsx
-// Página do Módulo de Verificação de Consistência de Dados.
+// Página do Módulo de Consistência de Dados.
 //
 // Duas leituras, uma do lado da outra:
 //  1. Cargas por rotina — o que o SimCC ETL registrou antes/depois de cada
@@ -40,7 +40,7 @@ export function VerificacaoConsistencia() {
   // título genérico do index.html).
   useEffect(() => {
     const anterior = document.title;
-    document.title = 'Verificação de Consistência de Dados — Observatório de CT&I da Bahia';
+    document.title = 'Módulo de Consistência de Dados — Observatório de CT&I da Bahia';
     return () => {
       document.title = anterior;
     };
@@ -232,7 +232,7 @@ export function VerificacaoConsistencia() {
             />
             <div>
               <h1 className="font-display text-2xl font-bold tracking-tight text-navy-deep md:text-3xl">
-                Verificação de Consistência de Dados
+                Módulo de Consistência de Dados
               </h1>
               <p className="mt-1 max-w-2xl text-body-md text-on-surface-variant">
                 Mostra a diferença de registros antes e depois de cada rotina de carga — no total e

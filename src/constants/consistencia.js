@@ -1,6 +1,6 @@
 // src/constants/consistencia.js
 // Catálogo das rotinas do SimCC ETL e traduções (pt-BR) do módulo de
-// Verificação de Consistência de Dados.
+// Consistência de Dados.
 // Referência: `simcc-etl/simcc_etl/core/consistency.py` (CONSISTENCY_CATALOG)
 
 /**

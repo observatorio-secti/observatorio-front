@@ -87,7 +87,7 @@ As variáveis de ambiente configuram o acesso às APIs do ecossistema e ao prove
 | `VITE_ETL_API_KEY` | Chave enviada em `X-ETL-API-Key` para o endpoint de exportação do ETL | *(obrigatória)* |
 | `VITE_SNAPSHOTS_URL` | Onde estão as fotos por instituição (`index.json` + arquivos JSON) | branch `dados-snapshots` via raw.githubusercontent |
 
-### Fotos por instituição (`/verificacao-consistencia`)
+### Fotos por instituição (`/consistencia`)
 
 O ETL registra `antes`/`depois` apenas em totais globais. Para mostrar a variação
 por instituição ("a UESC estava com 1.100 pesquisadores e ficou com 1.124"), o

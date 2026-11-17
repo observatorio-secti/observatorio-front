@@ -1,5 +1,5 @@
 // src/hooks/useConsistencia.js
-// Hooks React Query do módulo de Verificação de Consistência de Dados
+// Hooks React Query do módulo de Consistência de Dados
 
 import { useQuery } from '@tanstack/react-query';
 

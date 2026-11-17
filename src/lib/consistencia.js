@@ -1,5 +1,5 @@
 // src/lib/consistencia.js
-// Utilitários do módulo de Verificação de Consistência de Dados
+// Utilitários do módulo de Consistência de Dados
 // (contrato do SimCC ETL: `/etl/consistencia/export`)
 
 import {

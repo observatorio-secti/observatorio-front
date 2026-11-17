@@ -127,11 +127,11 @@ export function Header() {
                     </div>
 
                     <a
-                      href="/verificacao-consistencia"
+                      href="/consistencia"
                       className="flex items-center gap-2 px-3 py-2 text-xs text-on-surface hover:bg-surface-container-low transition-colors"
                     >
                       <ShieldCheck className="w-3.5 h-3.5 text-on-surface-variant" />
-                      <span>Verificação de consistência</span>
+                      <span>Módulo de Consistência de Dados</span>
                     </a>
 
                     <a
