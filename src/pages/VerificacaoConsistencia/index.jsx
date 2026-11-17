@@ -8,7 +8,7 @@
 //     amarrada à janela de cada carga. É o que responde "a UESC estava com
 //     1.100 pesquisadores e ficou com 1.124 depois da carga".
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FileDown, LogIn, Printer, RefreshCw, Settings2, ShieldAlert } from 'lucide-react';
 
 import { useHistoricoExecucoes, useUltimasExecucoes } from '../../hooks/useConsistencia';
@@ -35,6 +35,16 @@ import TabelaCargas from './TabelaCargas';
 
 export function VerificacaoConsistencia() {
   const { isAuthenticated, login } = useAuth();
+
+  // A aba do navegador passa a identificar o módulo (todas as rotas herdam o
+  // título genérico do index.html).
+  useEffect(() => {
+    const anterior = document.title;
+    document.title = 'Verificação de Consistência de Dados — Observatório de CT&I da Bahia';
+    return () => {
+      document.title = anterior;
+    };
+  }, []);
 
   const [aba, setAba] = useState('cargas');
   const [expandidos, setExpandidos] = useState(() => new Set());
