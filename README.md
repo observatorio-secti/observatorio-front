@@ -31,13 +31,13 @@ observatorio-front/
 │   │   ├── FeaturedResearchers.jsx
 │   │   ├── HeroMetricCards.jsx
 │   │   └── InitialHome.jsx
-│   ├── constants/                 # Links institucionais e constantes de busca do SimCC
+│   ├── constants/                 # Links institucionais, constantes de busca do SimCC e metadados do módulo de consistência
 │   ├── context/                   # Contexto global de autenticação SSO (AuthContext.jsx)
 │   ├── data/                      # Metadados de instituições parceiras e módulos do ecossistema
-│   ├── hooks/                     # Hooks React Query (useAuth, pesquisadores destaque, métricas home)
-│   ├── lib/                       # Utilitários gerais (utils.js, auth-storage.js)
-│   ├── pages/                     # Páginas da aplicação (AuthCallback.jsx)
-│   ├── services/                  # Clientes HTTP (api.js, authService.js, homeService.js, researcherService.js)
+│   ├── hooks/                     # Hooks React Query (useAuth, pesquisadores destaque, métricas home, consistência)
+│   ├── lib/                       # Utilitários gerais (utils.js, auth-storage.js, consistencia.js)
+│   ├── pages/                     # Páginas da aplicação (AuthCallback.jsx, VerificacaoConsistencia/)
+│   ├── services/                  # Clientes HTTP (api.js, authService.js, consistenciaService.js, homeService.js, researcherService.js)
 │   ├── App.jsx                    # Componente raiz, provedores e roteamento
 │   └── main.jsx                   # Ponto de montagem React e QueryClientProvider
 ├── DESIGN.md                      # Especificação do Design System
@@ -83,6 +83,37 @@ As variáveis de ambiente configuram o acesso às APIs do ecossistema e ao prove
 | :--- | :--- | :--- |
 | `VITE_API_URL` | URL base da API do SimCC/Observatório para busca de métricas e pesquisadores | `https://observatoriocti.secti.ba.gov.br/simcc/api` |
 | `VITE_IDP_URL` | URL base do Observatório IdP para autenticação SSO via OAuth 2.0 PKCE | `https://observatoriocti.secti.ba.gov.br/idp/` |
+| `VITE_ETL_URL` | URL base do SimCC ETL, que expõe os relatórios de consistência das cargas | `https://simcc.uesc.br/etl` |
+| `VITE_ETL_API_KEY` | Chave enviada em `X-ETL-API-Key` para o endpoint de exportação do ETL | *(obrigatória)* |
+| `VITE_SNAPSHOTS_URL` | Onde estão as fotos por instituição (`index.json` + arquivos JSON) | branch `dados-snapshots` via raw.githubusercontent |
+
+### Fotos por instituição (`/consistencia`)
+
+O ETL registra `antes`/`depois` apenas em totais globais. Para mostrar a variação
+por instituição ("a UESC estava com 1.100 pesquisadores e ficou com 1.124"), o
+portal fotografa `GET /simcc/api/institution` **sempre que os números mudam** e
+compara as fotos.
+
+- **Coletor:** `scripts/coletor-snapshots.mjs` (`npm run snapshots`), agendado em
+  `.github/workflows/snapshots.yaml` (cron `7 */6 * * *`).
+- **Uma foto por carga, não por checagem:** o workflow checa a cada 6 horas, mas só
+  grava (e só commita) quando alguma contagem muda ou quando uma rotina do ETL
+  termina. Banco parado não gera arquivo nem commit.
+- **Destino:** branch `dados-snapshots` do próprio repositório — não entra no
+  build do site e é lido por `raw.githubusercontent.com` (CORS livre).
+- **Comparação com carga:** `antes` = última foto anterior ao `iniciado_em`;
+  `depois` = primeira foto posterior ao `finalizado_em`. Como só existe foto
+  quando algo mudou, a foto "antes" é o estado exatamente anterior à carga —
+  mesmo que seja de um mês atrás.
+- **Sem carga registrada:** `hop_index` e `foment_scholars` não aparecem no
+  export do ETL; para essas métricas o portal compara as duas últimas fotos.
+- **Retenção:** 240 fotos (~2 anos) por padrão; ajuste com `--reter N`.
+- **Forçar uma foto:** `npm run snapshots -- --forcar`.
+- **Limites:** −5% / +10% calculados no front, com exceções por métrica salvas
+  no navegador.
+
+Para gerar as fotos localmente: `npm run snapshots -- --saida public/snapshots` e
+defina `VITE_SNAPSHOTS_URL=/snapshots` (a pasta é ignorada pelo git).
 
 ---
 

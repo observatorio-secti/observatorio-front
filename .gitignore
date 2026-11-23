@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Fotos locais do coletor de consistência
+public/snapshots/

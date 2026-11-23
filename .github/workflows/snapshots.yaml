@@ -1,0 +1,74 @@
+name: Coletor de snapshots por instituição
+
+# Checa os totais por instituição a cada 6 horas, mas só grava (e só commita)
+# quando os números mudam ou quando uma rotina do ETL termina. Na prática são
+# poucas fotos por mês — uma por carga — e não 1460 fotos idênticas.
+#
+# Por que 6 horas: a checagem só serve para perceber a mudança rápido. As cargas
+# do SimCC são um lote de rotinas que roda de vez em quando, então a cada 6 horas
+# a foto "depois" sai no máximo 6 h após o fim da carga — de sobra para um painel
+# de conferência — e o banco recebe 4× menos consultas que de hora em hora.
+#
+# O front compara a foto anterior com a posterior de cada carga registrada pelo
+# ETL, o que permite dizer quanto cada instituição ganhou ou perdeu.
+#
+# As fotos ficam no branch `dados-snapshots` (não afeta o build do site) e são
+# lidas pelo front via raw.githubusercontent.com. Para trocar de destino, mude
+# `VITE_SNAPSHOTS_URL` no ambiente de build.
+
+on:
+  schedule:
+    # a cada 6 horas, alguns minutos depois da hora cheia
+    - cron: '7 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coletor-snapshots
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o branch de dados
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/dados"
+          cd "$RUNNER_TEMP/dados"
+          git init -q
+          git config user.name "coletor-consistencia"
+          git config user.email "coletor@observatorio.secti.ba.gov.br"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch -q --depth 1 origin dados-snapshots; then
+            git reset -q --hard FETCH_HEAD
+          fi
+
+      - name: Coletar a foto do momento
+        env:
+          ETL_API_KEY: ${{ secrets.ETL_API_KEY }}
+        run: node scripts/coletor-snapshots.mjs --saida "$RUNNER_TEMP/dados"
+
+      - name: Publicar no branch de dados
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/dados"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nada mudou desde a última coleta."
+            exit 0
+          fi
+          git commit -q -m "dados: snapshot $(date -u +%FT%TZ)"
+          git push -q origin HEAD:dados-snapshots

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "snapshots": "node scripts/coletor-snapshots.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
