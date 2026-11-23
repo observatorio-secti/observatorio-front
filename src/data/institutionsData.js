@@ -86,5 +86,13 @@ export const institutionsData = [
     category: 'estaduais',
     logo: '/university-logo/LOGO-UESC.png',
     gridClass: 'lg:col-span-2 lg:row-span-1'
+  },
+  {
+    id: 'cimatec',
+    acronym: 'CIMATEC',
+    fullName: 'Centro Universitário SENAI CIMATEC',
+    category: 'privadas',
+    logo: '/university-logo/LOGO-CIMATEC.png',
+    gridClass: 'lg:col-span-1 lg:row-span-1'
   }
 ];

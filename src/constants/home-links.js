@@ -18,6 +18,7 @@ export const instituicoes = [
   { id: 'id-temp-uneb', sigla: 'UNEB', nome: 'Universidade do Estado da Bahia', categoria: 'Estaduais' },
   { id: 'id-temp-ifba', sigla: 'IFBA', nome: 'Instituto Federal da Bahia', categoria: 'Institutos' },
   { id: 'id-temp-fiocruz', sigla: 'FIOCRUZ', nome: 'Fundação Oswaldo Cruz', categoria: 'Institutos' },
+  { id: 'id-temp-cimatec', sigla: 'CIMATEC', nome: 'Centro Universitário SENAI CIMATEC', categoria: 'Privadas' },
 ];
 
 export const categoriasAbas = [
