@@ -18,4 +18,9 @@ jobs:
             set -euo pipefail
             cd /opt/observatorio/observatorio-front
             git pull origin main --ff-only
-            docker build --output type=local,dest=./dist .
+            # Build da imagem
+            docker build -t observatorio-front:latest .
+            # Extrai o dist sem erro de permissão (usa container temporário + docker cp)
+            CONTAINER_ID=$(docker create observatorio-front:latest)
+            docker cp "$CONTAINER_ID:/app/dist" ./dist
+            docker rm "$CONTAINER_ID"

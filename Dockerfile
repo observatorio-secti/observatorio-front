@@ -5,5 +5,7 @@ RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-FROM scratch AS export
-COPY --from=builder /app/dist /
+# Estágio final mantém o dist em /app/dist para facilitar docker cp
+FROM node:26.7.0-alpine AS export
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
