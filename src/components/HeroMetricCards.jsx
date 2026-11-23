@@ -10,17 +10,18 @@ export function HeroMetricCards({ data, loading = false }) {
     );
   }
 
-  const totalProducoes = data.visaoPrograma
-    ? (data.visaoPrograma.article || 0) +
-      (data.visaoPrograma.book || 0) +
-      (data.visaoPrograma.book_chapter || 0) +
-      (data.visaoPrograma.work_in_event || 0) +
-      (data.visaoPrograma.patent || 0) +
-      (data.visaoPrograma.software || 0) +
-      (data.visaoPrograma.brand || 0)
+  const vp = data.visaoPrograma;
+  const totalProducoes = vp
+    ? (vp.articles ?? vp.article ?? 0) +
+      (vp.books ?? vp.book ?? 0) +
+      (vp.book_chapters ?? vp.book_chapter ?? 0) +
+      (vp.work_in_event ?? 0) +
+      (vp.patents ?? vp.patent ?? 0) +
+      (vp.software ?? 0) +
+      (vp.brands ?? vp.brand ?? 0)
     : 0;
 
-  const totalPesquisadores = data.visaoPrograma ? (data.visaoPrograma.researcher || 0) : 0;
+  const totalPesquisadores = vp ? (vp.researchers ?? vp.researcher ?? 0) : 0;
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 w-full justify-center lg:justify-end mt-8 lg:mt-0">

@@ -10,6 +10,10 @@ export function DadosDestaqueSection({ data, loading = false }) {
   }
 
   const vp = data.visaoPrograma;
+  const articles = vp ? (vp.articles ?? vp.article ?? 0) : 0;
+  const books = vp ? (vp.books ?? vp.book ?? 0) : 0;
+  const bookChapters = vp ? (vp.book_chapters ?? vp.book_chapter ?? 0) : 0;
+  const researchers = vp ? (vp.researchers ?? vp.researcher ?? 0) : 0;
 
   const metrics = [
     {
@@ -20,19 +24,19 @@ export function DadosDestaqueSection({ data, loading = false }) {
     },
     {
       label: 'Produções',
-      value: vp ? (vp.article + vp.book + vp.book_chapter).toLocaleString('pt-BR') : '0',
+      value: (articles + books + bookChapters).toLocaleString('pt-BR'),
       icon: 'article',
       tooltip: 'Soma restrita apenas a: Artigos, Livros e Capítulos de Livros (exclui eventos).',
     },
     {
       label: 'Livros Registrados',
-      value: vp ? vp.book.toLocaleString('pt-BR') : '0',
+      value: books.toLocaleString('pt-BR'),
       icon: 'menu_book',
       tooltip: 'Total de livros e obras completas cadastradas.',
     },
     {
       label: 'Pesquisadores Ativos',
-      value: vp ? vp.researcher.toLocaleString('pt-BR') : '0',
+      value: researchers.toLocaleString('pt-BR'),
       icon: 'person_search',
       tooltip: 'Profissionais com base no currículo Lattes vinculado.',
     },
