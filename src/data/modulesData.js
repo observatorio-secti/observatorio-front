@@ -52,5 +52,12 @@ export const modulesData = [
     icon: 'hub',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     logo: '/LOGO-CLUBE.png'
+  },
+  {
+    id: 'consistencia-dados',
+    title: 'Consistência de Dados',
+    link: '/consistencia',
+    icon: 'shield_check',
+    gridClass: 'lg:col-span-1 lg:row-span-1'
   }
 ];
