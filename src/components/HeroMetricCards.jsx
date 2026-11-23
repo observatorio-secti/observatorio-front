@@ -1,3 +1,5 @@
+import { instituicoes } from '../constants/home-links';
+
 export function HeroMetricCards({ data, loading = false }) {
   // Skeleton quando carregando
   if (loading || !data) {
@@ -28,7 +30,7 @@ export function HeroMetricCards({ data, loading = false }) {
       {/* Card 1: Instituições */}
       <div className="bg-white/90 backdrop-blur-md border border-blue-50 p-6 rounded-[20px] flex flex-col items-center justify-center min-w-[190px] flex-1 sm:flex-none shadow-2xl shadow-blue-900/5 transition-transform duration-300 hover:scale-105 hover:border-blue-200">
         <span className="material-symbols-outlined text-[36px] mb-2 text-blue-600">account_balance</span>
-        <h4 className="text-3xl font-extrabold mb-3 text-[#0f4c64]">11</h4>
+        <h4 className="text-3xl font-extrabold mb-3 text-[#0f4c64]">{instituicoes.length}</h4>
 
         <div className="relative group flex items-center justify-center w-full">
           <button
