@@ -13,7 +13,7 @@ export const getOutstandingResearchers = async () => {
  */
 export const getResearcherImageUrl = (researcherId, customBaseUrl) => {
   const base = (customBaseUrl || api.defaults.baseURL || 'https://simcc.uesc.br/v3/api').replace(/\/+$/, '');
-  return `${base}/ResearcherData/Image?researcher_id=${researcherId}`;
+  return `${base}/v2/researcher/${researcherId}/image`;
 };
 
 export default {

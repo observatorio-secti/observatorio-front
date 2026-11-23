@@ -97,7 +97,7 @@ export default function InitialHome() {
     }
   };
 
-  // Efeito para buscar autocompletar na API (secondWord)
+  // Efeito para buscar autocompletar na API (/v2/suggestion)
   useEffect(() => {
     const query = simccSearchQuery.trim();
     const controller = new AbortController();
@@ -114,9 +114,11 @@ export default function InitialHome() {
           if (Array.isArray(data)) {
             const frequencyMap = new Map();
             data.forEach((item) => {
-              const normalized = item.word ? item.word.replace(/[?.,!;:]/g, '').trim().toLowerCase() : '';
+              const rawWord = item.term ?? item.word;
+              const normalized = rawWord ? rawWord.replace(/[?.,!;:]/g, '').trim().toLowerCase() : '';
               if (normalized) {
-                frequencyMap.set(normalized, (frequencyMap.get(normalized) || 0) + (item.freq || 1));
+                const count = item.frequency ?? item.freq ?? 1;
+                frequencyMap.set(normalized, (frequencyMap.get(normalized) || 0) + count);
               }
             });
 
