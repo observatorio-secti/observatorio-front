@@ -1178,12 +1178,6 @@ export default function InitialHome() {
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-12 max-w-[1400px] mx-auto gap-y-8 w-full mt-1">
             <div className="text-xl font-bold text-white tracking-widest uppercase flex items-center gap-2">Observatório</div>
-            <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-              <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#">Privacidade</a>
-              <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#">Termos de Uso</a>
-              <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#">Contato</a>
-              <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#">Sobre o Simcc</a>
-            </nav>
             <div className="text-sm text-slate-500 text-center md:text-right">Observatório de CT&I da Bahia</div>
           </div>
         </footer>

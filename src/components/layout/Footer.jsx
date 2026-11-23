@@ -8,34 +8,6 @@ export function Footer() {
           Observatório
         </div>
 
-        {/* Links */}
-        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          <a
-            className="text-xs text-surface-variant/80 hover:text-primary-fixed hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
-            href="#privacidade"
-          >
-            Privacidade
-          </a>
-          <a
-            className="text-xs text-surface-variant/80 hover:text-primary-fixed hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
-            href="#termos"
-          >
-            Termos de Uso
-          </a>
-          <a
-            className="text-xs text-surface-variant/80 hover:text-primary-fixed hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
-            href="#contato"
-          >
-            Contato
-          </a>
-          <a
-            className="text-xs text-surface-variant/80 hover:text-primary-fixed hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
-            href="#sobre"
-          >
-            Sobre o Simcc
-          </a>
-        </nav>
-
         {/* Copyright */}
         <div className="text-xs text-surface-variant/60 text-center md:text-right">
           © {new Date().getFullYear()} Observatório da Ciência da Bahia - Todos os direitos reservados.
