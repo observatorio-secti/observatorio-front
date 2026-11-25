@@ -461,9 +461,9 @@ export default function InitialHome() {
                 </a>
               </div>
               <a className="flex items-center h-full py-0 gap-3" href="#" onClick={(e) => scrollToSection(e, 'sobre')}>
-                <img alt="Símbolo Observatório" className="h-9 md:h-10 w-auto object-contain z-10 relative" src="/LOGO.png" />
+                <img alt="Símbolo Observatório" className="h-9 md:h-10 w-auto object-contain z-10 relative" src="/LOGO.png?v=20261125" />
                 <div className={`transition-all duration-500 ease-in-out flex items-center overflow-hidden ${isScrolled ? 'max-w-0 opacity-0 -translate-x-8' : 'max-w-[400px] opacity-100 translate-x-0'}`}>
-                  <img alt="Nome Observatório" className="h-8 md:h-11 w-auto object-contain" src="/NOME.png" />
+                  <img alt="Nome Observatório" className="h-8 md:h-11 w-auto object-contain" src="/NOME.png?v=20261125" />
                 </div>
               </a>
             </div>

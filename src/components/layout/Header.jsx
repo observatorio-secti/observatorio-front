@@ -55,7 +55,7 @@ export function Header() {
             <img
               alt="Observatório Logo"
               className="h-10 w-auto object-contain z-10 relative shrink-0 transition-transform duration-300 group-hover:scale-105"
-              src="/LOGO.png"
+              src="/LOGO.png?v=20261125"
             />
 
             {/* Name sliding from under logo left-to-right on section 2 */}
@@ -70,7 +70,7 @@ export function Header() {
               <img
                 alt="Observatório de CT&I da Bahia"
                 className="h-12 md:h-16 w-auto object-contain shrink-0"
-                src="/NOME.png"
+                src="/NOME.png?v=20261125"
               />
             </div>
           </div>

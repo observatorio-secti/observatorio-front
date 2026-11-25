@@ -65,8 +65,8 @@ export default function AuthCallback() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 bg-[#F8FAFC] text-slate-800">
       <div className="w-full max-w-md p-8 bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col items-center text-center space-y-6">
         <div className="flex items-center gap-2">
-          <img src="/LOGO.png" alt="Observatório" className="h-10 w-auto object-contain" />
-          <img src="/NOME.png" alt="Observatório CT&I" className="h-9 w-auto object-contain" />
+          <img src="/LOGO.png?v=20261125" alt="Observatório" className="h-10 w-auto object-contain" />
+          <img src="/NOME.png?v=20261125" alt="Observatório CT&I" className="h-9 w-auto object-contain" />
         </div>
 
         {status === 'loading' && (
