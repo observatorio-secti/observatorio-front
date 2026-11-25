@@ -35,15 +35,29 @@ jobs:
             # Build da imagem
             docker build -t observatorio-front:latest .
 
-            # Extrai o dist sem erro de permissão (usa container temporário + docker cp).
-            # Remove o dist antigo para o docker cp não aninhar em ./dist/dist.
+            # Extrai o dist sem erro de permissão (container temporário + docker cp).
+            # Copia o CONTEÚDO (/app/dist/.) para um diretório novo e só então troca
+            # o dist publicado: evita o docker cp aninhar em ./dist/dist e garante
+            # permissões de leitura para o nginx.
             CONTAINER_ID=$(docker create observatorio-front:latest)
-            rm -rf ./dist
-            docker cp "$CONTAINER_ID:/app/dist" ./dist
+            rm -rf ./dist.next
+            mkdir -p ./dist.next
+            docker cp "$CONTAINER_ID:/app/dist/." ./dist.next/
             docker rm "$CONTAINER_ID"
+            chmod -R a+rX ./dist.next
 
-            # Confere que as imagens chegaram íntegras ao dist publicado.
-            for asset in dist/LOGO.png dist/GOVERNO-BAHIA-SECTI.png dist/LOGO-LICURI.jpeg; do
+            if [ ! -s ./dist.next/index.html ]; then
+              echo "ERRO: index.html não foi copiado para o dist." >&2
+              exit 1
+            fi
+
+            OLD_DIST="./dist.old.$$"
+            if [ -e ./dist ]; then mv ./dist "$OLD_DIST"; fi
+            mv ./dist.next ./dist
+            rm -rf "$OLD_DIST" 2>/dev/null || true
+
+            # Confere que o dist publicado tem o HTML e as imagens.
+            for asset in dist/index.html dist/LOGO.png dist/GOVERNO-BAHIA-SECTI.png dist/LOGO-LICURI.jpeg; do
               if [ ! -s "$asset" ]; then
                 echo "ERRO: $asset saiu vazio no build." >&2
                 exit 1
