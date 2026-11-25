@@ -17,10 +17,37 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/observatorio/observatorio-front
-            git pull origin main --ff-only
+
+            # Restaura os arquivos rastreados. O `git pull` não reescreve arquivos
+            # que não mudaram no commit, então um checkout interrompido (disco cheio,
+            # por exemplo) deixava imagens vazias/truncadas para sempre no servidor.
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Aborta antes de buildar se algum asset binário veio vazio no checkout.
+            for asset in public/LOGO.png public/GOVERNO-BAHIA-SECTI.png public/LOGO-LICURI.jpeg public/BG-OBSERVATORIO.png; do
+              if [ ! -s "$asset" ]; then
+                echo "ERRO: $asset está vazio no servidor (checkout corrompido)." >&2
+                exit 1
+              fi
+            done
+
             # Build da imagem
             docker build -t observatorio-front:latest .
-            # Extrai o dist sem erro de permissão (usa container temporário + docker cp)
+
+            # Extrai o dist sem erro de permissão (usa container temporário + docker cp).
+            # Remove o dist antigo para o docker cp não aninhar em ./dist/dist.
             CONTAINER_ID=$(docker create observatorio-front:latest)
+            rm -rf ./dist
             docker cp "$CONTAINER_ID:/app/dist" ./dist
             docker rm "$CONTAINER_ID"
+
+            # Confere que as imagens chegaram íntegras ao dist publicado.
+            for asset in dist/LOGO.png dist/GOVERNO-BAHIA-SECTI.png dist/LOGO-LICURI.jpeg; do
+              if [ ! -s "$asset" ]; then
+                echo "ERRO: $asset saiu vazio no build." >&2
+                exit 1
+              fi
+            done
+
+            echo "Deploy concluído em $(date -u +%FT%TZ)."
