@@ -15,7 +15,7 @@ export const modulesData = [
   {
     id: 'vip-vitrine',
     title: 'Vitrine de Infraestrutura',
-    link: 'https://vip.uesc.br/',
+    link: 'https://observatoriocti.secti.ba.gov.br/painel-vip/',
     icon: 'domain',
     gridClass: 'lg:col-span-2 lg:row-span-2',
     isLarge: true,
